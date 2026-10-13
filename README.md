@@ -1,289 +1,289 @@
-#  Base de Batos 🕵🏻‍♂️ — Gestión para la generación automática de planes de entrenamiento
+# Base de Batos 🕵🏻‍♂️ — Management System for the Automatic Generation of Workout Plans
 
-> Proyecto integrador de **Bases de Datos II** e **Ingeniería de Software**  
-> Curso 2026–2027 | Carrera: Ciencia de la Computación | Universidad de La Habana  
-> Estado: **En desarrollo** 🚧
-
----
-
-## 📑 Tabla de contenidos
-
-- [Descripción del proyecto](#-descripción-del-proyecto)
-- [Equipo](#-equipo)
-- [Objetivos](#-objetivos)
-- [Funcionalidades principales](#-funcionalidades-principales)
-- [Modelo de datos preliminar](#-modelo-de-datos-preliminar)
-- [Arquitectura y tecnologías](#-arquitectura-y-tecnologías)
-- [Requisitos](#-requisitos)
-- [Instalación y ejecución](#-instalación-y-ejecución)
-- [Pruebas](#-pruebas)
-- [Estructura del repositorio](#-estructura-del-repositorio)
-- [Buenas prácticas y Git](#-buenas-prácticas-y-git)
-- [Documentación](#-documentación)
-- [Evaluación](#-evaluación)
-- [Bibliografía](#-bibliografía)
-- [Licencia](#-licencia)
+> Capstone Project for **Databases II** and **Software Engineering**  
+> Academic Year 2026–2027 | Major: Computer Science | University of Havana  
+> Status: **In development** 🚧
 
 ---
 
-## 📌 Descripción del proyecto
+## 📑 Table of Contents
 
-El proyecto consiste en una **aplicación web** para la **gestión y generación automática de planes de entrenamiento** en un gimnasio. El sistema debe administrar:
-
-- Ejercicios disponibles.
-- Programas de entrenamiento.
-- Grupos musculares y tipos de ejercicio.
-- Entrenadores encargados de crear y validar rutinas.
-- Clientes que ejecutan dichas rutinas.
-- Sesiones de entrenamiento y reportes de progreso.
-
-Las rutinas deben adaptarse a criterios como nivel de intensidad, tipo de ejercicio y distribución de grupos musculares durante el ciclo de entrenamiento. Además, el sistema debe permitir la generación automática de rutinas, su validación por parte del jefe de sala, la asignación a clientes y el registro de cada sesión ejecutada.
-
-Este proyecto se desarrolla de forma conjunta para las asignaturas **Bases de Datos II** e **Ingeniería de Software**, manteniendo la unidad lógica de cada materia y evitando la duplicación de contenidos.
+- [Project Description](#-project-description)
+- [Team](#-team)
+- [Objectives](#-objectives)
+- [Key Features](#-key-features)
+- [Preliminary Data Model](#-preliminary-data-model)
+- [Architecture & Technologies](#-architecture--technologies)
+- [Requirements](#-requirements)
+- [Installation and Execution](#-installation-and-execution)
+- [Testing](#-testing)
+- [Repository Structure](#-repository-structure)
+- [Best Practices and Git](#-best-practices-and-git)
+- [Documentation](#-documentation)
+- [Evaluation](#-evaluation)
+- [Bibliography](#-bibliography)
+- [License](#-license)
 
 ---
 
-## 👥 Equipo
+## 📌 Project Description
 
-**Nombre del equipo:** Base de Batos 🕵🏻‍♂️
+This project consists of a **web application** for the **management and automatic generation of workout plans** in a gym. The system must manage:
 
-| Integrante | Grupo | Telegram | GitHub |
-|------------|-------|----------|--------|
+- Available exercises.
+- Training programs.
+- Muscle groups and exercise types.
+- Trainers responsible for creating and validating routines.
+- Clients who execute these routines.
+- Workout sessions and progress tracking reports.
+
+Routines must dynamically adapt to parameters such as intensity levels, exercise types, and muscle group distribution throughout the training cycle. Furthermore, the system must support automatic routine generation, review and validation by the floor manager, assignment to clients, and logging of each completed workout session.
+
+This project is developed jointly for **Databases II** and **Software Engineering**, maintaining the logical coherence required by each subject while preventing duplicated effort.
+
+---
+
+## 👥 Team
+
+**Team Name:** Base de Batos 🕵🏻‍♂️
+
+| Member | Group | Telegram | GitHub |
+|--------|-------|----------|--------|
 | Bryan Ernesto Moya Aquino | C312 | [@BM0ya](https://t.me/BM0ya) | [el-M0ya](https://github.com/el-M0ya) |
 | Héctor Duarte Vázquez | C311 | [@hduartev](https://t.me/hduartev) | [HectorDuarte911](https://github.com/HectorDuarte911) |
 | Fabio Hernández Piloto | C311 | [@FabioPilot](https://t.me/FabioPilot) | [Fabio-Pilot](https://github.com/Fabio-Pilot) |
 | Gabriel Pérez Suárez | C312 | [@GabrielPS1016](https://t.me/GabrielPS1016) | [GaboPS1016](https://github.com/GaboPS1016) |
 | Alex Leonardo Cuervo Grillo | C311 | [@cuervogrillo](https://t.me/cuervogrillo) | [AlexCuervo](https://github.com/AlexCuervo) |
-|Alejandro Lopez Castro| C312| [@AlejandroL04](https://t.me/AlejandroL04) | [Kaik0405](https://github.com/Kaik0405) |
+| Alejandro Lopez Castro | C312 | [@AlejandroL04](https://t.me/AlejandroL04) | [Kaik0405](https://github.com/Kaik0405) |
 
-**Repositorio:** `https://github.com/el-M0ya/Proyecto_Conjunto_de_Bases_de_Datos_II_e_Ingenier-a_de_Software`  
-
----
-
-## 🎯 Objetivos
-
-- Consolidar y profundizar los conceptos, métodos y herramientas esenciales abordados en **Bases de Datos I**.
-- Diseñar, implementar, reingenierizar y/o mantener un **Sistema de Bases de Datos** acorde al estado del arte.
-- Desarrollar una aplicación que permita a los usuarios finales el intercambio efectivo de información de forma intuitiva y amigable.
-- Aplicar buenas prácticas de **Ingeniería de Software**: control de versiones, planificación, arquitectura desacoplada, pruebas unitarias y patrones de diseño.
-- Trabajar en equipos multidisciplinarios, integrando los problemas de aplicación en un solo proyecto conjunto.
+**Repository:** `https://github.com/el-M0ya/Proyecto_Conjunto_de_Bases_de_Datos_II_e_Ingenier-a_de_Software`  
 
 ---
 
-## ⚙️ Funcionalidades principales
+## 🎯 Objectives
 
-### Administrador
-- Evitar la existencia de ejercicios duplicados.
-- Impedir la asignación doble de rutinas a los clientes.
-- Gestionar usuarios, roles y permisos.
-
-### Entrenador
-- Ingresar ejercicios al banco existente.
-- Clasificar ejercicios por grupo muscular y tipo (fuerza, cardio o flexibilidad).
-- Otorgar nivel de intensidad (bajo, medio o alto).
-- Generar rutinas de forma automática a partir de ejercicios seleccionados.
-- Ver rutinas de otros entrenadores que atienden el mismo programa de entrenamiento.
-- Consultar reportes de progreso de los clientes.
-
-### Jefe de sala
-- Revisar y aprobar las rutinas generadas.
-- Indicar la confección de otra rutina bajo sus criterios.
-- Registrar observaciones y fechas de validación.
-
-### Cliente
-- Acceder a las rutinas que le son asignadas.
-- Registrar cada sesión de entrenamiento ejecutada.
-- Consultar reportes de progreso.
-- Solicitar de forma virtual un ajuste de rutina y especificar el entrenador que ejecutará esta tarea.
-
-### Sistema
-- Generar rutinas automáticamente según parámetros configurables: proporción de ejercicios por tipo, cobertura de grupos musculares, cantidad total de ejercicios, nivel de intensidad, etc.
-- Almacenar la estructura variable de bloques de cada rutina (calentamiento, circuitos, series, descansos).
-- Garantizar disponibilidad inmediata de la rutina activa del cliente durante la sesión.
-- Generar reportes detallados:
-  1. Listado de rutinas generadas automáticamente para un programa específico.
-  2. Ejercicios más utilizados en rutinas finales, clasificados por intensidad y grupo muscular.
-  3. Rutinas validadas por un revisor determinado, con fecha y observaciones.
-  4. Reporte de desempeño de clientes en una rutina, por intensidad y tasas de finalización.
-  5. Comparación de rutinas entre programas, verificando equilibrio de grupos musculares e intensidades.
-  6. Correlación entre nivel de intensidad y rendimiento promedio, incluyendo los 10 ejercicios con mayor tasa de abandono y comparación de ajustes manuales.
-- Exportar la información mostrada a archivos **PDF**.
-- Permitir ordenar cada columna de los resultados según intereses del usuario.
+- Consolidate and expand essential concepts, methods, and tools covered in **Databases I**.
+- Design, implement, re-engineer, and/or maintain a modern **Database System** following state-of-the-art standards.
+- Develop an application allowing end users to interact and exchange information effectively through an intuitive interface.
+- Apply **Software Engineering** best practices: version control, planning, decoupled architecture, unit testing, and design patterns.
+- Work effectively in multidisciplinary teams by integrating complex requirements into a unified joint project.
 
 ---
 
-## 🗄️ Modelo de datos preliminar
+## ⚙️ Key Features
 
-Entidades principales identificadas:
+### Administrator
+- Prevent duplicate exercise entries.
+- Prevent duplicate routine assignments to clients.
+- Manage users, roles, and access permissions.
 
-- **Usuario** (Administrador, Entrenador, Jefe de Sala, Cliente)
-- **ProgramaEntrenamiento**
-- **Entrenador**
-- **Cliente**
-- **Ejercicio**
-- **GrupoMuscular**
-- **TipoEjercicio**
-- **NivelIntensidad**
-- **Rutina**
-- **BloqueRutina** / **EstructuraRutina**
-- **SesionEntrenamiento**
-- **SolicitudAjuste**
-- **ValidacionRutina**
-- **ParametroRutina**
-- **Sede**
+### Trainer
+- Add new exercises to the existing exercise bank.
+- Categorize exercises by muscle group and type (strength, cardio, or flexibility).
+- Assign intensity levels (low, medium, or high).
+- Automatically generate routines based on selected exercises.
+- View routines created by other trainers assigned to the same training program.
+- View and monitor client progress reports.
 
-> El diseño conceptual relacional extendido (MERX) se documentará en el informe de **Diseño de la base de datos** correspondiente a la semana 5.
+### Room Chief
+- Review and approve generated routines.
+- Request the generation or adjustment of a routine based on specific criteria.
+- Log observations, feedback, and validation timestamps.
 
----
+### Client
+- Access assigned workout routines.
+- Log each executed training session.
+- Track personal progress reports.
+- Request virtual routine adjustments and designate the trainer responsible for the revision.
 
-## 🏗️ Arquitectura y tecnologías
-
-| Capa | Tecnología |
-|------|------------|
-| Frontend | **React 19** + **TypeScript 6** (modo estricto) + **Vite 8** |
-| Estilos | **Tailwind CSS v4** + **shadcn/ui** sobre Radix UI |
-| Estado | **TanStack Query 5** (servidor) + contextos de React (sesión y tema) |
-| Backend | Por definir — se implementa en la siguiente iteración |
-| Base de datos | **PostgreSQL 17** (modelo relacional) + **MongoDB 8** (estructura de bloques) + **Redis 8** (caché de la rutina activa) |
-| Contenedores | Docker + Docker Compose (frontend multietapa con Nginx) |
-| Pruebas | **Vitest 5** + Testing Library + **MSW 2** |
-| Calidad | ESLint 10 (con `eslint-plugin-jsdoc`) + Prettier 3 |
-| Control de versiones | Git + GitHub (con CI en `.github/workflows/`) |
-
-**Características arquitectónicas:**
-
-- Arquitectura **hexagonal** por capas: `app → features → domain`, con el dominio puro y sin dependencias de React ni de red.
-- **Nueve patrones de diseño** aplicados, entre ellos Repository, Adapter, Strategy, Factory, Chain of Responsibility, Facade, Provider, Compound Components y Guard. El detalle está en [`frontend/README.md`](frontend/README.md).
-- Pruebas unitarias, de componentes e integración en el front-end, con **umbrales de cobertura** que exige el CI.
-- JSDoc obligatorio en el código, verificado por ESLint.
-- Variables de entorno validadas con Zod en el arranque.
-- Sin secretos en el repositorio: configuración por variables de entorno y fichero `.env.example`.
-
-> **Nota de diseño de la base de datos.** El enunciado establece que la estructura de bloques de cada rutina es de esquema variable y que *no debe modelarse junto al resto de tablas*, y que la rutina activa debe estar disponible de forma prácticamente inmediata con independencia de los usuarios conectados. De ahí la combinación de un modelo relacional (PostgreSQL), un almacén documental para esa estructura variable (MongoDB) y una caché (Redis). El motor relacional se confirmará al cerrar el MERX (semana 5).
+### System
+- Automatically generate routines based on configurable constraints: exercise proportion by type, muscle group coverage, total number of exercises, intensity levels, etc.
+- Store the variable block structure of each routine (warm-up, circuits, sets, rest intervals).
+- Guarantee immediate availability of the client's active routine during workouts.
+- Generate comprehensive reports:
+  1. List of automatically generated routines for a given program.
+  2. Most utilized exercises in finalized routines, categorized by intensity and muscle group.
+  3. Routines validated by a specific reviewer, complete with timestamps and review notes.
+  4. Client performance reports per routine, including intensity distribution and completion rates.
+  5. Program-to-program routine comparison to verify muscle group and intensity balance.
+  6. Correlation analysis between intensity level and average performance, including the top 10 exercises with the highest drop-out rates and manual adjustment history.
+- Export all generated data and reports to **PDF** format.
+- Support multi-column sorting on all data views.
 
 ---
 
-## 📋 Requisitos
+## 🗄️ Preliminary Data Model
 
-- **Node.js 20.19+** (probado con 24.x) y npm 10+.
-- Docker y Docker Compose.
+Identified core entities:
+
+- **User** (Administrator, Trainer, Room Chief, Client)
+- **TrainingProgram**
+- **Trainer**
+- **Client**
+- **Exercise**
+- **MuscleGroup**
+- **ExerciseType**
+- **IntensityLevel**
+- **Routine**
+- **RoutineBlock** / **RoutineStructure**
+- **WorkoutSession**
+- **AdjustmentRequest**
+- **RoutineValidation**
+- **RoutineParameter**
+- **Branch** (Gym location)
+
+> The complete Enhanced Entity-Relationship (EER) conceptual model will be documented in the **Database Design** report corresponding to Week 5.
+
+---
+
+## 🏗️ Architecture & Technologies
+
+| Layer | Technology |
+|---|---|
+| Frontend | **React 19** + **TypeScript 6** (strict mode) + **Vite 8** |
+| Styling | **Tailwind CSS v4** + **shadcn/ui** built on Radix UI |
+| State Management | **TanStack Query 5** (server state) + React Context (auth session & theme) |
+| Backend | To be defined — scheduled for the next iteration |
+| Database | **PostgreSQL 17** (relational core) + **MongoDB 8** (variable block structure) + **Redis 8** (active routine cache) |
+| Containerization | Docker + Docker Compose (multi-stage frontend build with Nginx) |
+| Testing | **Vitest 5** + Testing Library + **MSW 2** |
+| Quality & Tooling | ESLint 10 (with `eslint-plugin-jsdoc`) + Prettier 3 |
+| Version Control | Git + GitHub (with CI pipelines in `.github/workflows/`) |
+
+**Architectural Highlights:**
+
+- Layered **hexagonal architecture**: `app → features → domain`, keeping domain logic pure with zero dependencies on React or network layers.
+- **Nine design patterns** implemented: Repository, Adapter, Strategy, Factory, Chain of Responsibility, Facade, Provider, Compound Components, and Guard (detailed in [`frontend/README.md`](frontend/README.md)).
+- Unit, component, and integration tests for the frontend, with **strict coverage thresholds** enforced by CI.
+- Mandatory JSDoc across code, verified by ESLint.
+- Runtime environment variable validation using Zod during application boot.
+- Zero secrets committed to the repository: configuration managed purely via environment variables and `.env.example`.
+
+> **Database Design Note:** Project requirements state that each routine's block hierarchy has a variable schema and *must not be modeled together with the rest of the relational tables*. Furthermore, the active routine must be available with near-zero latency regardless of concurrent load. Consequently, the architecture incorporates a relational database (PostgreSQL), a document store for variable block trees (MongoDB), and an in-memory cache (Redis). The relational engine will be finalized upon delivery of the EER design (Week 5).
+
+---
+
+## 📋 Requirements
+
+- **Node.js 20.19+** (tested on 24.x) and npm 10+.
+- Docker and Docker Compose.
 - Git.
 
 ---
 
-## 🚀 Instalación y ejecución
+## 🚀 Installation and Execution
 
-### Sólo el frontend, con datos simulados
+### Frontend only, with mock data
 
 ```bash
 git clone https://github.com/el-M0ya/Proyecto_Conjunto_de_Bases_de_Datos_II_e_Ingenier-a_de_Software
 cd Proyecto_Conjunto_de_Bases_de_Datos_II_e_Ingenier-a_de_Software/frontend
 npm install
-npm run mock        # http://localhost:5173 con respuestas simuladas de MSW
+npm run mock        # Runs http://localhost:5173 with MSW mock handlers
 ```
 
-Las credenciales de prueba para cada rol están en [`frontend/README.md`](frontend/README.md).
+Test credentials for each user role are documented in [`frontend/README.md`](frontend/README.md).
 
-### Frontend contra el backend
+### Frontend connected to the backend
 
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local     # ajustar VITE_API_PROXY_TARGET
-npm run dev                    # http://localhost:5173
+cp .env.example .env.local     # configure VITE_API_PROXY_TARGET
+npm run dev                    # Runs http://localhost:5173
 ```
 
-### Servicios de infraestructura
+### Infrastructure services
 
 ```bash
 cp .env.example .env
-docker compose up              # PostgreSQL, Redis y MongoDB
+docker compose up              # Starts PostgreSQL, Redis, and MongoDB
 ```
 
-### Frontend compilado, en contenedor
+### Containerized production build
 
 ```bash
 docker compose --profile full up --build
 ```
 
-### Comprobación de calidad
+### Quality checks
 
 ```bash
 cd frontend
-npm run verify                 # tipos + estilo + pruebas
-npm run test:coverage          # con informe de cobertura
+npm run verify                 # Typecheck + lint + tests
+npm run test:coverage          # Run tests with coverage output
 ```
 
 ---
 
-## 🧪 Pruebas
+## 🧪 Testing
 
-| Ámbito | Ubicación | Herramientas |
-|--------|-----------|--------------|
-| Unitarias | `frontend/src/tests/unit` | Vitest, dobles de repositorio |
-| Componentes | `frontend/src/tests/components` | Testing Library, `user-event` |
-| Integración | `frontend/src/tests/integration` | MSW sobre los repositorios HTTP reales |
-| Backend | `tests/` | Por definir junto con la implementación del servidor |
+| Scope | Location | Tools |
+|---|---|---|
+| Unit | `frontend/src/tests/unit` | Vitest, repository test doubles |
+| Component | `frontend/src/tests/components` | Testing Library, `user-event` |
+| Integration | `frontend/src/tests/integration` | MSW running against real HTTP repository adapters |
+| Backend | `tests/` | To be defined during server implementation |
 
-La suite del frontend fija umbrales mínimos de cobertura —60 % en sentencias,
-ramas, funciones y líneas— que el CI verifica en cada integración.
+The frontend test suite enforces a minimum coverage threshold of 60% across statements, branches, functions, and lines, validated on every push by GitHub Actions.
 
 ---
 
-## 📁 Estructura del repositorio
+## 📁 Repository Structure
+
 ```text
 .
-├── backend/                # Código del servidor
-├── frontend/               # Código de la aplicación web
+├── backend/                # Server-side source code
+├── frontend/               # Web client application source code
 │   ├── src/
-│   │   ├── app/            # Composition root: providers, enrutador, guardas, layouts
-│   │   ├── core/           # Infraestructura transversal: config, HTTP, RBAC, DI, storage
-│   │   ├── domain/         # Dominio puro: entidades y contratos (puertos)
-│   │   ├── features/       # Vertical slices por capacidad de negocio
-│   │   ├── infrastructure/ # Adaptadores: implementaciones HTTP de los puertos
-│   │   ├── shared/         # Componentes de UI, hooks y utilidades reutilizables
-│   │   ├── mocks/          # Datos simulados con MSW
-│   │   └── tests/          # Unitarias, de componentes e integración
-│   ├── Dockerfile          # Construcción multietapa y publicación en Nginx
-│   └── nginx.conf          # Enrutamiento del lado del cliente y cabeceras de seguridad
-├── db/                     # Scripts SQL, migraciones, respaldos
-├── docs/                   # Informes, documentación técnica, diagramas
-├── docker/                 # Dockerfiles y configuración de contenedores
-├── tests/                  # Pruebas del backend
-├── .github/workflows/      # Integración continua
-├── .env.example            # Variables de entorno de ejemplo
-├── .gitignore              # Archivos excluidos del versionado
-├── docker-compose.yml      # Orquestación de servicios
-├── README.md               # Este archivo
+│   │   ├── app/            # Composition root: providers, router, route guards, layouts
+│   │   ├── core/           # Cross-cutting infrastructure: config, HTTP client, RBAC, DI, storage
+│   │   ├── domain/         # Pure business domain: entities and interface contracts (ports)
+│   │   ├── features/       # Vertical slices organized by business feature
+│   │   ├── infrastructure/ # Adapters: HTTP implementations of domain ports
+│   │   ├── shared/         # Reusable UI components, custom hooks, and shared utilities
+│   │   ├── mocks/          # Mock data and MSW service worker handlers
+│   │   └── tests/          # Unit, component, and integration test suites
+│   ├── Dockerfile          # Multi-stage container build published on Nginx
+│   └── nginx.conf          # Client-side SPA routing and HTTP security headers
+├── db/                     # SQL scripts, schema migrations, and database backups
+├── docs/                   # Reports, technical documentation, diagrams
+├── docker/                 # Container configuration files and Dockerfiles
+├── tests/                  # Backend test suites
+├── .github/workflows/      # Continuous Integration (CI) configuration
+├── .env.example            # Sample environment variables template
+├── .gitignore              # Files ignored by Git
+├── docker-compose.yml      # Multi-container service orchestration
+├── README.md               # Main repository documentation
 └── ...
 ```
----
-## 📖 Bibliografía
-- García Hernández, L.; Montes de Oca Richardson, M. Sistemas de Bases de Datos: Modelación y Diseño. Editorial Félix Varela. Cuba, 2005.
-
-- Date, C. J. Introduction to Database Systems. 7ª edición. Addison Wesley. EUA, 2000.
-
-- Hansen, G. W.; Hansen, J. V. Database Management and Design. 2ª edición. Prentice Hall. Reino Unido, 1998.
-
-- Conferencias y otros materiales de interés.
 
 ---
 
-## 📄 Licencia
+## 📖 Bibliography
 
-Este proyecto está bajo la **Licencia MIT**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+- García Hernández, L.; Montes de Oca Richardson, M. *Sistemas de Bases de Datos: Modelación y Diseño*. Editorial Félix Varela. Cuba, 2005.
+- Date, C. J. *An Introduction to Database Systems*. 7th Edition. Addison-Wesley. USA, 2000.
+- Hansen, G. W.; Hansen, J. V. *Database Management and Design*. 2nd Edition. Prentice Hall. UK, 1998.
+- Course lectures and supplementary reference material.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ```text
 MIT License
 
 Copyright (c) 2025 CETED — Universidad de La Habana
 
-Por la presente se concede permiso, libre de cargos, a cualquier persona que obtenga
-una copia de este software y de los archivos de documentación asociados...
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files...
 ```
 
 ---
 
-## 📬 Contacto
-Para dudas o sugerencias, contactar a cualquier integrante del equipo a través de Telegram o GitHub.
+## 📬 Contact
 
+If you have questions, feedback, or suggestions, feel free to reach out to any team member via Telegram or GitHub.
