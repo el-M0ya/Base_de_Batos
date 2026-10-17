@@ -1,48 +1,48 @@
-name: "✨ Funcionalidad"
-description: "Proponer una nueva funcionalidad o capacidad del sistema."
+name: "✨ Feature Request"
+description: "Propose a new feature or system capability."
 title: "[FEATURE] "
 body:
   - type: markdown
     attributes:
       value: |
-        Describe la necesidad y el valor de la funcionalidad. Si es posible, vincúlala con un requisito del proyecto.
+        Describe the need and value of this feature. Link it to a project requirement when possible.
   - type: textarea
     id: context
     attributes:
-      label: Contexto y necesidad
-      description: ¿Qué problema o necesidad se quiere resolver y para quién?
-      placeholder: Como usuario..., necesito...
+      label: Context and Problem
+      description: What problem or need should be addressed, and who is affected?
+      placeholder: As a user..., I need...
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Resultado esperado
-      description: ¿Qué debería poder hacerse cuando la funcionalidad esté terminada?
+      label: Expected Outcome
+      description: What should users be able to do when this feature is complete?
     validations:
       required: true
   - type: textarea
     id: acceptance
     attributes:
-      label: Criterios de aceptación
-      description: Escribe condiciones verificables para considerar terminada la funcionalidad.
+      label: Acceptance Criteria
+      description: List verifiable conditions that must be met for this feature to be considered complete.
       placeholder: |
-        - [ ] Dado..., cuando..., entonces...
+        - [ ] Given..., when..., then...
         - [ ] ...
     validations:
       required: true
   - type: input
     id: requirements
     attributes:
-      label: Requisitos relacionados
-      description: Identificadores o enlaces de requisitos, historias u otras Issues. Si no aplica, escribe "Ninguno".
+      label: Related Requirements or Issues
+      description: Requirement IDs or links to related stories or issues. Enter "None" if not applicable.
       placeholder: "REQ-01, #12, ..."
     validations:
       required: false
   - type: textarea
     id: notes
     attributes:
-      label: Notas, restricciones o referencias
-      description: Diseño, enlaces, dependencias o detalles útiles (opcional).
+      label: Notes, Constraints, or References
+      description: Useful design details, links, dependencies, or other context (optional).
     validations:
       required: false
