@@ -1,29 +1,29 @@
-## Objetivo
-<!-- ¿Qué problema resuelve este PR y por qué es necesario? -->
+## Goal
+<!-- What problem does this PR solve, and why is the change needed? -->
 
-## Issue relacionada
-<!-- Usa Closes #123, Fixes #123 o Relates to #123. Sustituye 123 por el número correcto. -->
+## Related Issue
+<!-- Use Closes #123, Fixes #123, or Relates to #123. Replace 123 with the correct issue number. -->
 Closes #
 
-## Cambios realizados
+## Changes Made
 - 
 - 
 
-## Pruebas realizadas
-<!-- Indica comandos o pruebas ejecutadas y sus resultados. Si no se ejecutaron, explica por qué. -->
-- [ ] Pruebas unitarias/integración aplicables
-- [ ] Verificación manual realizada
-- [ ] No aplica (explicar abajo)
+## Tests Performed
+<!-- List the commands or tests you ran and their results. If tests were not run, explain why. -->
+- [ ] Relevant unit/integration tests
+- [ ] Manual verification completed
+- [ ] Not applicable (explain below)
 
-Detalles y resultados:
+Details and results:
 <!-- -->
 
-## Pasos para verificar
+## Steps to Verify
 1. 
 2. 
 
-## Lista de comprobación
-- [ ] El cambio respeta el alcance de la Issue.
-- [ ] Actualicé la documentación necesaria.
-- [ ] No incluí secretos, credenciales ni archivos generados innecesarios.
-- [ ] Revisé los cambios antes de solicitar revisión.
+## Checklist
+- [ ] The change stays within the scope of the related issue.
+- [ ] I updated the relevant documentation.
+- [ ] I did not include secrets, credentials, or unnecessary generated files.
+- [ ] I reviewed my changes before requesting review.
