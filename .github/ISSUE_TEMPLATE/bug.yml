@@ -1,54 +1,54 @@
-name: "🐛 Error o defecto"
-description: "Reportar un comportamiento incorrecto del sistema."
+name: "🐛 Bug Report"
+description: "Report incorrect or unexpected system behavior."
 title: "[BUG] "
 body:
   - type: markdown
     attributes:
       value: |
-        Describe el fallo de forma que otra persona pueda reproducirlo. No incluyas contraseñas, tokens ni datos personales sensibles.
+        Describe the bug so another person can reproduce it. Do not include passwords, tokens, or sensitive personal data.
   - type: textarea
     id: summary
     attributes:
-      label: Descripción del defecto
-      description: ¿Qué está fallando y cuál es el impacto?
+      label: Bug Description
+      description: What is failing, and what is its impact?
     validations:
       required: true
   - type: textarea
     id: reproduce
     attributes:
-      label: Pasos para reproducir
-      description: Enumera los pasos mínimos para observar el problema.
+      label: Steps to Reproduce
+      description: List the minimum steps needed to observe the problem.
       placeholder: |
-        1. Abrir...
-        2. Seleccionar...
-        3. Observar...
+        1. Open...
+        2. Select...
+        3. Observe...
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: Resultado actual
-      description: ¿Qué ocurre al reproducir el defecto?
+      label: Actual Behavior
+      description: What happens when the bug is reproduced?
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Resultado esperado
-      description: ¿Qué debería ocurrir en su lugar?
+      label: Expected Behavior
+      description: What should happen instead?
     validations:
       required: true
   - type: textarea
     id: environment
     attributes:
-      label: Entorno y evidencias
-      description: Rama o commit, navegador/sistema operativo, mensajes de error o capturas relevantes (opcional).
+      label: Environment and Evidence
+      description: Branch or commit, browser/operating system, error messages, or relevant screenshots (optional).
     validations:
       required: false
   - type: input
     id: requirements
     attributes:
-      label: Requisitos o Issues relacionados
-      description: Identificadores o enlaces relacionados. Si no aplica, escribe "Ninguno".
+      label: Related Requirements or Issues
+      description: Related IDs or links. Enter "None" if not applicable.
     validations:
       required: false
