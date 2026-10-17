@@ -1,0 +1,54 @@
+name: "🐛 Error o defecto"
+description: "Reportar un comportamiento incorrecto del sistema."
+title: "[BUG] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe el fallo de forma que otra persona pueda reproducirlo. No incluyas contraseñas, tokens ni datos personales sensibles.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Descripción del defecto
+      description: ¿Qué está fallando y cuál es el impacto?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Pasos para reproducir
+      description: Enumera los pasos mínimos para observar el problema.
+      placeholder: |
+        1. Abrir...
+        2. Seleccionar...
+        3. Observar...
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado actual
+      description: ¿Qué ocurre al reproducir el defecto?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+      description: ¿Qué debería ocurrir en su lugar?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno y evidencias
+      description: Rama o commit, navegador/sistema operativo, mensajes de error o capturas relevantes (opcional).
+    validations:
+      required: false
+  - type: input
+    id: requirements
+    attributes:
+      label: Requisitos o Issues relacionados
+      description: Identificadores o enlaces relacionados. Si no aplica, escribe "Ninguno".
+    validations:
+      required: false
