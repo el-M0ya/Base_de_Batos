@@ -1,0 +1,54 @@
+name: "🐛 Bug Report"
+description: "Report incorrect or unexpected system behavior."
+title: "[BUG] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the bug so another person can reproduce it. Do not include passwords, tokens, or sensitive personal data.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug Description
+      description: What is failing, and what is its impact?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: List the minimum steps needed to observe the problem.
+      placeholder: |
+        1. Open...
+        2. Select...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What happens when the bug is reproduced?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and Evidence
+      description: Branch or commit, browser/operating system, error messages, or relevant screenshots (optional).
+    validations:
+      required: false
+  - type: input
+    id: requirements
+    attributes:
+      label: Related Requirements or Issues
+      description: Related IDs or links. Enter "None" if not applicable.
+    validations:
+      required: false

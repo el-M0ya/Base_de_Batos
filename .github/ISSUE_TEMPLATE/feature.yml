@@ -1,0 +1,48 @@
+name: "✨ Feature Request"
+description: "Propose a new feature or system capability."
+title: "[FEATURE] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the need and value of this feature. Link it to a project requirement when possible.
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and Problem
+      description: What problem or need should be addressed, and who is affected?
+      placeholder: As a user..., I need...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Outcome
+      description: What should users be able to do when this feature is complete?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: List verifiable conditions that must be met for this feature to be considered complete.
+      placeholder: |
+        - [ ] Given..., when..., then...
+        - [ ] ...
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Related Requirements or Issues
+      description: Requirement IDs or links to related stories or issues. Enter "None" if not applicable.
+      placeholder: "REQ-01, #12, ..."
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes, Constraints, or References
+      description: Useful design details, links, dependencies, or other context (optional).
+    validations:
+      required: false

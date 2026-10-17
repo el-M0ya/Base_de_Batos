@@ -1,0 +1,47 @@
+name: "🛠️ Technical Task"
+description: "Track technical work, maintenance, documentation, or refactoring."
+title: "[TASK] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for a concrete piece of work that is neither a new feature nor a bug fix.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What work needs to be done, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and Deliverables
+      description: Expected files, modules, or outcomes. You do not need to know every affected file in advance.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How will we verify that the task is complete?
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Related Requirements or Issues
+      description: Related IDs or links. Enter "None" if not applicable.
+      placeholder: "REQ-01, #12, ..."
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Dependencies or Notes
+      description: Risks, prior decisions, or useful context (optional).
+    validations:
+      required: false
