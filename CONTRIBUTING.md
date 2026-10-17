@@ -1,66 +1,66 @@
-# Guía de contribución
+# Contributing Guide
 
-Esta guía define un flujo sencillo para trabajar en equipo. Si una convención aún no está automatizada por GitHub, debe seguirse manualmente.
+This guide defines a simple workflow for team contributions. If a convention is not automated by GitHub, contributors must follow it manually.
 
-## 1. Antes de empezar
+## 1. Before You Start
 
-1. Busca una Issue existente o crea una con la plantilla adecuada: **Funcionalidad**, **Error o defecto** o **Tarea técnica**.
-2. Comprueba que el objetivo, los criterios de aceptación y los requisitos relacionados estén claros.
-3. Evita duplicar trabajo. Si el alcance cambia de forma importante, actualiza la Issue antes de continuar.
+1. Look for an existing issue or create one using the appropriate template: **Feature Request**, **Bug Report**, or **Technical Task**.
+2. Make sure the objective, acceptance criteria, and related requirements are clear.
+3. Avoid duplicate work. If the scope changes significantly, update the issue before proceeding.
 
-## 2. Convención de ramas
+## 2. Branch Naming
 
-Crea una rama por Issue y evita trabajar directamente sobre `main`. Usa nombres cortos y descriptivos:
+Create one branch per issue and avoid working directly on `main`. Use short, descriptive branch names:
 
-- `feature/<numero>-<resumen>`: nueva funcionalidad.
-- `fix/<numero>-<resumen>`: corrección de un defecto.
-- `task/<numero>-<resumen>`: tarea técnica o documentación.
-- `chore/<numero>-<resumen>`: configuración y mantenimiento del repositorio.
+- `feature/<number>-<summary>`: new functionality.
+- `fix/<number>-<summary>`: bug fixes.
+- `task/<number>-<summary>`: technical or documentation tasks.
+- `chore/<number>-<summary>`: repository configuration and maintenance.
 
-Ejemplos: `feature/24-plan-entrenamiento`, `fix/31-validacion-formulario`, `task/18-documentar-api`.
+Examples: `feature/24-training-plan`, `fix/31-form-validation`, `task/18-document-api`.
 
-Usa minúsculas, guiones y el número de Issue cuando exista.
+Use lowercase letters, hyphens, and the issue number when one exists.
 
-## 3. Convención de commits
+## 3. Commit Messages
 
-Usa mensajes breves, en español o inglés, que indiquen la intención del cambio con un prefijo:
+Use concise commit messages with a prefix that describes the intent of the change:
 
-- `feat: agregar generación de planes`
-- `fix: corregir validación de ejercicios`
-- `docs: actualizar instrucciones de instalación`
-- `test: cubrir cálculo de duración`
-- `refactor: simplificar servicio de planificación`
-- `chore: configurar plantillas de GitHub`
+- `feat: add training plan generation`
+- `fix: correct exercise validation`
+- `docs: update installation instructions`
+- `test: cover duration calculation`
+- `refactor: simplify planning service`
+- `chore: configure GitHub templates`
 
-Añade el número de Issue cuando aporte claridad, por ejemplo: `docs: documentar instalación (#24)`. Cada commit debe representar un cambio coherente; evita mensajes vagos como `cambios`, `arreglos` o `final`.
+Include the issue number when it adds clarity, for example: `docs: document installation (#24)`. Each commit should represent one coherent change. Avoid vague messages such as `changes`, `fixes`, or `final`.
 
-## 4. Pull Requests y revisión
+## 4. Pull Requests and Reviews
 
-1. Abre un Pull Request desde tu rama hacia `main`.
-2. Completa la plantilla: objetivo, Issue relacionada, cambios, pruebas y pasos de verificación.
-3. Enlaza la Issue con `Closes #N` cuando el PR la complete; usa `Relates to #N` si solo está relacionado.
-4. Solicita revisión a la persona responsable del área. Consulta `.github/CODEOWNERS` para identificar propietarios.
-5. Para repartir revisiones manualmente, alterna el revisor principal:
-   - **Frontend:** Bryan (@el-M0ya) y Fabio (@Fabio-Pilot), alternando en cada PR.
-   - **Backend:** Cuervo (@AlexCuervo), Héctor (@HectorDuarte911) y Gabriel (@GaboPS1016), siguiendo ese orden.
-   - **Base de datos:** Gabriel (@GaboPS1016).
-   - **QA y documentación:** Alejandro (@Kaik0405).
-6. Atiende los comentarios, realiza los cambios necesarios y espera las aprobaciones exigidas por las reglas del repositorio antes de integrar el PR.
+1. Open a Pull Request from your branch into `main`.
+2. Complete the PR template: goal, related issue, changes, tests, and verification steps.
+3. Link the issue using `Closes #N` when the PR completes it; use `Relates to #N` if it is only related.
+4. Request a review from the person responsible for the relevant area. Check `.github/CODEOWNERS` to identify area owners.
+5. Distribute reviews manually using this rotation:
+   - **Frontend:** Bryan (@el-M0ya) and Fabio (@Fabio-Pilot), alternating on each PR.
+   - **Backend:** Cuervo (@AlexCuervo), Hector (@HectorDuarte911), and Gabriel (@GaboPS1016), following that order.
+   - **Database:** Gabriel (@GaboPS1016).
+   - **QA and documentation:** Alejandro (@Kaik0405).
+6. Address review comments, make the necessary changes, and wait for the approvals required by repository rules before merging.
 
-CODEOWNERS puede ayudar a solicitar revisiones, pero no alterna revisores automáticamente. La exigencia de aprobaciones depende de la configuración de protección de `main`.
+CODEOWNERS can help request reviews, but it does not automatically rotate reviewers. Approval requirements depend on the protection rules configured for `main`.
 
-## 5. Pruebas y calidad
+## 5. Testing and Quality
 
-- Ejecuta las pruebas relevantes para el cambio y anota sus resultados en el PR.
-- Si no puedes ejecutar una prueba, indícalo y explica la razón; no afirmes que pasó.
-- Verifica manualmente los cambios de interfaz o flujos cuando corresponda.
-- Actualiza documentación y ejemplos afectados.
-- No subas contraseñas, tokens, claves privadas, datos personales sensibles ni archivos locales de configuración con secretos.
+- Run the tests relevant to your change and record their results in the PR.
+- If you cannot run a test, say so and explain why; do not claim that it passed.
+- Manually verify UI changes or workflows when appropriate.
+- Update affected documentation and examples.
+- Do not commit passwords, tokens, private keys, sensitive personal data, or local configuration files containing secrets.
 
-## 6. Criterios de finalización
+## 6. Definition of Done
 
-Una tarea está lista para revisión cuando cumple sus criterios de aceptación, tiene pruebas o una explicación de las pruebas pendientes, y la documentación necesaria está actualizada. Se considera terminada cuando los cambios han sido revisados e integrados y la Issue queda actualizada o cerrada según corresponda.
+A task is ready for review when it meets its acceptance criteria, includes test results or an explanation of pending tests, and has the necessary documentation updates. It is complete when the changes have been reviewed and merged and the issue has been updated or closed as appropriate.
 
-## 7. Mantener la guía útil
+## 7. Keeping This Guide Useful
 
-Si el equipo acuerda cambiar nombres de ramas, convenciones de commits o el flujo de revisión, actualiza este documento y comunica el cambio. Mantén las reglas simples y aplicables al tamaño del equipo.
+If the team agrees to change branch naming, commit conventions, or the review workflow, update this document and communicate the change. Keep the rules simple and realistic for the team's size.
