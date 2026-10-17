@@ -1,0 +1,28 @@
+# CODEOWNERS
+# Define responsables por área. GitHub puede solicitar revisión a los propietarios
+# indicados, pero CODEOWNERS no implementa alternancia automática.
+# Alternancia recomendada para asignar el revisor principal en cada PR:
+#   Frontend: Bryan (@el-M0ya) y Fabio (@Fabio-Pilot), alternando uno por PR.
+#   Backend: Cuervo (@AlexCuervo), Héctor (@HectorDuarte911) y Gabriel
+#            (@GaboPS1016), alternando uno por PR.
+# Para exigir aprobación de propietarios, activar "Require review from Code Owners"
+# en las reglas de protección de la rama main.
+
+# Frontend
+/frontend/ @el-M0ya @Fabio-Pilot
+
+# Backend
+/backend/ @AlexCuervo @HectorDuarte911 @GaboPS1016
+
+# Base de datos / PostgreSQL
+/db/ @GaboPS1016
+
+# QA y pruebas
+/tests/ @Kaik0405
+
+# Documentación y planificación
+/docs/ @Kaik0405
+/README.md @el-M0ya @Kaik0405
+
+# Gobierno del repositorio
+/.github/ @el-M0ya
