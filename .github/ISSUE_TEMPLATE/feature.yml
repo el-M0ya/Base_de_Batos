@@ -1,0 +1,48 @@
+name: "✨ Funcionalidad"
+description: "Proponer una nueva funcionalidad o capacidad del sistema."
+title: "[FEATURE] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe la necesidad y el valor de la funcionalidad. Si es posible, vincúlala con un requisito del proyecto.
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto y necesidad
+      description: ¿Qué problema o necesidad se quiere resolver y para quién?
+      placeholder: Como usuario..., necesito...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+      description: ¿Qué debería poder hacerse cuando la funcionalidad esté terminada?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación
+      description: Escribe condiciones verificables para considerar terminada la funcionalidad.
+      placeholder: |
+        - [ ] Dado..., cuando..., entonces...
+        - [ ] ...
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Requisitos relacionados
+      description: Identificadores o enlaces de requisitos, historias u otras Issues. Si no aplica, escribe "Ninguno".
+      placeholder: "REQ-01, #12, ..."
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notas, restricciones o referencias
+      description: Diseño, enlaces, dependencias o detalles útiles (opcional).
+    validations:
+      required: false
