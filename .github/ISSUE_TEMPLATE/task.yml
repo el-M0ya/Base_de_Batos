@@ -1,0 +1,47 @@
+name: "🛠️ Tarea técnica"
+description: "Registrar trabajo técnico, mantenimiento, documentación o refactorización."
+title: "[TASK] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usa esta plantilla para trabajo concreto que no sea una nueva funcionalidad ni un defecto.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: ¿Qué trabajo hay que realizar y por qué?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Alcance y entregables
+      description: Archivos, módulos o resultados que se espera producir. No hace falta conocer todos los archivos de antemano.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación
+      description: ¿Cómo se comprobará que la tarea quedó terminada?
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Requisitos o Issues relacionados
+      description: Identificadores o enlaces relacionados. Si no aplica, escribe "Ninguno".
+      placeholder: "REQ-01, #12, ..."
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Dependencias o notas
+      description: Riesgos, decisiones previas o información útil (opcional).
+    validations:
+      required: false
