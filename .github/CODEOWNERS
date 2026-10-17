@@ -9,7 +9,7 @@
 # en las reglas de protección de la rama main.
 
 # Frontend
-/frontend/ @el-M0ya @Fabio-Pilot
+/frontend/ @el-M0ya @Fabio-Pilot @Kaik0405
 
 # Backend
 /backend/ @AlexCuervo @HectorDuarte911 @GaboPS1016
@@ -18,10 +18,10 @@
 /db/ @GaboPS1016
 
 # QA y pruebas
-/tests/ @Kaik0405
+/tests/ @Kaik0405 @el-M0ya
 
 # Documentación y planificación
-/docs/ @Kaik0405
+/docs/ @el-M0ya @Kaik0405 
 /README.md @el-M0ya @Kaik0405
 
 # Gobierno del repositorio
