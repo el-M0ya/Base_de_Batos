@@ -4,7 +4,7 @@
 
 The authoritative numbering for functional requirements is the numbering in the team's Database Design Report, Section 2.1, **RF-01 through RF-45** (printed pages 5–8). These are preserved exactly; this document does not replace them with a new FR numbering scheme. The problem statement's six original informational queries are also tracked separately as REP-01 through REP-06, with original item numbers 1–6 retained.
 
-**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Section 2.1, pp. 5–8. The related problem statement and Database II methodological guidance are in the repository under `docs/`.
+**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Section 2.1, printed pp. 5–8. This is the 43-page report supplied as additional context for this revision; it is not yet present in the repository's `docs/` directory. The related problem statement and Database II methodological guidance are in the repository under `docs/`.
 
 ## Requirements
 
@@ -239,4 +239,4 @@ Allow users to sort every result column according to their needs.
 - Reports RF-35 through RF-42 comprise the six report requests: report item 6 is represented by RF-40, RF-41, and RF-42 because the source query requires three result groups in one request. REP-06 preserves that as one original report item.
 - RF-43 through RF-45 require frontend/report work; dedicated frontend issues have not yet been identified in the repository issue list checked for this pass.
 - Exact acceptance formulas not specified by the source (for example, exercise abandonment denominator or routine-balance criteria) are marked for instructor/team confirmation rather than invented.
-- The approved database design report proposes a document store and a Redis cache for variable routine blocks (Section 4.9). This conflicts with the project's separately agreed implementation constraints of PostgreSQL only, no MongoDB, and no Redis. Treat that as an unresolved architecture/design conflict; do not interpret the report's technology proposal as an accepted implementation requirement without an explicit reconciliation decision.
+- The approved database design report proposes MongoDB for variable routine blocks and Redis for a cache (Section 4.9). This conflicts with the project's separately agreed implementation decision: PostgreSQL only, with the variable routine structure kept in an auxiliary `routine_structure` table using JSONB; no MongoDB and no Redis. Preserve the requirement for a separate representation of nested routine structure and its consistency, but treat MongoDB/Redis as a design conflict to reconcile—not as accepted implementation requirements.
