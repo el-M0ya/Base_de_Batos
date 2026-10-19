@@ -1,163 +1,242 @@
 # Functional Requirements
 
-## Purpose and identification rules
+## Source and identifier policy
 
-This document translates the available assignment into verifiable functional requirements for the Training Plan Automatic Generation Management System.
+The authoritative numbering for functional requirements is the numbering in the team's Database Design Report, Section 2.1, **RF-01 through RF-45** (printed pages 5–8). These are preserved exactly; this document does not replace them with a new FR numbering scheme. The problem statement's six original informational queries are also tracked separately as REP-01 through REP-06, with original item numbers 1–6 retained.
 
-The source problem statement does not assign identifiers to most narrative requirements. Therefore, identifiers **FR-01** onward are stable project identifiers introduced by this document; they do not replace or renumber any source identifier. The six numbered informational queries remain numbered 1–6 in the source and are catalogued separately as **REP-01** through **REP-06** in `informational-requirements.md`.
-
-## Sources
-
-- **S1 — Problem statement:** *Gestión para la generación automática de planes de entrenamiento*, especially “Descripción del problema” and “Funcionalidades”, pp. 1–3. Repository copy: [docs/4_Gestión_para_la_generación_automática_de_planes_de_entrenamiento.pdf](../4_Gestión_para_la_generación_automática_de_planes_de_entrenamiento.pdf).
-- **S2 — Database II course guidance:** *Orientaciones metodológicas — Bases de Datos II, Curso 2026–2027*, especially the project and implementation guidance, pp. 1–5. Repository copy: [docs/BD2 - Orientaciones metodológicas.pdf](../BD2%20-%20Orientaciones%20metodológicas.pdf).
-- **S3 — Approved database design:** The approved MERX, integrity-constraint specification, and final Database II design report were not identified among the available project documents during this requirements pass. Design-specific rules must be reconciled against the approved deliverable before being treated as definitive.
+**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Section 2.1, pp. 5–8. The related problem statement and Database II methodological guidance are in the repository under `docs/`.
 
 ## Requirements
 
-### FR-01 — Register exercises
+### RF-01
+Allow users to authenticate with email address and password.
 
-A trainer shall be able to add exercises to the existing exercise bank.
+**Feature:** User authentication. **Implementation tracking:** #30, #34, frontend/API issue TBD. **Test identifier:** TC-RF-01.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+### RF-02
+Manage user roles and restrict available functions according to the administrator, trainer, room-chief, and client roles.
 
-### FR-02 — Classify trainer-authored exercises
+**Feature:** Role and access management. **Implementation tracking:** #30, #34, #40. **Test identifier:** TC-RF-02.
 
-A trainer shall be able to classify exercises authored by that trainer by muscle group, exercise type (strength, cardio, or flexibility), and intensity level (low, medium, or high).
+### RF-03
+Allow the administrator to register, modify, and deactivate user accounts.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+**Feature:** User account administration. **Implementation tracking:** #20, #30, frontend issue TBD. **Test identifier:** TC-RF-03.
 
-### FR-03 — Generate routines automatically
+### RF-04
+Manage trainer information, including unique identifier, name, specialty, and the training programs in which the trainer is authorized to generate or validate routines.
 
-A trainer shall be able to generate routines automatically from selected available exercises. Generation criteria described by the source include intensity, exercise type, muscle-group coverage across the training cycle, exercise-type proportions, and the total number of exercises. Exact validation rules and algorithms must be specified in the approved design or implementation issues; they must not be inferred from this summary.
+**Feature:** Trainer administration and authorization. **Implementation tracking:** #20, #22. **Test identifier:** TC-RF-04.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+### RF-05
+Manage client information, including unique identifier, name, age, and assigned site.
 
-### FR-04 — View routines for a shared program
+**Feature:** Client administration. **Implementation tracking:** #20. **Test identifier:** TC-RF-05.
 
-A trainer shall be able to view routines created by other trainers who work with the same training program.
+### RF-06
+Manage gym sites so each client belongs to one site and reports can group results by site.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+**Feature:** Site and client-site relationship. **Implementation tracking:** #20. **Test identifier:** TC-RF-06.
 
-### FR-05 — Prevent duplicate exercises
+### RF-07
+Separate administrator, trainer, room-chief, and client functions so users can access only operations appropriate to their role.
 
-The system administrator shall be able to prevent duplicate exercises from being registered in the exercise bank.
+**Feature:** Authorization enforcement. **Implementation tracking:** #30, #34, #40. **Test identifier:** TC-RF-07.
 
-**Source:** S1, “Descripción del problema”, p. 1. The precise duplicate-detection key or comparison rule needs confirmation from the approved database design.
+### RF-08
+Manage training programs, including a unique identifier, name, objective, and the muscle groups to cover during the cycle.
 
-### FR-06 — Prevent double assignment of routines
+**Feature:** Training programs. **Implementation tracking:** #21. **Test identifier:** TC-RF-08.
 
-The system shall prevent a routine from being assigned twice to the same client when this would constitute a duplicate assignment. The exact uniqueness scope and whether re-assignment is permitted after a routine expires or is replaced must follow the approved database design and be confirmed by the team.
+### RF-09
+Allow muscle groups in the domain catalog to be created, modified, and deleted.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+**Feature:** Muscle-group catalog. **Implementation tracking:** #21. **Test identifier:** TC-RF-09.
 
-### FR-07 — Access assigned routines
+### RF-10
+Allow users to assign to a training program the muscle groups it must cover and consult that assignment.
 
-A client shall be able to access routines assigned to that client.
+**Feature:** Program muscle-group coverage. **Implementation tracking:** #21. **Test identifier:** TC-RF-10.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+### RF-11
+Allow trainers to register exercises in the existing bank, including name, description, and registration date.
 
-### FR-08 — Record completed training sessions
+**Feature:** Exercise bank. **Implementation tracking:** #22, #36, #39. **Test identifier:** TC-RF-11.
 
-The system shall store each session registered for an executed routine and preserve the association between the session and that routine's assignment or execution context.
+### RF-12
+Allow a trainer to classify exercises authored by that trainer by muscle group, exercise type (strength, cardio, flexibility), and intensity (low, medium, high).
 
-**Source:** S1, “Descripción del problema”, p. 1. The exact session fields and completion semantics require the approved data design.
+**Feature:** Exercise classification. **Implementation tracking:** #22, #25, #36. **Test identifier:** TC-RF-12.
 
-### FR-09 — Consult progress information
+### RF-13
+Allow all users to consult the system's exercise bank.
 
-Trainers and clients shall be able to consult progress reports. Client progress shall be available by training program.
+**Feature:** Exercise catalog query. **Implementation tracking:** #22, #36, #40. **Test identifier:** TC-RF-13.
 
-**Source:** S1, “Descripción del problema”, pp. 1–2, and “Funcionalidades”, p. 2. Report-specific requirements are REP-01–REP-06.
+### RF-14
+Allow the administrator to identify and prevent duplicate exercises according to the system's defined duplicate-detection criterion.
 
-### FR-10 — Request a routine adjustment
+**Feature:** Duplicate-exercise prevention. **Implementation tracking:** #22, #25. **Test identifier:** TC-RF-14.
 
-A client shall be able to submit a routine-adjustment request online and specify the trainer who is to carry out the adjustment.
+### RF-15
+Ensure that only the trainer who authored an exercise can modify its classification.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+**Feature:** Exercise authorship and authorization. **Implementation tracking:** #22, #25. **Test identifier:** TC-RF-15.
 
-### FR-11 — Preserve adjustment history and results
+### RF-16
+Allow a trainer to be assigned training programs for which they may generate routines, validate routines, or do both.
 
-The system shall store the adjustment-request process and the result of the manual adjustment.
+**Feature:** Trainer-program authorization. **Implementation tracking:** #22, #25. **Test identifier:** TC-RF-16.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+### RF-17
+Register a client's enrollment in each training program in which the client participates, including enrollment date.
 
-### FR-12 — Review, approve, or return generated routines
+**Feature:** Program enrollment. **Implementation tracking:** #22. **Test identifier:** TC-RF-17.
 
-A room chief shall be able to review and approve a generated routine or request the preparation of another routine according to the room chief's criteria.
+### RF-18
+Prevent a trainer from generating a routine for a program for which the trainer is not authorized.
 
-**Source:** S1, “Descripción del problema”, p. 1. The precise lifecycle states, permitted transitions, and meaning of a returned routine must be agreed and documented.
+**Feature:** Generation authorization check. **Implementation tracking:** #25, #32, #39. **Test identifier:** TC-RF-18.
 
-### FR-13 — Preserve generation parameters
+### RF-19
+Allow a trainer to consult routines created by other trainers when they serve the same training program.
 
-The system shall store the parameterization used to generate a routine together with that routine.
+**Feature:** Program-scoped routine query. **Implementation tracking:** #37, #40. **Test identifier:** TC-RF-19.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+### RF-20
+Allow a trainer to generate routines automatically from selected exercises.
 
-### FR-14 — Respect program-specific trainer authorization
+**Feature:** Automatic routine generation. **Implementation tracking:** #23, #32, #37, #42. **Test identifier:** TC-RF-20.
 
-The system shall represent the training programs for which each trainer is authorized to generate or validate routines and enforce that authorization in the corresponding operations.
+### RF-21
+Allow routine-generation criteria to be set: target intensity, proportions of exercise types, muscle-group coverage, and total number of exercises.
 
-**Source:** S1, “Descripción del problema”, p. 1.
+**Feature:** Generation parameterization. **Implementation tracking:** #23, #32, #42. **Test identifier:** TC-RF-21.
 
-### FR-15 — Maintain client, site, and program associations
+### RF-22
+Store the parameterization used to generate each routine alongside that routine.
 
-The system shall maintain each client's assigned site and enrollment in training programs, and support access to the client's progress for each enrolled program.
+**Feature:** Generation parameter persistence. **Implementation tracking:** #23, #37. **Test identifier:** TC-RF-22.
 
-**Source:** S1, “Descripción del problema”, pp. 1–2.
+### RF-23
+Record each generated routine's training program, creator, and creation date.
 
-### FR-16 — Preserve each routine's variable structure
+**Feature:** Routine provenance. **Implementation tracking:** #23, #32. **Test identifier:** TC-RF-23.
 
-The system shall manage the variable, potentially nested block structure of each routine, including warm-ups, circuits, sets, and rests. The source requires that this structure be managed independently rather than forced into the common fixed structure of the other tables. The storage technology is an architectural decision and is not prescribed by this functional requirement.
+### RF-24
+Record the exercises in each routine, including each exercise's order, number of sets, repetitions, and rest time.
 
-**Source:** S1, “Descripción del problema”, p. 2.
+**Feature:** Routine composition. **Implementation tracking:** #23, #37. **Test identifier:** TC-RF-24.
 
-### FR-17 — Present informational results as tables and charts
+### RF-25
+Allow a room chief to review a generated routine and record the review date and observations.
 
-The system shall provide results for the six informational queries in a tabular and graphical form.
+**Feature:** Routine review. **Implementation tracking:** #24, #43. **Test identifier:** TC-RF-25.
 
-**Source:** S1, “Funcionalidades”, p. 2. See REP-01–REP-06.
+### RF-26
+Allow a room chief to approve a routine or request creation of another routine under the room chief's criteria.
 
-### FR-18 — Export displayed results to PDF
+**Feature:** Routine approval and return/re-generation. **Implementation tracking:** #24, #43. **Test identifier:** TC-RF-26.
 
-Every type of system user shall be able to export the information displayed by the application to PDF files.
+### RF-27
+Associate each routine generated as the result of a review with the review that originated it.
 
-**Source:** S1, “Funcionalidades”, p. 2.
+**Feature:** Routine review lineage. **Implementation tracking:** #23, #24, #43. **Test identifier:** TC-RF-27.
 
-### FR-19 — Sort result columns
+### RF-28
+Allow routines to be assigned to clients and prevent duplicate assignment of the same routine to the same client.
 
-Users shall be able to sort each column of displayed results according to their needs.
+**Feature:** Routine assignment. **Implementation tracking:** #24, #25. **Test identifier:** TC-RF-28.
 
-**Source:** S1, “Funcionalidades”, p. 2.
+### RF-29
+Allow clients to access the routines assigned to them.
 
-## Database design and integrity requirements recorded in the project plan
+**Feature:** Client routine access. **Implementation tracking:** #24, #34, #40. **Test identifier:** TC-RF-29.
 
-The following items are traceable to the team's planning artifact, Issues(1).md, especially E1-07, E1-08, and E1-11. That file describes implementation work, but the instructor-approved Database Design Report and its complete MERX/constraint specification were not available during this review. Treat the items below as **provisional design-traceability records**, not as a substitute for the approved design.
+### RF-30
+Store each session recorded for a routine executed by a client, including date, start time, end time, perceived intensity, and completion status.
 
-### DBR-01 — Preserve the approved MERX-to-physical-schema mapping
+**Feature:** Training-session records. **Implementation tracking:** #24. **Test identifier:** TC-RF-30.
 
-The database design report must include the Extended Relational-Conceptual Model (MERX), and the implemented schema must be documented against that approved model. The project plan refers to 21 original relations and an additional technical routine_structure table for the variable routine structure. Verify the count, relation names, keys, and mapping against the approved report before declaring schema equivalence.
+### RF-31
+Allow clients and trainers to consult client progress reports for training programs in which the clients are enrolled.
 
-**Sources:** S2, “Informe: Diseño de la base de datos”, p. 3; project planning artifact E1-11, issue #29.
+**Feature:** Progress reporting. **Implementation tracking:** #24, #40. **Test identifier:** TC-RF-31.
 
-### Original uniqueness identifiers U-1 through U-12
+### RF-32
+Allow a client to request a routine adjustment online for a routine assigned to that client.
 
-The E1-07 planning issue (#25) says the approved report defines uniqueness restrictions **U-1 through U-12**. It summarizes the covered areas as email, catalog and program names, duplicate exercises, enrollments, trainer authorizations, routine composition, assignments, sessions, and adjustment results. The planning issue does **not** map each topic to each U-identifier. Preserve the original identifiers, but do not invent that mapping. The original constraint report must be obtained before each rule can be described or tested conclusively.
+**Feature:** Routine-adjustment requests. **Implementation tracking:** #24. **Test identifier:** TC-RF-32.
 
-### DBR-02 — Specify domain, numeric, and temporal constraints
+### RF-33
+Allow the client to specify the trainer who will handle the adjustment request.
 
-Implement the domain and numeric restrictions and temporal rules that are actually present in the approved design. Use PostgreSQL constraints when they can express the rule correctly; document rules that require application/use-case validation or other mechanisms.
+**Feature:** Requested trainer selection. **Implementation tracking:** #24. **Test identifier:** TC-RF-33.
 
-**Source:** project planning artifact E1-07, issue #25. Exact predicates require the approved constraint specification.
+### RF-34
+Record every adjustment request and the result of the manual adjustment.
 
-### DBR-03 — Preserve cross-entity consistency rules
+**Feature:** Adjustment history and result. **Implementation tracking:** #24. **Test identifier:** TC-RF-34.
 
-The E1-08 planning issue (#26) identifies three consistency cases to verify against the approved design: user role must agree with user specialization; routine status must agree with its latest validation; and the trainer who resolves an adjustment must match the trainer selected by the request. Keep these as provisional until checked against the approved design report.
+### RF-35
+For a selected training program, list automatically generated routines with creator name, creation date, and generation parameters.
 
-**Source:** project planning artifact E1-08, issue #26.
+**Feature:** Report 1: automatically generated routines. **Implementation tracking:** #23, #29, #37, report issue TBD. **Test identifier:** TC-RF-35.
 
-## Outstanding functional decisions
+### RF-36
+For a selected training program, identify the most-used exercises in final routines, classified by intensity and muscle group.
 
-1. Confirm the duplicate-exercise comparison rule and the precise scope of a duplicate routine assignment.
-2. Define session fields and what constitutes a completed, partially completed, or abandoned session; these definitions affect REP-04 and REP-06.
-3. Approve the routine lifecycle, including the effect of returning a routine and the relationship between a replacement routine and its source routine.
-4. Publish or link the approved MERX and integrity-constraint specification. Constraint identifiers and database-specific requirements must retain the identifiers in that approved source; they must not be reconstructed from the issue descriptions alone.
-5. Define the generation criteria and how each criterion is checked, without assuming numerical thresholds that the source does not give.
+**Feature:** Report 2: most-used exercises. **Implementation tracking:** #22, #23, #29, report issue TBD. **Test identifier:** TC-RF-36.
+
+### RF-37
+List routines validated by a specified reviewer, including validation date and recorded observations.
+
+**Feature:** Report 3: validated routines. **Implementation tracking:** #24, #29, #40, report issue TBD. **Test identifier:** TC-RF-37.
+
+### RF-38
+Report client performance for a routine, grouping exercises by intensity and comparing completion rates.
+
+**Feature:** Report 4: routine performance. **Implementation tracking:** #24, #29, #40, report issue TBD. **Test identifier:** TC-RF-38.
+
+### RF-39
+Compare routines generated for different training programs by muscle-group and intensity distributions and whether balance criteria were met.
+
+**Feature:** Report 5: routine balance comparison. **Implementation tracking:** #23, #29, #37, report issue TBD. **Test identifier:** TC-RF-39.
+
+### RF-40
+For each training program, determine the correlation between exercise intensity and average client performance.
+
+**Feature:** Report 6a: intensity/performance correlation. **Implementation tracking:** #22, #24, #29, report issue TBD. **Test identifier:** TC-RF-40.
+
+### RF-41
+Identify the ten exercises with the highest abandonment rate and show their creator and associated training program.
+
+**Feature:** Report 6b: highest exercise abandonment. **Implementation tracking:** #22, #24, #29, report issue TBD. **Test identifier:** TC-RF-41.
+
+### RF-42
+Compare the performance of clients who requested a routine adjustment with the general completion average at their sites for the same programs.
+
+**Feature:** Report 6c: adjustment cohort versus site average. **Implementation tracking:** #20, #24, #29, report issue TBD. **Test identifier:** TC-RF-42.
+
+### RF-43
+Present query and report results as tables and charts.
+
+**Feature:** Report presentation. **Implementation tracking:** Frontend/report issue TBD. **Test identifier:** TC-RF-43.
+
+### RF-44
+Allow every user type to export displayed information to PDF.
+
+**Feature:** PDF export. **Implementation tracking:** Frontend/export issue TBD. **Test identifier:** TC-RF-44.
+
+### RF-45
+Allow users to sort every result column according to their needs.
+
+**Feature:** Sortable result columns. **Implementation tracking:** Frontend/table issue TBD. **Test identifier:** TC-RF-45.
+
+## Notes for implementation planning
+
+- Requirement identifiers and descriptions above are source-derived and translated into English. The traceability matrix lists the source page and current issue/test mapping for each item.
+- Reports RF-35 through RF-42 comprise the six report requests: report item 6 is represented by RF-40, RF-41, and RF-42 because the source query requires three result groups in one request. REP-06 preserves that as one original report item.
+- RF-43 through RF-45 require frontend/report work; dedicated frontend issues have not yet been identified in the repository issue list checked for this pass.
+- Exact acceptance formulas not specified by the source (for example, exercise abandonment denominator or routine-balance criteria) are marked for instructor/team confirmation rather than invented.
+- The approved database design report proposes a document store and a Redis cache for variable routine blocks (Section 4.9). This conflicts with the project's separately agreed implementation constraints of PostgreSQL only, no MongoDB, and no Redis. Treat that as an unresolved architecture/design conflict; do not interpret the report's technology proposal as an accepted implementation requirement without an explicit reconciliation decision.
