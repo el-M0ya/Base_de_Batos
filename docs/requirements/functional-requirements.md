@@ -128,6 +128,32 @@ Users shall be able to sort each column of displayed results according to their 
 
 **Source:** S1, “Funcionalidades”, p. 2.
 
+## Database design and integrity requirements recorded in the project plan
+
+The following items are traceable to the team's planning artifact, Issues(1).md, especially E1-07, E1-08, and E1-11. That file describes implementation work, but the instructor-approved Database Design Report and its complete MERX/constraint specification were not available during this review. Treat the items below as **provisional design-traceability records**, not as a substitute for the approved design.
+
+### DBR-01 — Preserve the approved MERX-to-physical-schema mapping
+
+The database design report must include the Extended Relational-Conceptual Model (MERX), and the implemented schema must be documented against that approved model. The project plan refers to 21 original relations and an additional technical routine_structure table for the variable routine structure. Verify the count, relation names, keys, and mapping against the approved report before declaring schema equivalence.
+
+**Sources:** S2, “Informe: Diseño de la base de datos”, p. 3; project planning artifact E1-11, issue #29.
+
+### Original uniqueness identifiers U-1 through U-12
+
+The E1-07 planning issue (#25) says the approved report defines uniqueness restrictions **U-1 through U-12**. It summarizes the covered areas as email, catalog and program names, duplicate exercises, enrollments, trainer authorizations, routine composition, assignments, sessions, and adjustment results. The planning issue does **not** map each topic to each U-identifier. Preserve the original identifiers, but do not invent that mapping. The original constraint report must be obtained before each rule can be described or tested conclusively.
+
+### DBR-02 — Specify domain, numeric, and temporal constraints
+
+Implement the domain and numeric restrictions and temporal rules that are actually present in the approved design. Use PostgreSQL constraints when they can express the rule correctly; document rules that require application/use-case validation or other mechanisms.
+
+**Source:** project planning artifact E1-07, issue #25. Exact predicates require the approved constraint specification.
+
+### DBR-03 — Preserve cross-entity consistency rules
+
+The E1-08 planning issue (#26) identifies three consistency cases to verify against the approved design: user role must agree with user specialization; routine status must agree with its latest validation; and the trainer who resolves an adjustment must match the trainer selected by the request. Keep these as provisional until checked against the approved design report.
+
+**Source:** project planning artifact E1-08, issue #26.
+
 ## Outstanding functional decisions
 
 1. Confirm the duplicate-exercise comparison rule and the precise scope of a duplicate routine assignment.
