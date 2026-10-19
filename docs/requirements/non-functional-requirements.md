@@ -1,151 +1,95 @@
-# Non-Functional and Project Constraints
+# Non-Functional Requirements
 
-## Purpose and identification rules
+## Source and identifier policy
 
-The source assigns original numbers to several Engineering Software conditions. Those numbers are retained below in the **Original source identifier** field. The NFR identifiers introduced here are stable tracking identifiers only; they do not replace the source numbering.
+The authoritative requirement identifiers are those in the team's Database Design Report, Section 2.2: **RNF-01 through RNF-12** (printed page 8). They are preserved exactly. No new NFR-01 numbering scheme is substituted.
 
-## Sources
-
-- **S1 — Problem statement:** *Gestión para la generación automática de planes de entrenamiento*, pp. 1–3.
-- **S2 — Database II course guidance:** *Orientaciones metodológicas — Bases de Datos II, Curso 2026–2027*, pp. 1–5.
-
-Repository copies: [problem statement](../4_Gestión_para_la_generación_automática_de_planes_de_entrenamiento.pdf) and [Database II guidance](../BD2%20-%20Orientaciones%20metodológicas.pdf).
+**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Section 2.2, p. 8. **Supporting source (S2):** *Orientaciones Metodológicas — Bases de Datos II, Curso 2026–2027*, especially pp. 2–4.
 
 ## Requirements
 
-### NFR-01 — Web application
+### RNF-01
+The solution shall be a web application that runs across different operating systems and browsers.
 
-The delivered system shall be a web application.
+**Concern:** Cross-platform web application. **Implementation/verification tracking:** Frontend and deployment issues TBD. **Test identifier:** TC-RNF-01.
 
-**Original source identifier:** Problem statement, “Descripción del problema”, p. 1.  
-**Source:** S1.
+### RNF-02
+The user interface shall be friendly, intuitive, and easy to use.
 
-### NFR-02 — Multiplatform operation
+**Concern:** Usability. **Implementation/verification tracking:** Frontend/usability issue TBD. **Test identifier:** TC-RNF-02.
 
-The software shall be multiplatform.
+### RNF-03
+A client's active routine shall be available practically immediately during the training session.
 
-**Original source identifier:** Engineering Software condition 3, S1, p. 3.  
-**Source:** S1. The supported operating systems, browsers, and minimum versions are not specified and need agreement.
+**Concern:** Active-routine availability. **Implementation/verification tracking:** Performance issue TBD; #37. **Test identifier:** TC-RNF-03.
 
-### NFR-03 — Practical availability of the active routine
+### RNF-04
+Performance shall be maintained when multiple users are connected simultaneously.
 
-The active routine information shall be available practically immediately during a client's training session, regardless of the number of simultaneously connected users.
+**Concern:** Scalability and concurrency. **Implementation/verification tracking:** Performance/load-test issue TBD. **Test identifier:** TC-RNF-04.
 
-**Original source identifier:** Narrative performance requirement, S1, p. 2.  
-**Source:** S1. The source gives no numeric response-time target, concurrency level, test environment, or measurement procedure. Those acceptance thresholds must be agreed before performance compliance can be objectively tested.
+### RNF-05
+The application shall use a decoupled architecture separating frontend and backend to facilitate extensibility and maintenance.
 
-### NFR-04 — Intuitive user interaction
+**Concern:** Architecture quality. **Implementation/verification tracking:** #30, #33, #34. **Test identifier:** TC-RNF-05.
 
-The application shall provide an intuitive and user-friendly interaction experience.
+### RNF-06
+The solution shall implement at least two software design patterns.
 
-**Original source identifier:** Project description, S1, p. 1.  
-**Source:** S1. The team must define how usability will be reviewed; the source does not provide a specific usability score or user-test threshold.
+**Concern:** Design patterns. **Implementation/verification tracking:** #42, #43. **Test identifier:** TC-RNF-06.
 
-### NFR-05 — Decoupled, extensible, maintainable architecture
+### RNF-07
+Code shall follow good programming practices and contain structured comments/documentation.
 
-The application shall use an architecture that allows components to be decoupled, functionality to be extended, and the system to be maintained.
+**Concern:** Code quality and documentation. **Implementation/verification tracking:** PR review checklist; implementation issues. **Test identifier:** TC-RNF-07.
 
-**Original source identifier:** Engineering Software condition 7, S1, p. 3.  
-**Source:** S1.
+### RNF-08
+Unit tests shall be implemented for both frontend and backend.
 
-### NFR-06 — Programming quality and documentation
+**Concern:** Unit testing. **Implementation/verification tracking:** #41; frontend unit-test issue TBD. **Test identifier:** TC-RNF-08.
 
-The project shall follow good programming practices, including comments/docstrings throughout the code, logical organization of folders and modules, clear names, and separation of responsibilities.
+### RNF-09
+Development shall use version control, with frequent atomic commits that reflect each team member's contribution.
 
-**Original source identifier:** Engineering Software condition 5, S1, p. 3; implementation guidance, S2, p. 4.  
-**Source:** S1 and S2.
+**Concern:** Version control and contribution evidence. **Implementation/verification tracking:** #5, #6. **Test identifier:** TC-RNF-09.
 
-### NFR-07 — Use at least two design patterns
+### RNF-10
+Project planning shall use a CASE/project-planning tool.
 
-The implementation shall include at least two design patterns.
+**Concern:** Project planning. **Implementation/verification tracking:** #7. **Test identifier:** TC-RNF-10.
 
-**Original source identifier:** Engineering Software condition 6, S1, p. 3.  
-**Source:** S1. Documenting a pattern is not sufficient evidence of implementation; its use must be visible in code and verified through review/tests.
+### RNF-11
+All relevant operations shall be permanently stored to preserve historical traceability of information.
 
-### NFR-08 — Unit tests for both application sides
+**Concern:** Persistence and historical traceability. **Implementation/verification tracking:** #20, #22-#29. **Test identifier:** TC-RNF-11.
 
-Unit tests shall be implemented for both the backend and the frontend.
+### RNF-12
+PDF export and dynamic result-column sorting shall be available to every user type.
 
-**Original source identifier:** Engineering Software condition 8, S1, p. 3.  
-**Source:** S1. The source does not prescribe a specific test framework or coverage percentage.
+**Concern:** Cross-user report functionality. **Implementation/verification tracking:** Frontend/report issues TBD. **Test identifier:** TC-RNF-12.
 
-### NFR-09 — Public repository and contribution traceability
+## Database II and project-deliverable constraints
 
-The repository shall be public; the instructors and all team members shall be repository collaborators. Commit history shall remain interpretable and shall not be altered by force-pushing or rewriting shared history. Commits should provide meaningful evidence of each member's contribution.
+These are separate course/process constraints, not additional RNF identifiers. They are documented separately so that the original RNF numbering remains unchanged.
 
-**Original source identifier:** Database II implementation guidance, S2, p. 4.  
-**Source:** S2.
+### BD2-DEL-01 — Required contents of the database design report
+The Database II guidance says the design report must contain: team name and each member's name/group; project title; an enriched analysis/reformulation of functional and informational requirements; the Extended Relational-Conceptual Model (MERX); a specification of integrity constraints; and an assessment of database-design correctness. **Source:** S2, “Informe: Diseño de la base de datos,” p. 3.
 
-### NFR-10 — Reproducible setup and dependency documentation
+### BD2-DEL-02 — Test dataset for information queries
+A test dataset must be prepared to verify the correctness and effectiveness of the informational queries. The source does not mandate an exact record count. **Source:** S2, “Características del proyecto,” p. 2. Related reports: REP-01 through REP-06.
 
-The repository shall include a README with the steps needed to run the system, necessary environment/setup files (including Docker files where required), and a dependency list. A .gitignore shall exclude virtual environments, installed dependencies, generated/temporary files, credentials, and other files that should not be versioned. Real secrets must not be committed; environment variables or example configuration files should be used instead.
+### BD2-DEL-03 — Submission and revision process
+The methodological guidance states that submissions identified in the course are collected in the course group on Tuesdays at 10:00 a.m.; documents must be submitted as PDF; corrections requested after instructor review must be delivered no later than one week after that review. The published schedule places the database design report in week 5, the progress checkpoint in week 8, complete technical documentation in week 11, and project discussion/review in weeks 11–12. Confirm later changes against instructor announcements. **Source:** S2, pp. 2–3.
 
-**Original source identifier:** Database II implementation guidance, S2, p. 4.  
-**Source:** S2.
+### BD2-DEL-04 — Repository and reproducibility guidance
+The repository should be public and include the instructors and all team members as collaborators. The team should preserve readable commit history (no force-push/history rewriting of shared branches), maintain meaningful atomic commits, include a README with setup steps and environment/dependency files, maintain the dependency list, use a .gitignore for generated files and secrets, and never commit credentials or private configuration. **Source:** S2, p. 4.
 
-### NFR-11 — Use version control and preserve meaningful history
+### BD2-DEL-05 — Software Engineering pass gate
+The problem statement lists eight Software Engineering project criteria and says the first six are indispensable for passing. Requirements 7 and 8 (decoupled/maintainable architecture and frontend/backend unit tests) still remain stated requirements even though the document distinguishes the first-six pass gate. **Source:** S1, p. 3.
 
-The project shall use a version-control system. The shared commit history must remain readable and must not be altered by force-pushing or rewriting shared history. Commit messages should be descriptive, commits reasonably atomic, and the history should reflect actual individual contributions rather than one oversized commit or many insignificant commits.
+## Open issues and decisions
 
-**Original source identifiers:** Engineering Software condition 1, S1, p. 3; Database II implementation guidance, S2, p. 4.
-**Sources:** S1 and S2.
-
-### NFR-12 — Project planning with a CASE/planning tool
-
-The team shall carry out project planning using a planning/CASE tool such as GitHub, Jira, or Gantt software.
-
-**Original source identifier:** Engineering Software condition 2, S1, p. 3.  
-**Source:** S1. The project's existing GitHub Project named planificacion is the intended tracking location; no duplicate project is required.
-
-### NFR-13 — Satisfy the stated functional requirements
-
-The delivered application shall implement the functional requirements extracted from the problem statement, including all six informational queries and the shared table/chart, PDF-export, and sortable-column requirements.
-
-**Original source identifier:** Engineering Software condition 4, S1, p. 3.
-**Source:** S1. Use FR-01 through FR-19 and REP-01 through REP-06 as the traceable catalogue; this requirement does not replace those individual acceptance criteria.
-
-## Database II and course deliverable constraints
-
-These are coursework/deliverable constraints rather than runtime quality attributes. They are included here because E0-05 explicitly requires requirements to be traced to the specific Database II guidance.
-
-### BD2-DEL-01 — Include the required sections in the database design report
-
-The database design report shall include:
-1. team name and the name/group of each team member;
-2. project title;
-3. an enriched analysis and reformulation of functional and informational requirements;
-4. the Extended Relational-Conceptual Model (MERX);
-5. a specification of identified/established integrity constraints; and
-6. an assessment of database-design correctness.
-
-**Source:** S2, “Informe: Diseño de la base de datos”, p. 3.
-
-### BD2-DEL-02 — Prepare test data for the informational queries
-
-The team shall create a test dataset that allows the correctness and effectiveness of the six informational queries to be checked. Test records should cover the relevant paths and boundary cases established by the approved report definitions; the source does not prescribe exact record counts.
-
-**Source:** S2, “Características del proyecto”, p. 2. Related requirements: REP-01 through REP-06.
-
-### BD2-DEL-03 — Follow the documented report-submission and correction process
-
-The methodological guidance states that reports and specified information are submitted to the course group on Tuesdays at 10:00 a.m., and that reports must be submitted as PDF. After instructor review, requested corrections are due no later than one week after that review. Its published schedule lists the database design report in week 5, a progress checkpoint in week 8, complete technical documentation in week 11, and project discussion/review in weeks 11–12.
-
-**Source:** S2, “Programación de actividades de la asignatura” and “Informe: Diseño de la base de datos”, pp. 2–3. Verify dates and any later changes against current instructor announcements before scheduling actual submissions.
-
-### BD2-DEL-04 — Respect the explicit Software Engineering grading gate
-
-The problem statement lists eight Software Engineering project requirements and states that the first six are indispensable for passing the course. Requirements 7 and 8 (maintainable/decoupled architecture and unit tests for both backend and frontend) remain stated requirements even though the document distinguishes the first-six pass gate.
-
-**Source:** S1, “Requisitos particulares de la asignatura Ingeniería de Software”, p. 3.
-
-## Verification notes and open decisions
-
-- The problem statement says the team may have up to five members, while the Database II guidance says teams consist of five students. The project has separately reported a six-person team. Obtain instructor confirmation or document an approved exception rather than silently changing either source.
-- The complete approved Database Design Report/MERX and the full text of constraints U-1 through U-12 were not found in the available context. Request the approved report before claiming that every database-specific constraint has been extracted and individually verified.
-- The separate “Documento Técnico. Informe Técnico de Software” is referenced as a future course document; its detailed technical-documentation requirements cannot yet be extracted. Update this catalogue when that document is supplied.
-- NFR-02 needs an agreed compatibility matrix (OS/browser versions) before a definitive platform test can be written.
-- NFR-03 needs a measurable response-time target, a concurrency target, and a reproducible load-test environment. Do not invent these values.
-- NFR-04 needs an agreed usability review method.
-- NFR-08 requires frontend test issues and test setup to be tracked when that work is planned; the currently identified E2 unit-test issue is backend-focused.
-- NFR-09's public repository status can be observed, but instructor collaborator access must be verified separately.
-- NFR-10 and NFR-11 should be checked as part of pull-request review and the final release checklist.
+- **Team-size discrepancy:** S1 says the team may have up to five members and S2 says teams consist of five students, while the submitted design report lists six team members. Confirm the instructor's approval/exception rather than silently changing the source.
+- **Technology conflict:** the database design report Section 4.9 proposes MongoDB and Redis for variable routine structure/cache, but the project's accepted architecture constraints say PostgreSQL only and explicitly reject both technologies. This must be reconciled with the instructors/team before implementation; it is not silently changed in this requirements catalogue.
+- **Performance metric:** RNF-03 and RNF-04 state “practically immediate” availability and concurrent-user performance, but provide no measurable latency/concurrency target. An acceptance threshold and test environment are needed.
+- **The separate Software Technical Report guide:** the Database II guidance refers to “Documento Técnico. Informe Técnico de Software” as a document to be provided later. Its detailed requirements are not derivable from the current source set until that document is available.
