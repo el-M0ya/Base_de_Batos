@@ -4,7 +4,7 @@
 
 The authoritative informational requirement IDs are **RI-01 through RI-35**, as defined in the team's Database Design Report, Section 2.3, printed pages 9–12. They are preserved exactly and describe data that the database must store or provide. The six original report requests under “Funcionalidades” are tracked separately as **REP-01 through REP-06**, retaining source item numbers 1–6. Database integrity rules are also captured below using the source's exact identifiers (U-1 through U-12 and R1 through R13) or clearly marked project tracking IDs where the source supplies no identifier.
 
-**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Sections 2.3, 4.2–4.8, printed pp. 9–12 and 18–24. **S1:** original problem statement. **S2:** Database II methodological guidance.
+**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Sections 2.3, 4.2–4.8, printed pp. 9–12 and 18–24. This is the 43-page report supplied as additional context for this revision and is not yet present in the repository's `docs/` directory. **S1:** original problem statement. **S2:** Database II methodological guidance.
 
 ## Informational requirements (RI-01 through RI-35)
 
@@ -235,7 +235,7 @@ For each training program, correlate exercise intensity with average client perf
 - **U-2 (WORKOUT PROGRAM):** A training-program name must be unique.
 - **U-3 (MUSCLE GROUP, EXERCISE TYPE, INTENSITY LEVEL):** Catalog names must be unique within their respective catalog.
 - **U-4 (INSCRIBED):** The pair (idClient, idWorkoutProgram) must be unique; a client cannot enroll in the same program twice.
-- **U-5 (AUTHORISES):** The pair (idTrainer, idWorkoutProgram) must be unique; the source describes no duplicate authorization for a trainer/program pair.
+- **U-5 (AUTHORISES):** The source states that the pair (idTrainer, idWorkoutProgram) is unique and describes it as preventing simultaneous duplicate authorizations for a trainer/program pair. Clarify the history/validity-period implication if multiple non-overlapping authorization periods are intended.
 - **U-6 (CONTAINS):** The pair (idRoutine, idExercise) must be unique; an exercise cannot occur more than once in a routine.
 - **U-7 (CONTAINS):** The pair (idRoutine, order) must be unique; two exercises cannot occupy the same position in one routine.
 - **U-8 (PARAMETERS ROUTINE):** idRoutine must be unique; each routine has exactly one parameterization.
@@ -288,11 +288,12 @@ For each training program, correlate exercise intensity with average client perf
 - **Entity integrity:** every entity/associative relation has a primary key; primary-key attributes are non-null and unique. **Source:** S3, Section 4.1, printed p. 18.
 - **Referential integrity:** every foreign key references an existing related occurrence; this includes program enrollments and trainer authorizations, exercise-to-routine composition, routine creator/program, validation and authorization, assignments, sessions linked through assignments, adjustment requests, and adjustment results. Historical parent records must not be deleted if that would lose required history unless an explicit safe deletion/cascade policy is defined. **Source:** S3, Section 4.3, printed pp. 19–20.
 - **Nullability:** IDs and primary keys are mandatory; names, program objective, trainer specialty, client age/site, exercise classification/creator, event dates, adjustment reason/result description, and validation decision are required. The report identifies nullable fields including exercise description, authorization/assignment end dates, validation/session observations, perceived session intensity, and routine-origin reference. **Source:** S3, Section 4.5, printed p. 21.
+- **Variable routine structure consistency:** each routine keeps a reference to its separately managed variable structure; there must be no orphan structure associated with a non-existent routine, and each stored structure must correspond to a registered routine. The proposed technology in S3 conflicts with the project decision above; the integrity requirement remains applicable to the approved PostgreSQL/JSONB implementation. **Source:** S3, Section 4.9, printed pp. 25–26; project planning issue #23.
 - **Implementation mechanisms:** PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, CHECK, database triggers, or application logic depending on the rule's nature. **Source:** S3, Section 4.10, printed pp. 25–26.
 
 ## Design references and explicit unresolved conflicts
 
 - The report describes a 21-relation relational core with 31 foreign keys and includes a requirement-to-relation mapping in Table 10 (printed pp. 37–38).
-- The report's Section 4.9 proposes MongoDB for nested routine blocks and Redis for a cache. The project's separately agreed implementation constraints are PostgreSQL only, no MongoDB, and no Redis. This is a genuine source/design conflict and must be reconciled before implementation; it is recorded here, not silently resolved.
+- The report's Section 4.9 proposes MongoDB for nested routine blocks and Redis for a cache. The separately agreed project implementation decision is PostgreSQL only, with the variable routine structure stored in an auxiliary `routine_structure` table as JSONB, and no MongoDB or Redis. Preserve the independent/separately managed structure and orphan-prevention requirement, but reconcile this technology conflict before implementation; it is recorded here, not silently resolved.
 - In Report REP-02, the source does not define number of results, ties, or analysis period. REP-03 does not settle latest-vs-all validation events. REP-04 requires the report's stated completion-rate comparison but does not specify every aggregation detail. REP-05 references balance criteria without a fully stated numeric threshold. REP-06 gives its high-level correlation and comparison requirements but leaves the specific correlation method/abandonment-rate denominator and analysis window for confirmation.
 - The project planning file says E1-07 implements U-1 through U-12 and E1-08 implements three cross-entity consistency mechanisms. Those implementation issues should trace back to this source catalogue; they do not supersede the report's full requirements.
