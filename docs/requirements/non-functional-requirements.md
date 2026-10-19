@@ -4,7 +4,7 @@
 
 The authoritative requirement identifiers are those in the team's Database Design Report, Section 2.2: **RNF-01 through RNF-12** (printed page 8). They are preserved exactly. No new NFR-01 numbering scheme is substituted.
 
-**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Section 2.2, p. 8. **Supporting source (S2):** *Orientaciones Metodológicas — Bases de Datos II, Curso 2026–2027*, especially pp. 2–4.
+**Primary source (S3):** *Informe — Diseño de la Base de Datos: Gestión para la generación automática de planes de entrenamiento*, Section 2.2, printed p. 8. This is the 43-page report supplied as additional context for this revision and is not yet present in the repository's `docs/` directory. **Supporting source (S2):** *Orientaciones Metodológicas — Bases de Datos II, Curso 2026–2027*, especially pp. 2–4.
 
 ## Requirements
 
