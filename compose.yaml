@@ -1,0 +1,123 @@
+# Orquestación de los servicios del proyecto.
+#
+# Arquitectura de almacenamiento (según issue #23 y MERX actualizado):
+#
+#   - PostgreSQL  -> núcleo relacional: 21 relaciones (R1..R21) + `routine_structure`
+#                    con JSONB. Es la única fuente de verdad.
+#   - Redis       -> caché clave-valor de la rutina activa. NO es fuente de
+#                    verdad: TTL corto e invalidación desde el disparador que
+#                    actualiza el estado de la rutina.
+#
+# La estructura variable de bloques se guarda en PostgreSQL con JSONB en una
+# transacción junto con la rutina, tal como indica la issue #23. No se usa
+# almacén documental externo.
+#
+# `docker compose up -d --wait` levanta el núcleo (PostgreSQL + Redis).
+# `docker compose --profile full up --build` añade el frontend compilado.
+#
+# Los valores de todas las variables se leen del fichero `.env` de la raíz.
+# La plantilla con los valores de desarrollo es `.env.example`; el fichero
+# `.env` real está en `.gitignore` y nunca debe subirse al repositorio.
+#
+# Referencia: issue #19 — Configurar PostgreSQL para el entorno de desarrollo.
+
+services:
+  # ---------------------------------------------------------------------------
+  # Núcleo relacional
+  # ---------------------------------------------------------------------------
+  # Aquí viven las 21 relaciones del esquema (USER, TRAINER, ROOMCHIEF, SITE,
+  # CLIENT, WORKOUTPROGRAM, COVERS, MUSCLEGROUP, EXERCISETYPE,
+  # INTENSITYLEVEL, EXERCISE, AUTHORISES, INSCRIBED, ROUTINE,
+  # PARAMETERSROUTINE, CONTAINS, VALIDATE, ASSIGNMENT, SESION, REQUEST y
+  # ADJUSTMENTRESULT), creadas por los scripts numerados del proyecto.
+  #
+  # Versión 17: es la que ya usaba la configuración del repositorio y la que
+  # declara el README del proyecto. Se mantiene fijada de forma explícita para
+  # que todos los entornos trabajen contra el mismo motor, y queda pendiente
+  # de confirmación formal por el equipo (issue #19).
+  postgres:
+    image: postgres:17-alpine
+    container_name: basedebatos-postgres
+    restart: unless-stopped
+    environment:
+      # Base de datos, usuario y contraseña iniciales. Sólo existen dentro del
+      # volumen del contenedor: `psql` los crea en el primer arranque.
+      POSTGRES_DB: ${POSTGRES_DB:-basedebatos}
+      POSTGRES_USER: ${POSTGRES_USER:-basedebatos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-basedebatos}
+      # Locale e intercalación en inglés (C) para que las comparaciones de
+      # cadenas no dependan de la configuración regional de cada equipo.
+      POSTGRES_INITDB_ARGS: '--locale=C --encoding=UTF8'
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      # Volumen con nombre: los datos sobreviven a `docker compose down`.
+      - postgres-data:/var/lib/postgresql/data
+      # Los scripts de inicialización se ejecutan sólo en el primer arranque,
+      # cuando el volumen está vacío. Se ordenan por el prefijo numérico del
+      # nombre (`001_`, `002_`, ...), que es el orden en que deben aplicarse.
+      - ./backend/database/scripts:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # `pg_isready` responde cuando el servidor acepta conexiones. Los
+      # servicios que dependen de la base de datos esperan a este estado.
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-basedebatos} -d ${POSTGRES_DB:-basedebatos}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Caché de la rutina activa
+  # ---------------------------------------------------------------------------
+  # El enunciado exige que la rutina activa del cliente esté disponible de
+  # forma prácticamente inmediata, con independencia del número de usuarios
+  # conectados simultáneamente (RNF-03). Redis absorbe esa carga de lecturas.
+  #
+  # La caché es una copia de lectura: el estado de la rutina y de su
+  # asignación se sigue leyendo del núcleo relacional (informe, sección 4.9).
+  # La aplicación fija el TTL de cada clave y el disparador que actualiza el
+  # estado de la rutina invalida la entrada correspondiente.
+  redis:
+    image: redis:8-alpine
+    container_name: basedebatos-redis
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # (El almacén documental se elimina según issue #23 y MERX actualizado:
+  #  la estructura de bloques se guarda en PostgreSQL con JSONB en la tabla
+  #  routine_structure, en una transacción con la rutina.)
+
+  # ---------------------------------------------------------------------------
+  # Frontend
+  # ---------------------------------------------------------------------------
+  # Perfil `full`: publica la aplicación ya compilada en Nginx.
+  #   docker compose --profile full up --build
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_APP_ENV: production
+        VITE_API_BASE_URL: /api
+        VITE_ENABLE_MOCKS: 'false'
+    container_name: basedebatos-frontend
+    restart: unless-stopped
+    profiles: ['full']
+    ports:
+      - '${FRONTEND_PORT:-8080}:80'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  redis-data:
