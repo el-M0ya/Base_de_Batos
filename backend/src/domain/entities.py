@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
-from datetime import Optional
+from datetime import datetime
+from typing import Optional
 from src.domain.exceptions import InvalidEmailException, InvalidUserAge
 
 # User Roles
