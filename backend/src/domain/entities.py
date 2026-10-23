@@ -11,6 +11,10 @@ class RoleEnum(str, Enum):
     TRAINER = "trainer"
     CLIENT = "client"
 
+class TrainerSpecialtyEnum(str, Enum):
+    NORMAL = "normal" #normal trainer
+    CREATOR = "creator" #creates and modifies routines
+    ROOM_CHIEF = "room_chief" #validates routines
 
 # Site entity
 
@@ -46,9 +50,11 @@ class User:
 
 @dataclass
 class Trainer(User):
-    specialization: str
+    specialty: TrainerSpecialtyEnum
 
 @dataclass
 class Client(User):
     # membership_id: int
+    age: int
+    site_id: int
     pass
