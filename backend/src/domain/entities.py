@@ -9,7 +9,6 @@ from src.domain.exceptions import InvalidEmailException, InvalidUserAge
 class RoleEnum(str, Enum):
     ADMIN = "admin"
     TRAINER = "trainer"
-    ROOM_CHIEF = "room_chief"
     CLIENT = "client"
 
 
@@ -47,11 +46,7 @@ class User:
 
 @dataclass
 class Trainer(User):
-    specialty: str
-
-@dataclass
-class RoomChief(User):
-    pass
+    specialization: str
 
 @dataclass
 class Client(User):
