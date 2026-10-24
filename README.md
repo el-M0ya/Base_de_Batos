@@ -144,7 +144,7 @@ Identified core entities:
 | Styling | **Tailwind CSS v4** + **shadcn/ui** built on Radix UI |
 | State Management | **TanStack Query 5** (server state) + React Context (auth session & theme) |
 | Backend | To be defined — scheduled for the next iteration |
-| Database | **PostgreSQL 17** (relational core) + **MongoDB 8** (variable block structure) + **Redis 8** (active routine cache) |
+| Database | **PostgreSQL 17** (relational core, 21 relations + `routine_structure` JSONB) + **Redis 8** (active routine cache) |
 | Containerization | Docker + Docker Compose (multi-stage frontend build with Nginx) |
 | Testing | **Vitest 5** + Testing Library + **MSW 2** |
 | Quality & Tooling | ESLint 10 (with `eslint-plugin-jsdoc`) + Prettier 3 |
@@ -159,15 +159,17 @@ Identified core entities:
 - Runtime environment variable validation using Zod during application boot.
 - Zero secrets committed to the repository: configuration managed purely via environment variables and `.env.example`.
 
-> **Database Design Note:** Project requirements state that each routine's block hierarchy has a variable schema and *must not be modeled together with the rest of the relational tables*. Furthermore, the active routine must be available with near-zero latency regardless of concurrent load. Consequently, the architecture incorporates a relational database (PostgreSQL), a document store for variable block trees (MongoDB), and an in-memory cache (Redis). The relational engine will be finalized upon delivery of the EER design (Week 5).
+> **Database Design Note:** Project requirements state that each routine's block hierarchy has a variable schema and *must not be modeled together with the rest of the relational tables*. Furthermore, the active routine must be available with near-zero latency regardless of concurrent load. According to the updated MERX and issue #23, the routine structure is stored as **JSONB** in PostgreSQL in a `routine_structure` table (one-to-one with `routine`), saved in the same transaction as the routine (no external store). **Intensity is an attribute of the routine**. The **Room Chief** is a specific type of Trainer who **validates routines and guides their creation but does not create routines directly**. Redis provides a non-authoritative cache of the active routine with short TTL and invalidation from the relational triggers. The design is documented in [`docs/database/local-environment.md`](docs/database/local-environment.md).
 
 ---
 
 ## 📋 Requirements
 
 - **Node.js 20.19+** (tested on 24.x) and npm 10+.
-- Docker and Docker Compose.
+- Docker Engine 24+ and Docker Compose v2.
 - Git.
+- PostgreSQL 17 (provided as a container; the `psql` client is optional for
+  inspecting the database).
 
 ---
 
@@ -196,9 +198,14 @@ npm run dev                    # Runs http://localhost:5173
 ### Infrastructure services
 
 ```bash
-cp .env.example .env
-docker compose up              # Starts PostgreSQL, Redis, and MongoDB
+cp .env.example .env           # local configuration; never committed
+docker compose up -d --wait    # Starts PostgreSQL and Redis
 ```
+
+The database is then available on `localhost:5432`. The full procedure —
+environment variables, persistent volumes, initialization scripts, backups and
+troubleshooting — is documented in
+[`docs/database/local-environment.md`](docs/database/local-environment.md).
 
 ### Containerized production build
 
@@ -234,6 +241,7 @@ The frontend test suite enforces a minimum coverage threshold of 60% across stat
 ```text
 .
 ├── backend/                # Server-side source code
+│   └── database/scripts/   # Numbered SQL scripts: schema, constraints, and fixtures
 ├── frontend/               # Web client application source code
 │   ├── src/
 │   │   ├── app/            # Composition root: providers, router, route guards, layouts
@@ -246,14 +254,14 @@ The frontend test suite enforces a minimum coverage threshold of 60% across stat
 │   │   └── tests/          # Unit, component, and integration test suites
 │   ├── Dockerfile          # Multi-stage container build published on Nginx
 │   └── nginx.conf          # Client-side SPA routing and HTTP security headers
-├── db/                     # SQL scripts, schema migrations, and database backups
 ├── docs/                   # Reports, technical documentation, diagrams
+│   └── database/           # PostgreSQL environment and physical schema documentation
 ├── docker/                 # Container configuration files and Dockerfiles
 ├── tests/                  # Backend test suites
 ├── .github/workflows/      # Continuous Integration (CI) configuration
 ├── .env.example            # Sample environment variables template
 ├── .gitignore              # Files ignored by Git
-├── docker-compose.yml      # Multi-container service orchestration
+├── compose.yaml            # Multi-container service orchestration (Docker Compose)
 ├── README.md               # Main repository documentation
 └── ...
 ```
