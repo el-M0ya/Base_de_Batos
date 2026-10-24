@@ -30,11 +30,9 @@ class Site:
 class User:
     id: Optional[int]
     name: str
-    age: int
     email: str
     password_hash: str
     role: RoleEnum
-    site: Site
 
     def _is_valid_email(self, email: str) -> bool:
         return True
@@ -45,8 +43,6 @@ class User:
     def __post_init__(self):
         if not self._is_valid_email(self.email):
             raise InvalidEmailException(self.email)
-        if not self._is_valid_age(self.age):
-            raise InvalidUserAge(self.age)
 
 @dataclass
 class Trainer(User):
@@ -57,4 +53,10 @@ class Client(User):
     # membership_id: int
     age: int
     site_id: int
+
+    def __post_init__(self):
+        if not self._is_valid_email(self.email):
+            raise InvalidEmailException(self.email)
+        if not self._is_valid_age(self.age):
+                raise InvalidUserAge(self.age)
     pass
