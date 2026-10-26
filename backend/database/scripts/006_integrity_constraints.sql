@@ -81,7 +81,7 @@ $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_exercise_identity') THEN
     ALTER TABLE exercise
-      ADD CONSTRAINT uq_exercise_identity UNIQUE (name, id_exercise_type, id_muscle_group, id_intensity_level);
+      ADD CONSTRAINT uq_exercise_identity UNIQUE (name, id_exercise_type, id_muscle_group);
   END IF;
 END
 $$;

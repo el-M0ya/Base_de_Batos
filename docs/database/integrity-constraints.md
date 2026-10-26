@@ -11,6 +11,7 @@ This document details all integrity constraints implemented by `006_integrity_co
 ## Design Alignment
 
 - **Routine structure:** Stored as **JSONB** in `routine_structure` (one-to-one with `routine`), saved in a single transaction with the routine as per **issue #23**.
+- **Intensity:** Modeled as an **attribute of the routine** (updated MERX), not of the exercise. The `intensity_level` catalog is referenced by `routine`, never by `exercise`.
 - **Normalization:** Constraints are applied to keep the relational model in line with 3NF.
 - **Referential Integrity:** Maintained via FOREIGN KEYs defined in previous scripts.
 
@@ -21,7 +22,7 @@ This document details all integrity constraints implemented by `006_integrity_co
 | U-1 | `user.email` | `UNIQUE` | Prevents duplicate user accounts. |
 | U-2 | `muscle_group.name`, `exercise_type.name`, `intensity_level.name`, `site.name` | `UNIQUE` | Ensures catalog consistency. |
 | U-3 | `workout_program.name` | `UNIQUE` | Prevents duplicate training programs. |
-| U-4 | `exercise` (name, exercise_type, muscle_group, intensity_level) | `UNIQUE` | Prevents duplicate exercises in the catalog. |
+| U-4 | `exercise` (name, exercise_type, muscle_group) | `UNIQUE` | Prevents duplicate exercises in the catalog. Intensity is not part of the exercise identity: it is an attribute of the routine. |
 | U-5 | `inscribed` (id_client, id_workout_program) | `PRIMARY KEY` | Prevents duplicate client enrollments in the same program. |
 | U-6 | `authorises` (id_trainer, id_workout_program) | `PRIMARY KEY` | Prevents duplicate trainer authorizations for the same program. |
 | U-7 | `contains` (id_routine, id_exercise) | `UNIQUE` | Prevents adding the same exercise twice to the same routine composition. |
