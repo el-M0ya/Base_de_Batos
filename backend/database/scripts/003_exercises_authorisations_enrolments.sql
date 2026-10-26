@@ -5,11 +5,8 @@
 --   - inscribed     (R13) - Client enrollments in workout programs
 --
 -- Design notes (updated MERX):
---   - exercise is linked to exercise_type, intensity_level, muscle_group and trainer
---   - authorises enforces trainer permissions (can_generate / can_validate) per program
+--   - exercise is linked to exercise_type, muscle_group and trainer
 --   - inscribed represents client enrollment with enrollment_date
---   - Room Chief is a specific type of trainer that validates routines and guides
---     creation but does not create routines directly (enforced by business rules/triggers)
 --   - Follows 3NF, referential integrity and approved naming conventions
 -- -----------------------------------------------------------------------------
 
@@ -24,19 +21,12 @@ CREATE TABLE IF NOT EXISTS exercise (
     description           TEXT,
     registration_date     DATE                NOT NULL DEFAULT CURRENT_DATE,
     id_exercise_type      INTEGER             NOT NULL,
-    id_intensity_level    INTEGER             NOT NULL,
     id_muscle_group       INTEGER             NOT NULL,
     id_trainer_creator    INTEGER             NOT NULL,
 
     CONSTRAINT fk_exercise_exercise_type
         FOREIGN KEY (id_exercise_type)
         REFERENCES exercise_type (id_exercise_type)
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT,
-
-    CONSTRAINT fk_exercise_intensity_level
-        FOREIGN KEY (id_intensity_level)
-        REFERENCES intensity_level (id_intensity_level)
         ON UPDATE RESTRICT
         ON DELETE RESTRICT,
 
@@ -56,13 +46,14 @@ CREATE TABLE IF NOT EXISTS exercise (
         CHECK (TRIM(name) <> '')
 );
 
--- Indexes for common lookups
+-- Indexes for common lookups and FK checks.
+-- PostgreSQL does not index foreign key columns automatically, so every FK
+-- column that is not already a leading column of a primary/unique key gets one.
 CREATE INDEX IF NOT EXISTS idx_exercise_trainer_creator ON exercise (id_trainer_creator);
 CREATE INDEX IF NOT EXISTS idx_exercise_muscle_group   ON exercise (id_muscle_group);
 CREATE INDEX IF NOT EXISTS idx_exercise_type          ON exercise (id_exercise_type);
-CREATE INDEX IF NOT EXISTS idx_exercise_intensity     ON exercise (id_intensity_level);
 
-COMMENT ON TABLE  exercise IS 'Exercise catalog. Each exercise is created by a trainer and classified by type, muscle group and intensity level.';
+COMMENT ON TABLE  exercise IS 'Exercise catalog. Each exercise is created by a trainer and classified by type and muscle group.';
 COMMENT ON COLUMN exercise.id_exercise        IS 'Primary key of the exercise.';
 COMMENT ON COLUMN exercise.name               IS 'Exercise name.';
 COMMENT ON COLUMN exercise.description        IS 'Detailed description of the exercise.';
@@ -101,9 +92,9 @@ CREATE TABLE IF NOT EXISTS authorises (
         CHECK (can_generate = TRUE OR can_validate = TRUE)
 );
 
--- Indexes
+-- Only the non-leading FK column needs an index: the composite primary key
+-- (id_trainer, id_workout_program) already covers lookups by id_trainer.
 CREATE INDEX IF NOT EXISTS idx_authorises_workout_program ON authorises (id_workout_program);
-CREATE INDEX IF NOT EXISTS idx_authorises_trainer         ON authorises (id_trainer);
 
 COMMENT ON TABLE  authorises IS 'Authorization matrix defining which trainers can generate and/or validate routines for each workout program.';
 COMMENT ON COLUMN authorises.can_generate IS 'TRUE if the trainer is allowed to generate routines for this program.';
@@ -134,9 +125,9 @@ CREATE TABLE IF NOT EXISTS inscribed (
         ON DELETE RESTRICT
 );
 
--- Indexes
+-- Only the non-leading FK column needs an index: the composite primary key
+-- (id_client, id_workout_program) already covers lookups by id_client.
 CREATE INDEX IF NOT EXISTS idx_inscribed_workout_program ON inscribed (id_workout_program);
-CREATE INDEX IF NOT EXISTS idx_inscribed_client          ON inscribed (id_client);
 
 COMMENT ON TABLE  inscribed IS 'Client enrollments in workout programs.';
 COMMENT ON COLUMN inscribed.enrollment_date IS 'Date the client enrolled in the workout program.';
