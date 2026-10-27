@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph Outer["Outer layers — implementation details"]
+        UI["React + TypeScript frontend"]
+        API["FastAPI routes / controllers"]
+        INFRA["Infrastructure adapters: PostgreSQL driver + parameterized SQL"]
+    end
+    subgraph Inner["Backend application"]
+        APP["Application use cases, DTOs, repository contracts"]
+        DOMAIN["Domain entities, value objects, business rules"]
+    end
+    UI -->|"HTTP API contract"| API
+    API --> APP
+    APP --> DOMAIN
+    INFRA -. "implements repository contracts" .-> APP
+    INFRA --> DB[(PostgreSQL)]
