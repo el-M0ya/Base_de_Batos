@@ -1,0 +1,95 @@
+:root {
+  /* Canvas & surfaces */
+  --color-canvas: #0a0a0a;
+  --color-surface: #141414;
+  --color-surface-elevated: #1c1c1c;
+  --color-surface-inset: #0f0f0f;
+  --color-surface-bright: #3a3939;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container: #201f1f;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-highest: #353534;
+  --color-surface-container-lowest: #0e0e0e;
+
+  /* Text */
+  --color-text-high: #ffffff;
+  --color-text-medium: #b3b3b3;
+  --color-text-low: #666666;
+  --color-text-on-primary: #0a0a0a;
+
+  /* Borders */
+  --color-border: #2a2a2a;
+  --color-border-strong: #383838;
+  --color-border-focus: #ff6a00;
+
+  /* Primary accent */
+  --color-primary: #ff6a00;
+  --color-primary-hover: #ff8a33;
+  --color-primary-active: #cc5500;
+  --color-primary-glow: rgba(255, 106, 0, 0.35);
+
+  /* Status */
+  --color-error: #ef4444;
+  --color-error-surface: #2d1515;
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-success: #22c55e;
+  --color-success-surface: #132b1e;
+  --color-success-border: rgba(34, 197, 94, 0.3);
+  --color-warning: #f59e0b;
+
+  /* Intensity spectrum */
+  --color-intensity-low-bg: rgba(255, 106, 0, 0.12);
+  --color-intensity-low-text: #ff9e66;
+  --color-intensity-low-border: rgba(255, 106, 0, 0.25);
+  --color-intensity-medium-bg: rgba(255, 106, 0, 0.28);
+  --color-intensity-medium-text: #ff8033;
+  --color-intensity-medium-border: rgba(255, 106, 0, 0.45);
+  --color-intensity-high-bg: #ff6a00;
+  --color-intensity-high-text: #0a0a0a;
+  --color-intensity-high-border: #ff6a00;
+
+  /* Typography */
+  --font-family-base: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.5rem;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --line-height-tight: 1.1;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-caps: 0.08em;
+
+  /* Spacing (8px base) */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-modal: 0 12px 32px rgba(0, 0, 0, 0.65);
+  --shadow-focus: 0 0 0 2px var(--color-canvas), 0 0 16px var(--color-primary-glow);
+
+  /* Layout */
+  --container-max: 1440px;
+  --gutter: 1.5rem;
+  --gutter-mobile: 1rem;
+  --margin: 2rem;
+  --margin-mobile: 1rem;
+}
