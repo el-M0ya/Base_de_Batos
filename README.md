@@ -56,7 +56,7 @@ This project is developed jointly for **Databases II** and **Software Engineerin
 | Alex Leonardo Cuervo Grillo | C311 | [@cuervogrillo](https://t.me/cuervogrillo) | [AlexCuervo](https://github.com/AlexCuervo) |
 | Alejandro Lopez Castro | C312 | [@AlejandroL04](https://t.me/AlejandroL04) | [Kaik0405](https://github.com/Kaik0405) |
 
-**Repository:** `https://github.com/el-M0ya/Proyecto_Conjunto_de_Bases_de_Datos_II_e_Ingenier-a_de_Software`  
+**Repository:** `https://github.com/el-M0ya/Base_de_Batos`  
 
 ---
 
