@@ -1,0 +1,65 @@
+===============================================================================
+GUIA DE DESARROLLO: CAPA DE DOMINIO (src/domain/)
+===============================================================================
+
+1. PROPOSITO DE LA CAPA
+-------------------------------------------------------------------------------
+La capa de Dominio es el NUCLEO del sistema. Contiene las entidades de negocio,
+sus reglas esenciales y sus excepciones. Debe ser 100% PURA:
+- NUNCA importes librerias de infraestructura o frameworks (FastAPI, SQL, Pydantic, etc.).
+- Solo utiliza librerias nativas de Python (dataclasses, enum, datetime, typing, uuid).
+
+2. QUE IMPLEMENTAR AQUI
+-------------------------------------------------------------------------------
+- src/domain/entities/   -> Entidades puras del modelo (User, Routine, Exercise, Site, etc.)
+- src/domain/exceptions/ -> Excepciones personalizadas del dominio (DomainException, etc.)
+- src/domain/values/     -> Enums u Objetos de Valor (UserRole, RoutineStatus, etc.)
+
+3. TRADUCCION A CODIGO
+-------------------------------------------------------------------------------
+- Las ENTIDADES se definen como clases de Python usando el decorador @dataclass.
+- Las EXCEPCIONES heredan de la clase base Exception.
+- Los VALORES/ENUMS heredan de str, Enum para facilitar la serializacion.
+
+4. EJEMPLO CODIGO DE REFERENCIA
+-------------------------------------------------------------------------------
+
+--- Ejemplo: src/domain/entities/user.py ---
+from dataclasses import dataclass
+from datetime import date
+from typing import Optional
+from enum import Enum
+
+class UserRole(str, Enum):
+    ADMIN = "ADMIN"
+    TRAINER = "TRAINER"
+    CLIENT = "CLIENT"
+
+@dataclass
+class User:
+    id_user: Optional[int]
+    email: str
+    password_hash: str
+    role: UserRole
+    is_active: bool = True
+    creation_date: Optional[date] = None
+
+    def activate(self) -> None:
+        self.is_active = True
+
+    def deactivate(self) -> None:
+        self.is_active = False
+
+
+--- Ejemplo: src/domain/exceptions/user_exceptions.py ---
+class DomainException(Exception):
+    pass
+
+class UserNotFoundException(DomainException):
+    def __init__(self, user_id: int):
+        super().__init__(f"El usuario con ID {user_id} no existe en el sistema.")
+
+class InvalidUserRoleException(DomainException):
+    def __init__(self, role: str):
+        super().__init__(f"El rol '{role}' no es valido para este tipo de usuario.")
+===============================================================================
