@@ -1,0 +1,75 @@
+===============================================================================
+GUIA DE DESARROLLO: CAPA DE INFRAESTRUCTURA (src/infrastructure/)
+===============================================================================
+
+1. PROPOSITO DE LA CAPA
+-------------------------------------------------------------------------------
+La capa de Infraestructura gestiona los detalles tecnicos, herramientas de bajo nivel,
+conexiones externas, seguridad y variables de entorno:
+- Configuracion y manejo del pool de conexiones a la base de datos PostgreSQL.
+- Carga de variables del sistema (.env).
+- Servicios de seguridad (JWT, hasheo con bcrypt).
+
+2. QUE IMPLEMENTAR AQUI
+-------------------------------------------------------------------------------
+- src/infrastructure/database/ -> Manejo de conexiones psycopg y pools (database.py).
+- src/infrastructure/config/   -> Configuracion de entorno con pydantic-settings (config.py).
+- src/infrastructure/security/ -> Implementacion concreta de hasheo e Insercion JWT (security.py).
+
+3. TRADUCCION A CODIGO
+-------------------------------------------------------------------------------
+- BASE DE DATOS: Funciones/clases que administran conexiones psycopg.connect con dict_row.
+- CONFIGURACION: Clases herederas de pydantic_settings.BaseSettings.
+- SEGURIDAD: Funciones auxiliares usando passlib / bcrypt y python-jose (o pyjwt).
+
+4. EJEMPLO CODIGO DE REFERENCIA
+-------------------------------------------------------------------------------
+
+--- Ejemplo: src/infrastructure/config/config.py ---
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    db_host: str = "localhost"
+    db_port: int = 5432
+    db_name: str = "gym_db"
+    db_user: str = "postgres"
+    db_password: str = "postgres"
+    secret_key: str = "super_secret_jwt_key"
+    algorithm: str = "HS256"
+
+    @property
+    def database_url(self) -> str:
+        return f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+
+
+--- Ejemplo: src/infrastructure/database/database.py ---
+import psycopg
+from psycopg.rows import dict_row
+from src.infrastructure.config.config import settings
+
+def get_db_connection():
+    conn = psycopg.connect(settings.database_url, row_factory=dict_row)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+
+--- Ejemplo: src/infrastructure/security/bcrypt_hasher.py ---
+from passlib.context import CryptContext
+from src.application.ports.password_hasher import IPasswordHasher
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class BcryptPasswordHasher(IPasswordHasher):
+    def hash(self, password: str) -> str:
+        return pwd_context.hash(password)
+
+    def verify(self, plain_password: str, hashed_password: str) -> bool:
+        return pwd_context.verify(plain_password, hashed_password)
+===============================================================================
