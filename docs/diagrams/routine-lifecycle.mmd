@@ -1,0 +1,18 @@
+flowchart TD
+    A([Generation parameters submitted]) --> B{Input valid?}
+    B -- No --> C[Report validation errors]
+    C --> A
+    B -- Yes --> D[Generate routine proposal]
+    D --> E[Trainer reviews proposal]
+    E --> F{Accept as-is?}
+    F -- Yes --> G[Approve program]
+    F -- No --> H{Can be adjusted?}
+    H -- Yes --> I[Manually adjust routine]
+    I --> J[Review adjusted routine]
+    J --> K{Approved?}
+    K -- Yes --> G
+    K -- No --> L[Return for correction]
+    H -- No --> L
+    L --> D
+    G --> M[Assign program to client]
+    M --> N([Available to client])

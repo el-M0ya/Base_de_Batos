@@ -1,0 +1,16 @@
+flowchart LR
+    Client([Client])
+    Trainer([Trainer])
+    Manager([Gym manager])
+
+    Client --> UC1[View assigned program]
+    Client --> UC2[View routine and schedule]
+    Client --> UC3[Submit adjustment request]
+    Trainer --> UC4[Enter generation parameters]
+    Trainer --> UC5[Generate training program]
+    Trainer --> UC6[Review generated program]
+    Trainer --> UC7[Manually adjust routine]
+    Trainer --> UC8[Approve program]
+    Trainer --> UC9[Return for correction]
+    Trainer --> UC10[Assign program to client]
+    Manager --> UC11[Oversee gym operations]
