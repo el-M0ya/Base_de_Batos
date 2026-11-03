@@ -1,0 +1,63 @@
+===============================================================================
+GUIA DE DESARROLLO: PUERTOS E INTERFACES (src/application/ports/)
+===============================================================================
+
+1. PROPOSITO DE LA SUB-CAPA PORTS
+-------------------------------------------------------------------------------
+Los Puertos son los CONTRATOS ABSTRACTOS de la capa de aplicacion.
+Define que operaciones necesita la aplicacion sin importar la tecnologia usada:
+- "Necesito guardar un usuario", "Necesito buscar una rutina por ID", etc.
+- Permiten desacoplar la logica de negocio de la infraestructura real (PostgreSQL, Redis, etc.).
+
+2. QUE IMPLEMENTAR AQUI
+-------------------------------------------------------------------------------
+- Interfaces de Repositorios (IUserRepository, IRoutineRepository, ISiteRepository, etc.).
+- Interfaces de Servicios Externos (IPasswordHasher, INotificationService, etc.).
+
+3. TRADUCCION A CODIGO
+-------------------------------------------------------------------------------
+- Se declaran como clases abstractas utilizando el modulo nativo abc.
+- La clase hereda de abc.ABC.
+- Cada metodo de la interfaz se decora con @abstractmethod y finaliza con pass.
+- Utilizan tipos del dominio en sus firmas (User, Routine, etc.).
+
+4. EJEMPLO CODIGO DE REFERENCIA
+-------------------------------------------------------------------------------
+
+--- Ejemplo: src/application/ports/user_repository.py ---
+from abc import ABC, abstractmethod
+from typing import Optional, List
+from src.domain.entities.user import User
+
+class IUserRepository(ABC):
+    
+    @abstractmethod
+    def save(self, user: User) -> User:
+        pass
+
+    @abstractmethod
+    def get_by_id(self, id_user: int) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    def get_by_email(self, email: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    def list_all(self) -> List[User]:
+        pass
+
+
+--- Ejemplo: src/application/ports/password_hasher.py ---
+from abc import ABC, abstractmethod
+
+class IPasswordHasher(ABC):
+
+    @abstractmethod
+    def hash(self, password: str) -> str:
+        pass
+
+    @abstractmethod
+    def verify(self, plain_password: str, hashed_password: str) -> bool:
+        pass
+===============================================================================

@@ -1,0 +1,94 @@
+===============================================================================
+GUÍA DE PRUEBAS UNITARIAS: backend/tests/unit/
+===============================================================================
+
+1. PROPÓSITO DE LA CAPA DE TESTS UNITARIOS
+-------------------------------------------------------------------------------
+Las pruebas unitarias verifican el comportamiento aislado de las unidades más
+pequeñas del código:
+  - Entidades de Dominio (validaciones de estado, reglas de negocio puras).
+  - Casos de Uso (orquestación del flujo de aplicación).
+
+REGLA DE ORO DE PRUEBAS UNITARIAS:
+  - NUNCA deben conectarse a una base de datos real (PostgreSQL).
+  - NUNCA deben realizar peticiones HTTP reales ni depender de frameworks web.
+  - Deben ser ultra rápidas (ejecución en milisegundos).
+  - Usan "Mocks", "Fakes" o repositorios en memoria (InMemoryRepository).
+
+2. ESTRUCTURA DE ARCHIVOS SUGERIDA
+-------------------------------------------------------------------------------
+backend/tests/unit/
+├── __init__.py
+├── domain/
+│   ├── __init__.py
+│   ├── test_user_entity.py
+│   └── test_routine_entity.py
+└── use_cases/
+    ├── __init__.py
+    └── test_create_user_use_case.py
+
+3. TRADUCCIÓN A CÓDIGO (EJEMPLOS FUNCIONALES)
+
+A) Prueba de Entidad de Dominio (Domain Entity Test):
+-------------------------------------------------------------------------------
+# File: tests/unit/domain/test_user_entity.py
+import pytest
+from src.domain.entities.user import User, UserRole
+from src.domain.exceptions.user_exceptions import InvalidEmailException
+
+def test_create_user_with_valid_data_succeeds():
+    # Arrange & Act
+    user = User(id_user=1, email="trainer@gym.com", password_hash="hashed_123", role=UserRole.TRAINER)
+
+    # Assert
+    assert user.id_user == 1
+    assert user.email == "trainer@gym.com"
+    assert user.role == UserRole.TRAINER
+
+def test_user_invalid_email_raises_domain_exception():
+    # Arrange, Act & Assert
+    with pytest.raises(InvalidEmailException):
+        User(id_user=2, email="invalid-email-format", password_hash="123", role=UserRole.CLIENT)
+
+
+B) Prueba de Caso de Uso con Fake/InMemory Repository:
+-------------------------------------------------------------------------------
+# File: tests/unit/use_cases/test_create_user_use_case.py
+import pytest
+from typing import Optional, List
+from src.domain.entities.user import User, UserRole
+from src.application.ports.user_repository_port import IUserRepository
+from src.application.use_cases.create_user_use_case import CreateUserUseCase, CreateUserInputDTO
+
+# Fake/InMemory Implementation for Testing
+class InMemoryUserRepository(IUserRepository):
+    def __init__(self):
+        self.users: List[User] = []
+
+    def get_by_email(self, email: str) -> Optional[User]:
+        return next((u for u in self.users if u.email == email), None)
+
+    def save(self, user: User) -> User:
+        user.id_user = len(self.users) + 1
+        self.users.append(user)
+        return user
+
+def test_create_user_use_case_success():
+    # Arrange
+    fake_repo = InMemoryUserRepository()
+    use_case = CreateUserUseCase(user_repo=fake_repo)
+    input_dto = CreateUserInputDTO(email="newclient@gym.com", password="SecurePassword123!", role="CLIENT")
+
+    # Act
+    output = use_case.execute(input_dto)
+
+    # Assert
+    assert output.id_user == 1
+    assert output.email == "newclient@gym.com"
+    assert len(fake_repo.users) == 1
+
+4. COMANDOS DE EJECUCIÓN
+-------------------------------------------------------------------------------
+Para ejecutar únicamente los tests unitarios:
+  $ pytest tests/unit/ -v
+===============================================================================

@@ -1,0 +1,80 @@
+===============================================================================
+GUIA DE DESARROLLO: CAPA DE ADAPTADORES (src/adapters/)
+===============================================================================
+
+1. PROPOSITO DE LA CAPA
+-------------------------------------------------------------------------------
+La capa de Adaptadores traduce los datos entre el mundo exterior y la aplicacion.
+Conecta los puertos abstractos con tecnologias especificas:
+- Transforma peticiones HTTP en llamadas a Casos de Uso.
+- Traduce consultas SQL / PostgreSQL a Entidades de Dominio.
+- Valida los esquemas de entrada/salida de la API.
+
+2. QUE IMPLEMENTAR AQUI
+-------------------------------------------------------------------------------
+- src/adapters/repositories/ -> Implementaciones SQL concretas de los puertos (PostgresUserRepository, etc.).
+- src/adapters/routers/      -> Controladores / Enrutadores HTTP de FastAPI.
+- src/adapters/schemas/      -> Esquemas DTO de Pydantic para validacion Request/Response.
+
+3. TRADUCCION A CODIGO
+-------------------------------------------------------------------------------
+- REPOSITORIOS: Heredan de la interfaz en ports/ e implementan los metodos con SQL nativo (psycopg).
+- SCHEMAS: Heredan de pydantic.BaseModel para validar tipos y JSON.
+- ROUTERS: Usan APIRouter de FastAPI e inyectan los casos de uso.
+
+4. EJEMPLO CODIGO DE REFERENCIA
+-------------------------------------------------------------------------------
+
+--- Ejemplo: src/adapters/repositories/postgres_user_repository.py ---
+from typing import Optional
+from src.application.ports.user_repository import IUserRepository
+from src.domain.entities.user import User, UserRole
+
+class PostgresUserRepository(IUserRepository):
+    def __init__(self, db_connection):
+        self.conn = db_connection
+
+    def save(self, user: User) -> User:
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO app_user (email, password_hash, role, is_active)
+                VALUES (%s, %s, %s, %s)
+                RETURNING id_user, creation_date;
+                """,
+                (user.email, user.password_hash, user.role.value, user.is_active)
+            )
+            row = cur.fetchone()
+            user.id_user = row['id_user']
+            user.creation_date = row['creation_date']
+            return user
+
+
+--- Ejemplo: src/adapters/schemas/user_schemas.py ---
+from pydantic import BaseModel, EmailStr
+
+class CreateUserRequestSchema(BaseModel):
+    email: EmailStr
+    password: str
+    role: str
+
+class UserResponseSchema(BaseModel):
+    id_user: int
+    email: EmailStr
+    role: str
+    is_active: bool
+
+
+--- Ejemplo: src/adapters/routers/user_router.py ---
+from fastapi import APIRouter, Depends, HTTPException, status
+from src.adapters.schemas.user_schemas import CreateUserRequestSchema, UserResponseSchema
+from src.application.dtos.user_dtos import CreateUserInputDTO
+
+router = APIRouter(prefix="/users", tags=["Users"])
+
+@router.post("/", response_model=UserResponseSchema, status_code=status.HTTP_201_CREATED)
+def create_user(req: CreateUserRequestSchema, use_case = Depends(...)):
+    input_dto = CreateUserInputDTO(email=req.email, password=req.password, role=req.role)
+    output_dto = use_case.execute(input_dto)
+    return output_dto
+===============================================================================

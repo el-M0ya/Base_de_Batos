@@ -1,0 +1,95 @@
+===============================================================================
+GUÍA DE PRUEBAS DE INTEGRACIÓN: backend/tests/integration/
+===============================================================================
+
+1. PROPÓSITO DE LA CAPA DE TESTS DE INTEGRACIÓN
+-------------------------------------------------------------------------------
+Las pruebas de integración verifican la interacción entre múltiples componentes
+reales del sistema:
+  - Repositorios SQL y consultas PostgreSQL reales (incluyendo Triggers y FKs).
+  - Endpoints HTTP de FastAPI utilizando TestClient o AsyncClient.
+  - Serialización y Deserialización de DTOs / Schemas Pydantic.
+
+REGLAS DE PRUEBAS DE INTEGRACIÓN:
+  - Se conectan a una base de datos de prueba (PostgreSQL en Docker o Test DB).
+  - Verifican que los adaptadores (Adapters) e infraestructura funcionen correctamente.
+  - Usan "Fixtures" de Pytest en conftest.py para preparar y limpiar datos de prueba.
+
+2. ESTRUCTURA DE ARCHIVOS SUGERIDA
+-------------------------------------------------------------------------------
+backend/tests/integration/
+├── __init__.py
+├── conftest.py                    # Fixtures globales (DB Connection, TestClient)
+├── adapters/
+│   ├── __init__.py
+│   └── test_postgres_user_repository.py
+└── api/
+    ├── __init__.py
+    ├── test_health_router.py
+    └── test_user_router.py
+
+3. TRADUCCIÓN A CÓDIGO (EJEMPLOS FUNCIONALES)
+
+A) Archivo de Configuración de Fixtures (conftest.py):
+-------------------------------------------------------------------------------
+# File: tests/integration/conftest.py
+import pytest
+import psycopg
+from fastapi.testclient import TestClient
+from src.main import app
+from src.infrastructure.config import settings
+
+@pytest.fixture(scope="session")
+def db_connection():
+    # Proporciona una conexión real a la base de datos de pruebas.
+    conn = psycopg.connect(settings.database_url)
+    yield conn
+    conn.close()
+
+@pytest.fixture
+def client():
+    # Proporciona un TestClient de FastAPI para simular peticiones HTTP.
+    with TestClient(app) as c:
+        yield c
+
+
+B) Prueba de Endpoint HTTP con TestClient (API Test):
+-------------------------------------------------------------------------------
+# File: tests/integration/api/test_health_router.py
+def test_health_check_endpoint_returns_200(client):
+    # Act
+    response = client.get("/health")
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "ok",
+        "message": "Backend service is running smoothly"
+    }
+
+
+C) Prueba de Repositorio PostgreSQL Real (Repository Integration Test):
+-------------------------------------------------------------------------------
+# File: tests/integration/adapters/test_postgres_user_repository.py
+from src.adapters.repositories.postgres_user_repository import PostgresUserRepository
+from src.domain.entities.user import User, UserRole
+
+def test_postgres_user_repository_save_and_get(db_connection):
+    # Arrange
+    repo = PostgresUserRepository(db_connection)
+    new_user = User(id_user=None, email="test_integration@gym.com", password_hash="hash_abc", role=UserRole.TRAINER)
+
+    # Act
+    saved_user = repo.save(new_user)
+    fetched_user = repo.get_by_id(saved_user.id_user)
+
+    # Assert
+    assert saved_user.id_user is not None
+    assert fetched_user is not None
+    assert fetched_user.email == "test_integration@gym.com"
+
+4. COMANDOS DE EJECUCIÓN
+-------------------------------------------------------------------------------
+Para ejecutar únicamente los tests de integración:
+  $ pytest tests/integration/ -v
+===============================================================================

@@ -1,0 +1,76 @@
+===============================================================================
+GUIA DE DESARROLLO: CAPA DE APLICACION (src/application/)
+===============================================================================
+
+1. PROPOSITO DE LA CAPA
+-------------------------------------------------------------------------------
+La capa de Aplicacion orquesta la logica de negocio y los casos de uso del sistema.
+Define "QUE HACE" la aplicacion ante las solicitudes del usuario:
+- Coordina la interaccion entre las entidades del dominio y los repositorios (puertos).
+- No sabe que base de datos se usa ni que servidor HTTP atiende la peticion.
+- Depende unicamente del Dominio y de las Interfaces/Puertos de Aplicacion.
+
+2. QUE IMPLEMENTAR AQUI
+-------------------------------------------------------------------------------
+- src/application/use_cases/ -> Casos de uso / Interactores (ej. CreateUserUseCase, GenerateRoutineUseCase).
+- src/application/dtos/      -> DTOs de entrada y salida (Data Transfer Objects).
+- src/application/ports/     -> Interfaces abstractas de repositorios y servicios externos.
+
+3. TRADUCCION A CODIGO
+-------------------------------------------------------------------------------
+- Los CASOS DE USO se declaran como clases con un constructor __init__ que recibe
+  los puertos (interfaces) mediante Inyeccion de Dependencias.
+- Tienen un metodo principal ejecutor: execute(...) o __call__(...).
+- Los DTOs se declaran con @dataclass para transportar datos planos entre capas.
+
+4. EJEMPLO CODIGO DE REFERENCIA
+-------------------------------------------------------------------------------
+
+--- Ejemplo: src/application/dtos/user_dtos.py ---
+from dataclasses import dataclass
+
+@dataclass
+class CreateUserInputDTO:
+    email: str
+    password: str
+    role: str
+
+@dataclass
+class UserOutputDTO:
+    id_user: int
+    email: str
+    role: str
+    is_active: bool
+
+
+--- Ejemplo: src/application/use_cases/create_user.py ---
+from src.application.dtos.user_dtos import CreateUserInputDTO, UserOutputDTO
+from src.application.ports.user_repository import IUserRepository
+from src.domain.entities.user import User, UserRole
+
+class CreateUserUseCase:
+    def __init__(self, user_repository: IUserRepository, password_hasher):
+        self.user_repository = user_repository
+        self.password_hasher = password_hasher
+
+    def execute(self, input_dto: CreateUserInputDTO) -> UserOutputDTO:
+        # 1. Validar e instanciar entidad de dominio
+        hashed_pwd = self.password_hasher.hash(input_dto.password)
+        user = User(
+            id_user=None,
+            email=input_dto.email,
+            password_hash=hashed_pwd,
+            role=UserRole(input_dto.role)
+        )
+        
+        # 2. Persistir a traves del puerto
+        saved_user = self.user_repository.save(user)
+        
+        # 3. Retornar DTO de salida
+        return UserOutputDTO(
+            id_user=saved_user.id_user,
+            email=saved_user.email,
+            role=saved_user.role.value,
+            is_active=saved_user.is_active
+        )
+===============================================================================
