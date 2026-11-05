@@ -4,13 +4,12 @@
 
 Use the existing GitHub Project status values:
 
-**Backlog → Ready → In Progress → Review → QA → Done**
+**Backlog → Pending → In Progress → In Review → Done**
 
 - **Backlog:** captured but not yet ready to start.
-- **Ready:** Definition of Ready is satisfied.
+- **Pending:** Definition of Ready is satisfied.
 - **In Progress:** implementation or documentation work is active.
-- **Review:** a pull request is open and awaiting peer review.
-- **QA:** acceptance criteria and relevant behavior are being verified.
+- **In Review:** a pull request is open and awaiting peer review.
 - **Done:** Definition of Done is satisfied and the change is integrated.
 
 Move an issue back to an earlier status if review or QA discovers work that must be corrected. Keep status synchronized with the actual PR and verification state.
