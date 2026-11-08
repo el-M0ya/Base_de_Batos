@@ -4,6 +4,9 @@ Only a trainer may create exercises. The use case validates that the muscle
 group exists, delegates the classification to the domain and rejects a
 duplicate by normalized name plus muscle group, returning the existing exercise
 as the duplicate context.
+
+``execute`` is a coroutine because the repository adapters use the async psycopg
+pool; the application layer itself never imports psycopg.
 """
 
 from __future__ import annotations
@@ -35,7 +38,7 @@ class CreateExerciseUseCase:
         self._exercises = exercise_repository
         self._catalogs = catalog_repository
 
-    def execute(self, input_dto: CreateExerciseInputDTO) -> ExerciseOutputDTO:
+    async def execute(self, input_dto: CreateExerciseInputDTO) -> ExerciseOutputDTO:
         actor = input_dto.actor
         if actor.role is not UserRole.TRAINER:
             raise PermissionDenied(
@@ -43,7 +46,7 @@ class CreateExerciseUseCase:
                 f"the actor has the role {actor.role.value}."
             )
 
-        muscle_group = self._catalogs.get_muscle_group(input_dto.muscle_group_id)
+        muscle_group = await self._catalogs.get_muscle_group(input_dto.muscle_group_id)
         if muscle_group is None:
             raise ResourceNotFound("muscle group", input_dto.muscle_group_id)
 
@@ -60,7 +63,7 @@ class CreateExerciseUseCase:
         except DomainException as error:
             raise InvalidInput(str(error)) from error
 
-        duplicate = self._exercises.find_duplicate(
+        duplicate = await self._exercises.find_duplicate(
             exercise.normalized_name, muscle_group.id_muscle_group
         )
         if duplicate is not None:
@@ -72,5 +75,5 @@ class CreateExerciseUseCase:
                 existing=duplicate,
             )
 
-        saved = self._exercises.save(exercise)
+        saved = await self._exercises.save(exercise)
         return ExerciseOutputDTO.from_entity(saved)

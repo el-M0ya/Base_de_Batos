@@ -20,7 +20,9 @@ class ListExercisesUseCase:
     def __init__(self, exercise_repository: ExerciseRepository) -> None:
         self._exercises = exercise_repository
 
-    def execute(self, input_dto: ListExercisesInputDTO) -> tuple[ExerciseOutputDTO, ...]:
+    async def execute(
+        self, input_dto: ListExercisesInputDTO
+    ) -> tuple[ExerciseOutputDTO, ...]:
         order_by = input_dto.order_by.strip().lower()
         if order_by not in ORDERING_FIELDS:
             raise InvalidInput(
@@ -42,7 +44,7 @@ class ListExercisesUseCase:
         except DomainException as error:
             raise InvalidInput(str(error)) from error
 
-        exercises = self._exercises.list(
+        exercises = await self._exercises.list(
             muscle_group_id=input_dto.muscle_group_id,
             exercise_type=exercise_type,
             intensity=intensity,

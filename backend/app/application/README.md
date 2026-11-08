@@ -23,9 +23,10 @@ app/application/
 3. **The actor is a DTO.** `ActorDTO(id_user, role)` carries the authenticated
    user and the role used for authorization. The layer never imports a framework
    request object.
-4. **One class per use case, with `execute()`.** Dependencies arrive through the
-   constructor (dependency injection); there are no module-level singletons and
-   no imports of concrete adapters.
+4. **One class per use case, with an async `execute()`.** Dependencies arrive
+   through the constructor (dependency injection); there are no module-level
+   singletons and no imports of concrete adapters. `execute` is a coroutine so
+   the persistence adapters can use the async psycopg pool of E2-05.
 5. **No FastAPI or psycopg imports.** The layer depends on `app.domain` only.
 
 ## Example
@@ -42,7 +43,7 @@ use_case = CreateExerciseUseCase(
     catalog_repository=catalog_repository,     # any CatalogRepository implementation
 )
 
-output = use_case.execute(
+output = await use_case.execute(
     CreateExerciseInputDTO(
         actor=ActorDTO(id_user=7, role="TRAINER"),
         name="Press de banca",

@@ -3,6 +3,9 @@
 The interface is expressed only with domain types: it contains no SQL, no
 psycopg and no framework import. The adapter in the infrastructure layer is the
 only place that knows about the ``exercise`` table.
+
+The methods are coroutines because the persistence adapters use the async
+psycopg pool of the infrastructure layer (E2-05).
 """
 
 from __future__ import annotations
@@ -21,7 +24,7 @@ class ExerciseRepository(ABC):
     """Persistence operations required by the exercise use cases."""
 
     @abstractmethod
-    def save(self, exercise: Exercise) -> Exercise:
+    async def save(self, exercise: Exercise) -> Exercise:
         """Insert the exercise when it has no identifier, update it otherwise.
 
         Returns the stored exercise, including the identifier assigned by the
@@ -29,11 +32,11 @@ class ExerciseRepository(ABC):
         """
 
     @abstractmethod
-    def get_by_id(self, id_exercise: int) -> Optional[Exercise]:
+    async def get_by_id(self, id_exercise: int) -> Optional[Exercise]:
         """Return the exercise with that identifier, or ``None``."""
 
     @abstractmethod
-    def find_duplicate(
+    async def find_duplicate(
         self, normalized_name: str, id_muscle_group: int
     ) -> Optional[Exercise]:
         """Return the exercise that collides with the duplicate key (U-12).
@@ -43,7 +46,7 @@ class ExerciseRepository(ABC):
         """
 
     @abstractmethod
-    def list(
+    async def list(
         self,
         *,
         muscle_group_id: Optional[int] = None,

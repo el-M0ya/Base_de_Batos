@@ -14,7 +14,7 @@ class ListExerciseCatalogsUseCase:
     def __init__(self, catalog_repository: CatalogRepository) -> None:
         self._catalogs = catalog_repository
 
-    def execute(self, actor: ActorDTO) -> CatalogOutputDTO:
+    async def execute(self, actor: ActorDTO) -> CatalogOutputDTO:
         if not isinstance(actor, ActorDTO):
             raise InvalidInput("an authenticated actor is required to read the catalogs.")
 
@@ -23,16 +23,16 @@ class ListExerciseCatalogsUseCase:
                 id_muscle_group=muscle_group.id_muscle_group,
                 name=muscle_group.name,
             )
-            for muscle_group in self._catalogs.list_muscle_groups()
+            for muscle_group in await self._catalogs.list_muscle_groups()
         )
         return CatalogOutputDTO(
             muscle_groups=muscle_groups,
             exercise_types=tuple(
                 exercise_type.value
-                for exercise_type in self._catalogs.list_exercise_types()
+                for exercise_type in await self._catalogs.list_exercise_types()
             ),
             intensity_levels=tuple(
                 intensity.value
-                for intensity in self._catalogs.list_intensity_levels()
+                for intensity in await self._catalogs.list_intensity_levels()
             ),
         )

@@ -18,17 +18,17 @@ class CatalogRepository(ABC):
     """Read operations over the catalogs used by the exercise bank."""
 
     @abstractmethod
-    def list_muscle_groups(self) -> list[MuscleGroup]:
+    async def list_muscle_groups(self) -> list[MuscleGroup]:
         """Return every muscle group, ordered by name."""
 
     @abstractmethod
-    def get_muscle_group(self, id_muscle_group: int) -> Optional[MuscleGroup]:
+    async def get_muscle_group(self, id_muscle_group: int) -> Optional[MuscleGroup]:
         """Return the muscle group with that identifier, or ``None``."""
 
     @abstractmethod
-    def list_exercise_types(self) -> list[ExerciseType]:
+    async def list_exercise_types(self) -> list[ExerciseType]:
         """Return the exercise types seeded in the catalog."""
 
     @abstractmethod
-    def list_intensity_levels(self) -> list[IntensityLevel]:
+    async def list_intensity_levels(self) -> list[IntensityLevel]:
         """Return the intensity levels seeded in the catalog."""

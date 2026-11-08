@@ -1,6 +1,6 @@
 """In-memory implementation of ``ExerciseRepository`` for unit tests.
 
-It behaves like the future PostgreSQL adapter for the rules exercised by the use
+It behaves like the PostgreSQL adapter for the rules exercised by the use
 cases: identifiers are assigned on save and duplicate detection uses the
 normalized name plus the muscle group.
 """
@@ -23,22 +23,18 @@ class InMemoryExerciseRepository(ExerciseRepository):
         self._rows: dict[int, Exercise] = {}
         self._next_id = 1
         for exercise in exercises or []:
-            self.save(exercise)
+            self.save_sync(exercise)
 
-    def save(self, exercise: Exercise) -> Exercise:
-        if exercise.id_exercise is None:
-            saved = replace(exercise, id_exercise=self._next_id)
-            self._next_id += 1
-        else:
-            saved = exercise
-            self._next_id = max(self._next_id, saved.id_exercise + 1)
-        self._rows[saved.id_exercise] = saved
-        return saved
+    # ------------------------------------------------------------------
+    # ExerciseRepository
+    # ------------------------------------------------------------------
+    async def save(self, exercise: Exercise) -> Exercise:
+        return self.save_sync(exercise)
 
-    def get_by_id(self, id_exercise: int) -> Optional[Exercise]:
+    async def get_by_id(self, id_exercise: int) -> Optional[Exercise]:
         return self._rows.get(id_exercise)
 
-    def find_duplicate(
+    async def find_duplicate(
         self, normalized_name: str, id_muscle_group: int
     ) -> Optional[Exercise]:
         for exercise in self._rows.values():
@@ -49,7 +45,7 @@ class InMemoryExerciseRepository(ExerciseRepository):
                 return exercise
         return None
 
-    def list(
+    async def list(
         self,
         *,
         muscle_group_id: Optional[int] = None,
@@ -72,7 +68,20 @@ class InMemoryExerciseRepository(ExerciseRepository):
         }
         return sorted(rows, key=keys[order_by], reverse=descending)
 
-    # Test helper -----------------------------------------------------
+    # ------------------------------------------------------------------
+    # Test helpers
+    # ------------------------------------------------------------------
+    def save_sync(self, exercise: Exercise) -> Exercise:
+        """Synchronous save used to preload the repository in tests."""
+        if exercise.id_exercise is None:
+            saved = replace(exercise, id_exercise=self._next_id)
+            self._next_id += 1
+        else:
+            saved = exercise
+            self._next_id = max(self._next_id, saved.id_exercise + 1)
+        self._rows[saved.id_exercise] = saved
+        return saved
+
     def count(self) -> int:
         """Number of stored exercises."""
         return len(self._rows)
