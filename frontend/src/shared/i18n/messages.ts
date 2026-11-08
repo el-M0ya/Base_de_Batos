@@ -10,4 +10,8 @@ export const messages = {
     name: 'Base de Batos',
     tagline: 'Gestión para la generación automática de planes de entrenamiento',
   },
+  textField: {
+    showPassword: 'Mostrar contraseña',
+    hidePassword: 'Ocultar contraseña',
+  },
 } as const;
