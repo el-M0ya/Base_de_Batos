@@ -1,17 +1,12 @@
-import { messages } from './shared/i18n/messages';
+import { LoginPage } from './features/auth/LoginPage';
 
 /**
- * Componente raíz de la aplicación.
+ * Root component of the application.
  *
  * @remarks
- * Por ahora solo muestra el nombre del sistema. En E3-05 se sustituye por el
- * enrutador con el layout y la navegación por rol.
+ * Temporarily shows the login screen directly. In E3-05 it is replaced by
+ * the router with the layout and role-based navigation.
  */
 export function App() {
-  return (
-    <main>
-      <h1>{messages.app.name}</h1>
-      <p>{messages.app.tagline}</p>
-    </main>
-  );
+  return <LoginPage />;
 }

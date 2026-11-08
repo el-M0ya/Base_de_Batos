@@ -27,7 +27,7 @@
 
 .info {
   background: var(--color-info-bg);
-  color: var(--color-link);
+  color: var(--color-info);
 }
 
 .icon {

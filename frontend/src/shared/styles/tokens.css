@@ -37,13 +37,15 @@
   --color-primary: #8a4bff; /* Voltio Violeta: el color de las acciones */
   --color-primary-hover: #9d66ff; /* El mismo, al pasar el ratón */
   --color-on-primary: #ffffff; /* Texto encima de un fondo primario */
-  --color-link: #b99cff; /* Enlaces (lavanda de la paleta) */
+  --color-link: #60a5fa; /* Links (blue, as in frontend_models/login) */
+  --color-link-hover: #93c5fd; /* Links on hover */
 
   /* Colores — estados */
   --color-success: #3ddc97; /* Verde: operación correcta */
   --color-error: #ff5c7a; /* Rosa-rojo: errores */
   --color-error-bg: rgb(255 92 122 / 10%); /* Fondo suave de una alerta de error */
   --color-success-bg: rgb(61 220 151 / 10%); /* Soft background of a success alert */
+  --color-info: #b99cff; /* Lavender: informative messages */
   --color-info-bg: rgb(138 75 255 / 12%); /* Soft background of an info alert */
 
   /* ---------------------------------------------------------------------

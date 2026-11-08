@@ -14,9 +14,9 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   /** Visible label. Required: every field must have one for accessibility. */
   label: string;
   /** Error message. When present, the field is marked as invalid. */
-  error?: string;
+  error?: string | undefined;
   /** Help text shown below the field when there is no error. */
-  hint?: string;
+  hint?: string | undefined;
   /** Optional icon shown at the start of the field (e.g. a mail icon). */
   icon?: ReactNode;
 }

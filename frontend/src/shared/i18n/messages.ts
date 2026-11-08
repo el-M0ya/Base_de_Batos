@@ -17,4 +17,24 @@ export const messages = {
   alert: {
     dismiss: 'Descartar',
   },
+  login: {
+    brand: 'FORJA',
+    backToHome: 'Volver a inicio',
+    title: 'Inicia sesión',
+    emailLabel: 'Correo electrónico',
+    emailPlaceholder: 'tu.correo@gmail.com',
+    passwordLabel: 'Contraseña',
+    passwordPlaceholder: '••••••••••••',
+    forgotPassword: '¿Has olvidado tu contraseña?',
+    submit: 'Entrar',
+    noAccount: '¿Aún no tienes cuenta?',
+    createAccount: 'Crear cuenta',
+    errors: {
+      emailRequired: 'Introduce tu correo electrónico.',
+      emailInvalid: 'El correo no tiene un formato válido.',
+      passwordRequired: 'Introduce tu contraseña.',
+      invalidCredentials: 'Correo o contraseña incorrectos. Verifica tus credenciales.',
+    },
+    demoSuccess: 'Credenciales correctas. La sesión real llegará con E3-06.',
+  },
 } as const;
