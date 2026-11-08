@@ -43,6 +43,8 @@
   --color-success: #3ddc97; /* Verde: operación correcta */
   --color-error: #ff5c7a; /* Rosa-rojo: errores */
   --color-error-bg: rgb(255 92 122 / 10%); /* Fondo suave de una alerta de error */
+  --color-success-bg: rgb(61 220 151 / 10%); /* Soft background of a success alert */
+  --color-info-bg: rgb(138 75 255 / 12%); /* Soft background of an info alert */
 
   /* ---------------------------------------------------------------------
    * Tipografía

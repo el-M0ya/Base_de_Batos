@@ -14,4 +14,7 @@ export const messages = {
     showPassword: 'Mostrar contraseña',
     hidePassword: 'Ocultar contraseña',
   },
+  alert: {
+    dismiss: 'Descartar',
+  },
 } as const;
