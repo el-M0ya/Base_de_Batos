@@ -1,0 +1,104 @@
+/*
+ * Tokens de diseño — sistema visual "FORJA".
+ *
+ * Un token es una decisión de diseño con nombre (un color, un tamaño, un
+ * espaciado). Se definen UNA sola vez aquí y el resto de la app los usa con
+ * `var(--nombre)`. Para cambiar el aspecto de toda la app, se cambia aquí.
+ *
+ * Fuente: frontend_models/<pantalla>/DESIGN.md
+ *
+ * `:root` es el elemento raíz del documento (<html>): las variables declaradas
+ * aquí están disponibles en cualquier parte de la página.
+ */
+:root {
+  /* ---------------------------------------------------------------------
+   * Colores — superficies (fondos), de más oscura a más clara.
+   * El diseño no usa sombras: la profundidad se consigue apilando
+   * superficies cada vez un poco más claras, más bordes de 1px.
+   * ------------------------------------------------------------------- */
+  --color-bg: #0b0812; /* Obsidiana Ciruela: fondo de toda la página */
+  --color-surface-sunken: #07050b; /* Más oscuro que el fondo: tarjeta del login */
+  --color-surface: #130e1f; /* Noche Violeta: tarjetas */
+  --color-surface-raised: #1c1530; /* Amatista Profunda: elementos elevados */
+  --color-input: #0e0a17; /* Fondo de los campos de texto */
+  --color-input-focus: #1a1429; /* Campo de texto con el foco */
+  --color-band: #1a0b38; /* Banda Púrpura: pie de página, fondo de iconos */
+
+  /* Colores — texto */
+  --color-text: #f4f1fb; /* Hueso: texto principal */
+  --color-text-muted: #a9a3bf; /* Niebla: etiquetas, texto secundario */
+  --color-text-subtle: #6f6889; /* Pizarra: placeholders, iconos, notas */
+
+  /* Colores — bordes */
+  --color-border: #2a2140; /* Crepúsculo: separadores, borde de tarjetas */
+  --color-border-input: #3a2f57; /* Borde de los campos de texto */
+
+  /* Colores — acción (botones, enlaces, foco) */
+  --color-primary: #8a4bff; /* Voltio Violeta: el color de las acciones */
+  --color-primary-hover: #9d66ff; /* El mismo, al pasar el ratón */
+  --color-on-primary: #ffffff; /* Texto encima de un fondo primario */
+  --color-link: #b99cff; /* Enlaces (lavanda de la paleta) */
+
+  /* Colores — estados */
+  --color-success: #3ddc97; /* Verde: operación correcta */
+  --color-error: #ff5c7a; /* Rosa-rojo: errores */
+  --color-error-bg: rgb(255 92 122 / 10%); /* Fondo suave de una alerta de error */
+
+  /* ---------------------------------------------------------------------
+   * Tipografía
+   * Sora (títulos, con carácter) + Manrope (texto, muy legible).
+   * Se incluyen en el proyecto (paquetes @fontsource, ver global.css),
+   * así que funcionan sin conexión a internet.
+   * ------------------------------------------------------------------- */
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+
+  /* Tamaños de letra */
+  --text-xs: 0.75rem; /* 12px — notas, texto pequeño */
+  --text-sm: 0.875rem; /* 14px — texto normal de la app */
+  --text-md: 1rem; /* 16px — texto destacado */
+  --text-lg: 1.125rem; /* 18px — subtítulos */
+  --text-xl: 1.25rem; /* 20px — título pequeño */
+  --text-2xl: 1.5rem; /* 24px — título de tarjeta ("Inicia sesión") */
+  --text-3xl: 2.25rem; /* 36px — título de página */
+  --text-4xl: 3rem; /* 48px — titular de portada */
+
+  /* Grosores de letra */
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* Interlineado (altura de cada línea respecto al tamaño de letra) */
+  --leading-tight: 1.2; /* títulos */
+  --leading-normal: 1.6; /* párrafos */
+
+  /* ---------------------------------------------------------------------
+   * Espaciado — una escala fija. Usar siempre estos valores para márgenes
+   * y separaciones hace que todo quede alineado con el mismo ritmo.
+   * (1rem = 16px por defecto)
+   * ------------------------------------------------------------------- */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.5rem; /* 24px */
+  --space-6: 2rem; /* 32px */
+  --space-7: 2.5rem; /* 40px */
+  --space-8: 4rem; /* 64px */
+
+  /* ---------------------------------------------------------------------
+   * Bordes redondeados
+   * ------------------------------------------------------------------- */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.75rem; /* 12px — campos de texto, alertas */
+  --radius-lg: 1rem; /* 16px — iconos con fondo */
+  --radius-xl: 1.5rem; /* 24px — tarjetas */
+  --radius-pill: 9999px; /* píldora — TODOS los botones */
+
+  /* ---------------------------------------------------------------------
+   * Tamaños de control y animación
+   * ------------------------------------------------------------------- */
+  --control-height: 3rem; /* 48px — altura de botones e inputs */
+  --transition-fast: 150ms ease; /* duración de los cambios al pasar el ratón */
+}

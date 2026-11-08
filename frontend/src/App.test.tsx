@@ -1,16 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { renderWithProviders, screen } from './test/test-utils';
+import { App } from './App';
 
-import App from './App';
-
-/**
- * Smoke test ensuring the testing pipeline is wired correctly.
- */
 describe('App', () => {
-  it('renders the application title', () => {
-    render(<App />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Planificador de Rutinas de Gimnasio',
-    );
+  it('muestra el nombre del sistema', () => {
+    renderWithProviders(<App />);
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Base de Batos' })).toBeInTheDocument();
   });
 });

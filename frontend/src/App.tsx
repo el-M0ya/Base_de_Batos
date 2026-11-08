@@ -1,15 +1,17 @@
+import { messages } from './shared/i18n/messages';
+
 /**
- * Root application component.
+ * Componente raíz de la aplicación.
  *
- * @returns The rendered application shell.
+ * @remarks
+ * Por ahora solo muestra el nombre del sistema. En E3-05 se sustituye por el
+ * enrutador con el layout y la navegación por rol.
  */
-function App(): JSX.Element {
+export function App() {
   return (
     <main>
-      <h1>Planificador de Rutinas de Gimnasio</h1>
-      <p>Base del frontend inicializada correctamente.</p>
+      <h1>{messages.app.name}</h1>
+      <p>{messages.app.tagline}</p>
     </main>
   );
 }
-
-export default App;

@@ -1,0 +1,103 @@
+/*
+ * Estilos globales: lo que aplica a TODA la página.
+ *
+ * Aquí solo van reglas generales (fondo, fuente por defecto, enlaces...).
+ * Lo que es propio de un componente va en su archivo `*.module.css`.
+ *
+ * Primero importamos las fuentes y los tokens para poder usar `var(--...)`.
+ */
+
+/* Fuentes incluidas en el proyecto (paquetes @fontsource): funcionan SIN
+ * internet, porque Vite copia los archivos .woff2 dentro de la app al
+ * compilar. Solo importamos los grosores que usa el diseño, para no
+ * cargar archivos de más. */
+@import '@fontsource/manrope/400.css'; /* texto normal */
+@import '@fontsource/manrope/600.css'; /* etiquetas */
+@import '@fontsource/manrope/700.css'; /* enlaces, negritas */
+@import '@fontsource/sora/700.css'; /* títulos */
+@import '@fontsource/sora/800.css'; /* titulares grandes */
+
+@import './tokens.css';
+
+/* `box-sizing: border-box` hace que el ancho de un elemento INCLUYA su
+ * padding y su borde. Sin esto, un input de width 100% con padding se sale
+ * de su contenedor. Es la primera regla de casi cualquier proyecto. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Los navegadores ponen márgenes por defecto a body, títulos y párrafos.
+ * Los quitamos para controlar el espaciado nosotros con los tokens. */
+body,
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+/* Le decimos al navegador que la app es oscura: así las barras de scroll
+ * y los controles nativos también salen oscuros. */
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh; /* el fondo cubre toda la ventana */
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased; /* letras más finas en macOS */
+}
+
+/* Los títulos usan la fuente de "display" (Sora) */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em; /* letras un poco más juntas, como en el modelo */
+}
+
+a {
+  color: var(--color-link);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Los botones e inputs no heredan la fuente por defecto: lo forzamos. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Accesibilidad: un anillo visible cuando se navega con el TECLADO (Tab).
+ * `:focus-visible` no aparece al hacer clic con el ratón, solo con teclado. */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Accesibilidad: si el usuario pidió en su sistema "reducir movimiento",
+ * desactivamos animaciones y transiciones. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,7 +1,32 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  // Un único tsconfig para la aplicación, las pruebas y los ficheros de configuración.
+  // Vite compila el código; TypeScript solo comprueba los tipos (noEmit).
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client"],
+
+    "noEmit": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+
+    // Modo estricto exigido por el proyecto (E3-01).
+    "strict": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src", "vite.config.ts", "vitest.config.ts", "eslint.config.js"]
 }
