@@ -1,7 +1,3 @@
-
-
-
-
 import { useId, type ReactNode, type SelectHTMLAttributes } from 'react';
 import { ChevronDown } from 'lucide-react';
 import styles from './SelectField.module.css';

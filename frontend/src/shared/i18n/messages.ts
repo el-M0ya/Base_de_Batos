@@ -17,6 +17,12 @@ export const messages = {
   alert: {
     dismiss: 'Descartar',
   },
+  states: {
+    loading: 'Cargando…',
+    errorTitle: 'No se pudieron cargar los datos',
+    errorDescription: 'Comprueba tu conexión e inténtalo de nuevo.',
+    retry: 'Reintentar',
+  },
   login: {
     brand: 'FORJA',
     backToHome: 'Volver a inicio',

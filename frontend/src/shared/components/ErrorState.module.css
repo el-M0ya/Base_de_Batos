@@ -1,0 +1,26 @@
+/*
+ * ErrorState styles. Same layout as EmptyState (reused with `composes`);
+ * only the icon box changes to the error color.
+ */
+
+.container {
+  composes: container from './EmptyState.module.css';
+}
+
+.iconBox {
+  composes: iconBox from './EmptyState.module.css';
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.title {
+  composes: title from './EmptyState.module.css';
+}
+
+.description {
+  composes: description from './EmptyState.module.css';
+}
+
+.action {
+  composes: action from './EmptyState.module.css';
+}
