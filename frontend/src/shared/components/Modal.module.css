@@ -1,0 +1,85 @@
+/*
+ * Modal styles. The <dialog> itself has no padding so that a click on its
+ * edge is a click on the backdrop; the visible card is `.panel`.
+ */
+
+.dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 4rem);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.dialog[open] {
+  animation: appear 160ms ease-out;
+}
+
+/* The dark layer behind the modal. Literal color on purpose: older browsers
+   do not pass CSS variables to ::backdrop. (#0b0812 = --color-bg) */
+.dialog::backdrop {
+  background: rgb(11 8 18 / 70%);
+  backdrop-filter: blur(4px);
+}
+
+/* While a modal is open, the page behind must not scroll. */
+:global(body:has(dialog[open])) {
+  overflow: hidden;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+}
+
+.close {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: var(--space-1);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.close:hover {
+  color: var(--color-text);
+}
+
+.body {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Buttons aligned to the right, like most dialogs */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}

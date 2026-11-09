@@ -17,6 +17,9 @@ export const messages = {
   alert: {
     dismiss: 'Descartar',
   },
+  modal: {
+    close: 'Cerrar',
+  },
   states: {
     loading: 'Cargando…',
     errorTitle: 'No se pudieron cargar los datos',
