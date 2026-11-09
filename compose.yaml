@@ -106,9 +106,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_APP_ENV: production
         VITE_API_BASE_URL: /api
-        VITE_ENABLE_MOCKS: 'false'
+        VITE_API_MODE: real
+        VITE_BASE_PATH: /
     container_name: basedebatos-frontend
     restart: unless-stopped
     profiles: ['full']
