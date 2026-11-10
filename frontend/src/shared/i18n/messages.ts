@@ -44,6 +44,13 @@ export const messages = {
       passwordRequired: 'Introduce tu contraseña.',
       invalidCredentials: 'Correo o contraseña incorrectos. Verifica tus credenciales.',
     },
-    demoSuccess: 'Credenciales correctas. La sesión real llegará con E3-06.',
+    demoSuccess: 'Credenciales correctas. Sesión iniciada.',
+    sessionError: 'Error al iniciar sesión. Inténtalo de nuevo.',
+    sessionExpired: 'Tu sesión ha expirado. Inicia sesión de nuevo.',
+    logout: 'Cerrar sesión',
+  },
+  auth: {
+    notAuthenticated: 'Debes iniciar sesión para acceder a esta página.',
+    notAuthorized: 'No tienes permiso para acceder a esta página.',
   },
 } as const;
