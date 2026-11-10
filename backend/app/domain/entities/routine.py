@@ -5,13 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from app.domain.exceptions.domain_exceptions import (
     InvalidDomainValue,
     InvalidRoutineReference,
-    InvalidRoutineStateTransition,
 )
+
+if TYPE_CHECKING:
+    from app.domain.states import RoutineState
 
 
 class RoutineStatus(str, Enum):
@@ -19,15 +21,8 @@ class RoutineStatus(str, Enum):
     PENDING_REVIEW = "PENDING_REVIEW"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
-
-_ALLOWED_TRANSITIONS: dict[RoutineStatus, frozenset[RoutineStatus]] = {
-    RoutineStatus.DRAFT: frozenset({RoutineStatus.PENDING_REVIEW}),
-    RoutineStatus.PENDING_REVIEW: frozenset(
-        {RoutineStatus.APPROVED, RoutineStatus.REJECTED}
-    ),
-    RoutineStatus.REJECTED: frozenset({RoutineStatus.PENDING_REVIEW}),
-    RoutineStatus.APPROVED: frozenset(),
-}
+    # Domain state that still requires a migration of chk_routine_status.
+    REPLACED = "REPLACED"
 
 
 def _ensure_positive_int(value: object, field_name: str) -> None:
@@ -91,31 +86,36 @@ class Routine:
         self._validate_fields()
 
     # ------------------------------------------------------------------
-    # Life cicle
+    # Life cycle (delegated to the current State object)
     # ------------------------------------------------------------------
-    def _transition_to(self, target: RoutineStatus) -> None:
-        self.status = self._coerce_status(self.status)
-        allowed = _ALLOWED_TRANSITIONS[self.status]
-        if target not in allowed:
-            raise InvalidRoutineStateTransition(self.status, target)
-        self.status = target
+    @property
+    def state(self) -> "RoutineState":
+        """Return the State object that represents the persisted status."""
+        from app.domain.states import state_for_status
+
+        return state_for_status(self.status)
+
+    def _set_status(self, target: RoutineStatus) -> None:
+        """Apply a transition already authorised by the current State."""
+        self.status = self._coerce_status(target)
 
     def can_transition_to(self, target: RoutineStatus) -> bool:
-        self.status = self._coerce_status(self.status)
-        target = self._coerce_status(target)
-        return target in _ALLOWED_TRANSITIONS[self.status]
+        return self.state.can_transition_to(self._coerce_status(target))
 
     def submit_for_review(self) -> None:
-        self._transition_to(RoutineStatus.PENDING_REVIEW)
+        self.state.submit_for_review(self)
 
     def resubmit_for_review(self) -> None:
-        self._transition_to(RoutineStatus.PENDING_REVIEW)
+        self.state.submit_for_review(self)
 
     def approve(self) -> None:
-        self._transition_to(RoutineStatus.APPROVED)
+        self.state.approve(self)
 
-    def reject(self) -> None:
-        self._transition_to(RoutineStatus.REJECTED)
+    def reject(self, observations: str | None = None) -> None:
+        self.state.reject(self, observations)
+
+    def replace(self) -> None:
+        self.state.replace(self)
 
     # ------------------------------------------------------------------
     # Procedence
@@ -142,6 +142,9 @@ class Routine:
 
     def is_rejected(self) -> bool:
         return self.status is RoutineStatus.REJECTED
+
+    def is_replaced(self) -> bool:
+        return self.status is RoutineStatus.REPLACED
 
     def can_be_edited(self) -> bool:
         return self.status in (RoutineStatus.DRAFT, RoutineStatus.REJECTED)
