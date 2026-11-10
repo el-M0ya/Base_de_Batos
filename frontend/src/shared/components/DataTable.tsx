@@ -144,30 +144,32 @@ export function DataTable<T>({
                   ))}
                   {hasActions && (
                     <td className={styles.actions}>
-                      {onEdit !== undefined && (
-                        <Button
-                          variant="ghost"
-                          className={styles.actionButton}
-                          onClick={() => onEdit(row)}
-                          aria-label={`Editar registro ${index + 1}`}
-                          title="Editar"
-                          icon={<Pencil size={16} aria-hidden="true" />}
-                        >
-                          Editar
-                        </Button>
-                      )}
-                      {onDelete !== undefined && (
-                        <Button
-                          variant="ghost"
-                          className={`${styles.actionButton} ${styles.deleteButton}`}
-                          onClick={() => onDelete(row)}
-                          aria-label={`Eliminar registro ${index + 1}`}
-                          title="Eliminar"
-                          icon={<Trash2 size={16} aria-hidden="true" />}
-                        >
-                          Eliminar
-                        </Button>
-                      )}
+                      <div className={styles.actionGroup}>
+                        {onEdit !== undefined && (
+                          <Button
+                            variant="ghost"
+                            className={styles.actionButton}
+                            onClick={() => onEdit(row)}
+                            aria-label={`Editar registro ${index + 1}`}
+                            title="Editar"
+                            icon={<Pencil size={16} aria-hidden="true" />}
+                          >
+                            Editar
+                          </Button>
+                        )}
+                        {onDelete !== undefined && (
+                          <Button
+                            variant="ghost"
+                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                            onClick={() => onDelete(row)}
+                            aria-label={`Eliminar registro ${index + 1}`}
+                            title="Eliminar"
+                            icon={<Trash2 size={16} aria-hidden="true" />}
+                          >
+                            Eliminar
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   )}
                 </tr>
