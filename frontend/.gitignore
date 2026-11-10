@@ -1,6 +1,15 @@
-node_modules
-dist
-*.local
-coverage
-.vite
-.DS_Store
+# Dependencias y artefactos de compilación
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+
+# Variables de entorno locales (solo se versiona .env.example)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Registros
+*.log

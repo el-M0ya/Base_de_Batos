@@ -1,0 +1,31 @@
+# Files that must not be sent to the Docker build context: they are rebuilt
+# inside the image or are not needed, and would only slow the build down.
+# Adapted from the `Frontend` branch.
+
+node_modules
+dist
+coverage
+.git
+.gitignore
+
+# Local configuration that may contain secrets.
+.env
+.env.local
+.env.*.local
+
+# Logs and debug files.
+npm-debug.log*
+*.log
+*.tsbuildinfo
+
+# Editors and operating system.
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+
+# Not part of the bundle.
+README.md
+Dockerfile
+.dockerignore

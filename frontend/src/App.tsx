@@ -1,15 +1,12 @@
-/**
- * Root application component.
- *
- * @returns The rendered application shell.
- */
-function App(): JSX.Element {
-  return (
-    <main>
-      <h1>Planificador de Rutinas de Gimnasio</h1>
-      <p>Base del frontend inicializada correctamente.</p>
-    </main>
-  );
-}
+import { LoginPage } from './features/auth/LoginPage';
 
-export default App;
+/**
+ * Root component of the application.
+ *
+ * @remarks
+ * Temporarily shows the login screen directly. In E3-05 it is replaced by
+ * the router with the layout and role-based navigation.
+ */
+export function App() {
+  return <LoginPage />;
+}

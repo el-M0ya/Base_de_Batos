@@ -1,0 +1,58 @@
+/*
+ * Alert styles, taken from the error box of frontend_models/login.
+ * Every value comes from the design tokens.
+ */
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+/* Each variant sets the text color; the icon and the button inherit it
+   through `currentcolor`. */
+.error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.info {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0; /* the icon never gets squeezed by a long message */
+  margin-top: 1px;
+}
+
+.message {
+  flex: 1;
+}
+
+.dismiss {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: var(--space-1);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: currentcolor;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.dismiss:hover {
+  opacity: 1;
+}

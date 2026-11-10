@@ -1,0 +1,115 @@
+/*
+ * TextField styles. Every value comes from the design tokens
+ * (src/shared/styles/tokens.css).
+ */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.03em;
+}
+
+/* Wrapper that lets the icon and the toggle sit on top of the input */
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  height: var(--control-height);
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--color-input);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--color-border-input);
+}
+
+/* The global focus ring is replaced by a violet border + lighter background */
+.input:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-input-focus);
+}
+
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Extra left/right room so the text does not overlap the icon or the toggle */
+.withIcon {
+  padding-left: var(--space-7);
+}
+
+.withToggle {
+  padding-right: var(--space-7);
+}
+
+.invalid,
+.invalid:hover:not(:disabled) {
+  border-color: var(--color-error);
+}
+
+.icon {
+  position: absolute;
+  left: var(--space-4);
+  display: inline-flex;
+  color: var(--color-text-subtle);
+  pointer-events: none; /* clicks go through to the input */
+}
+
+.icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.toggle {
+  position: absolute;
+  right: var(--space-3);
+  display: inline-flex;
+  padding: var(--space-1);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.toggle:hover {
+  color: var(--color-text);
+}
+
+.hint,
+.error {
+  font-size: var(--text-xs);
+}
+
+.hint {
+  color: var(--color-text-subtle);
+}
+
+.error {
+  color: var(--color-error);
+}

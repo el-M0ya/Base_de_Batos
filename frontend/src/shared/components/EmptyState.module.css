@@ -1,0 +1,40 @@
+/*
+ * EmptyState styles. Centered block with an icon box like the logo box of
+ * the login screen, so it feels part of the same design.
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.iconBox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-band);
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+}
+
+.description {
+  max-width: 28rem; /* long lines are hard to read */
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.action {
+  margin-top: var(--space-3);
+}

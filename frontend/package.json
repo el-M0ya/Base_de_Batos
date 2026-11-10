@@ -1,43 +1,52 @@
 {
-  "name": "gym-routine-planner-frontend",
+  "name": "base-de-batos-frontend",
   "private": true,
   "version": "0.1.0",
+  "description": "Frontend de Base de Batos: generación automática de planes de entrenamiento",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b --noEmit && vite build",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint .",
-    "typecheck": "tsc -b --noEmit",
-    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test": "vitest run --coverage",
     "test:watch": "vitest"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@fontsource/manrope": "^5.3.0",
+    "@fontsource/sora": "^5.3.0",
+    "lucide-react": "^1.70.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.1.0",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/node": "^22.10.2",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.17.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-jsdoc": "^50.6.1",
-    "typescript-eslint": "^8.18.0",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "jsdom": "^25.0.1",
-    "prettier": "^3.4.2",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.3",
-    "vitest": "^2.1.8"
-  },
-  "allowScripts": {
-    "esbuild@0.25.12": true,
-    "esbuild@0.21.5": true
+    "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "@vitest/coverage-v8": "^5.1.0",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^65.4.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.14.0",
+    "jsdom": "^31.0.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
   }
 }

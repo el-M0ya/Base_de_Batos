@@ -1,0 +1,64 @@
+/*
+ * SelectField styles, from frontend_models/signup ("Sede de entrenamiento").
+ *
+ * `composes` reuses the TextField classes, so both fields always look the
+ * same: change the input style there and the select follows.
+ */
+
+.field {
+  composes: field from './TextField.module.css';
+}
+
+.label {
+  composes: label from './TextField.module.css';
+}
+
+.control {
+  composes: control from './TextField.module.css';
+}
+
+.icon {
+  composes: icon from './TextField.module.css';
+}
+
+.hint {
+  composes: hint from './TextField.module.css';
+}
+
+.error {
+  composes: error from './TextField.module.css';
+}
+
+.withIcon {
+  composes: withIcon from './TextField.module.css';
+}
+
+.invalid {
+  composes: invalid from './TextField.module.css';
+}
+
+.select {
+  composes: input from './TextField.module.css';
+  appearance: none; /* hide the browser's own arrow: we draw ours */
+  padding-right: var(--space-7); /* room for the chevron */
+  cursor: pointer;
+}
+
+/* While the placeholder is selected, show it in the dimmer placeholder color */
+.select:has(option:checked:disabled) {
+  color: var(--color-text-subtle);
+}
+
+/* The open list of options (styling support depends on the browser) */
+.select option {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.chevron {
+  position: absolute;
+  right: var(--space-3);
+  display: inline-flex;
+  color: var(--color-text-subtle);
+  pointer-events: none; /* clicks go through to the select */
+}
