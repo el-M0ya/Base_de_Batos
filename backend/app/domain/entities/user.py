@@ -1,13 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
 from typing import Optional
 
-
-class UserRole(str, Enum):
-    ADMIN = "ADMIN"
-    TRAINER = "TRAINER"
-    CLIENT = "CLIENT"
+from app.domain.value_objects.user_role import UserRole
 
 
 @dataclass
@@ -18,10 +13,10 @@ class User:
     role: UserRole
     id_user: Optional[int] = None
     created_at: Optional[datetime] = None
+    active: bool = True
 
     def __post_init__(self):
-        if isinstance(self.role, str):
-            self.role = UserRole(self.role)
+        self.role = UserRole.from_value(self.role)
         self.validate()
 
     def validate(self) -> None:
@@ -31,6 +26,8 @@ class User:
             raise ValueError(f"Invalid email: '{self.email}'")
         if not self.password_hash:
             raise ValueError("No hashed password.")
+        if not isinstance(self.active, bool):
+            raise ValueError("User active status must be a boolean.")
 
     def is_admin(self) -> bool:
         return self.role == UserRole.ADMIN
