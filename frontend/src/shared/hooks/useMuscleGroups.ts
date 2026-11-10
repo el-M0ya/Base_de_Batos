@@ -5,8 +5,8 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from '@tanstack/react-query';
-import { getMuscleGroupApi } from './muscleGroupApiSelector';
-import type { MuscleGroup, MuscleGroupInput } from './types';
+import { getMuscleGroupApi } from '../api/muscleGroupApiSelector';
+import type { MuscleGroup, MuscleGroupInput } from '../types/muscleGroup';
 
 /** Stable cache key for the muscle-group catalog. */
 export const muscleGroupsQueryKey = ['muscle-groups'] as const;

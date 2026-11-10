@@ -1,5 +1,5 @@
-import { httpClient } from '../../shared/api/httpClient';
-import type { MuscleGroup, MuscleGroupApi, MuscleGroupInput } from './types';
+import { httpClient } from './httpClient';
+import type { MuscleGroup, MuscleGroupApi, MuscleGroupInput } from '../types/muscleGroup';
 
 /** Endpoint used by the muscle-group catalog. */
 const MUSCLE_GROUPS_ENDPOINT = '/muscle-groups';

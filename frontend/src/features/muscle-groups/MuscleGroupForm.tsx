@@ -3,7 +3,7 @@ import { ApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
 import { TextField } from '../../shared/components/TextField';
-import type { MuscleGroup, MuscleGroupInput } from './types';
+import type { MuscleGroup, MuscleGroupInput } from '../../shared/types/muscleGroup';
 import styles from './MuscleGroupForm.module.css';
 
 /** Props for the create/edit muscle-group form. */

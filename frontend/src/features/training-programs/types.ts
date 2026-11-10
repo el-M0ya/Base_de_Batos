@@ -1,4 +1,4 @@
-import type { MuscleGroup } from '../muscle-groups/types';
+import type { MuscleGroup } from '../../shared/types/muscleGroup';
 
 /**
  * Training program record exposed to the frontend.

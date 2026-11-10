@@ -1,6 +1,6 @@
 import { muscleGroupApi } from './muscleGroupApi';
 import { muscleGroupApiMock } from './muscleGroupApi.mock';
-import type { MuscleGroupApi } from './types';
+import type { MuscleGroupApi } from '../types/muscleGroup';
 
 /**
  * Selects the real or in-memory implementation.

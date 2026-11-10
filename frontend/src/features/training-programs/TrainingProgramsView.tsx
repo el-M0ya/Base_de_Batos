@@ -4,7 +4,7 @@ import { ApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
 import { Modal } from '../../shared/components/Modal';
-import { useMuscleGroups } from '../muscle-groups/useMuscleGroups';
+import { useMuscleGroups } from '../../shared/hooks/useMuscleGroups';
 import { TrainingProgramForm } from './TrainingProgramForm';
 import { TrainingProgramTable } from './TrainingProgramTable';
 import {

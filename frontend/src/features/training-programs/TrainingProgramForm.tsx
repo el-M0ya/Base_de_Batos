@@ -5,7 +5,7 @@ import { Button } from '../../shared/components/Button';
 import { LoadingState } from '../../shared/components/LoadingState';
 import { TextField } from '../../shared/components/TextField';
 import { TrainingProgramMuscleGroups } from './TrainingProgramMuscleGroups';
-import type { MuscleGroup } from '../muscle-groups/types';
+import type { MuscleGroup } from '../../shared/types/muscleGroup';
 import type { TrainingProgram, TrainingProgramInput } from './types';
 import styles from './TrainingProgramForm.module.css';
 

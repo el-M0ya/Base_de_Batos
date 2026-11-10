@@ -4,10 +4,15 @@ import { ApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
 import { Modal } from '../../shared/components/Modal';
-import { useCreateMuscleGroup, useDeleteMuscleGroup, useMuscleGroups, useUpdateMuscleGroup } from './useMuscleGroups';
+import {
+  useCreateMuscleGroup,
+  useDeleteMuscleGroup,
+  useMuscleGroups,
+  useUpdateMuscleGroup,
+} from '../../shared/hooks/useMuscleGroups';
 import { MuscleGroupForm } from './MuscleGroupForm';
 import { MuscleGroupTable } from './MuscleGroupTable';
-import type { MuscleGroup, MuscleGroupInput } from './types';
+import type { MuscleGroup, MuscleGroupInput } from '../../shared/types/muscleGroup';
 import styles from './MuscleGroupsView.module.css';
 
 /**

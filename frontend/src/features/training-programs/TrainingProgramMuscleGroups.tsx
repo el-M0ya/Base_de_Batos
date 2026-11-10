@@ -1,4 +1,4 @@
-import type { MuscleGroup } from '../muscle-groups/types';
+import type { MuscleGroup } from '../../shared/types/muscleGroup';
 import styles from './TrainingProgramMuscleGroups.module.css';
 
 /** Props for the muscle-group association editor. */

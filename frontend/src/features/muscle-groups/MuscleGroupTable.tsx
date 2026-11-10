@@ -1,5 +1,5 @@
 import { DataTable, type DataTableColumn } from '../../shared/components/DataTable';
-import type { MuscleGroup } from './types';
+import type { MuscleGroup } from '../../shared/types/muscleGroup';
 
 /** Props for the muscle-group table. */
 export interface MuscleGroupTableProps {

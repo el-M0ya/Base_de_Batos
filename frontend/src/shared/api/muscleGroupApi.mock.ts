@@ -1,5 +1,5 @@
-import { ApiError } from '../../shared/api/apiError';
-import type { MuscleGroup, MuscleGroupApi, MuscleGroupInput } from './types';
+import { ApiError } from './apiError';
+import type { MuscleGroup, MuscleGroupApi, MuscleGroupInput } from '../types/muscleGroup';
 
 /** Demo records used when no backend is available. */
 let records: MuscleGroup[] = [

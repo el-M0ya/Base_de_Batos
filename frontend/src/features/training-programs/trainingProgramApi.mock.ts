@@ -1,5 +1,5 @@
 import { ApiError } from '../../shared/api/apiError';
-import { muscleGroupApiMock } from '../muscle-groups/muscleGroupApi.mock';
+import { muscleGroupApiMock } from '../../shared/api/muscleGroupApi.mock';
 import type { TrainingProgram, TrainingProgramApi, TrainingProgramInput } from './types';
 
 /** Demo programs used when the application runs without a backend. */
