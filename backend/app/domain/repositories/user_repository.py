@@ -26,6 +26,10 @@ class UserRepository(ABC):
         """Return all user accounts, including their active status."""
 
     @abstractmethod
+    async def get_profile(self, id_user: int) -> Trainer | Client | None:
+        """Return the specialization profile associated with a user."""
+
+    @abstractmethod
     async def save(
         self,
         user: User,

@@ -67,6 +67,37 @@ class PostgresUserRepository(UserRepository):
             rows = await cursor.fetchall()
         return tuple(_user_from_row(_as_mapping(row)) for row in rows)
 
+    async def get_profile(self, id_user: int) -> Trainer | Client | None:
+        async with connection_scope() as connection:
+            cursor = await connection.execute(
+                """
+                SELECT u.id_user, u.name, u.email, u.password_hash, u.role,
+                       u.active, u.registration_date,
+                       t.specialty AS trainer_specialty,
+                       c.age AS client_age, c.id_site AS client_site
+                FROM app_user AS u
+                LEFT JOIN trainer AS t ON t.id_trainer = u.id_user
+                LEFT JOIN client AS c ON c.id_client = u.id_user
+                WHERE u.id_user = %s
+                """,
+                (id_user,),
+            )
+            raw_row = await cursor.fetchone()
+        if raw_row is None:
+            return None
+
+        row = _as_mapping(raw_row)
+        user = _user_from_row(row)
+        if user.is_trainer() and row["trainer_specialty"] is not None:
+            return Trainer(user=user, specialty=row["trainer_specialty"])
+        if user.is_client() and row["client_age"] is not None:
+            return Client(
+                user=user,
+                age=row["client_age"],
+                id_site=row["client_site"],
+            )
+        return None
+
     async def save(
         self,
         user: User,
@@ -94,18 +125,13 @@ class PostgresUserRepository(UserRepository):
                 user.id_user = row["id_user"]
                 user.created_at = _as_datetime(row["registration_date"])
                 await self._save_profile(connection, user, profile)
-            except errors.UniqueViolation as error:
-                raise DuplicateResource(
-                    "user",
-                    f"email {user.email!r} is already registered.",
-                ) from error
-            except errors.ForeignKeyViolation as error:
-                raise ResourceNotFound(
-                    "site",
-                    profile.id_site if isinstance(profile, Client) else "unknown",
-                ) from error
-            except errors.CheckViolation as error:
-                raise InvalidInput("user or profile data violates a database rule.") from error
+            except (
+                errors.UniqueViolation,
+                errors.ForeignKeyViolation,
+                errors.CheckViolation,
+                errors.RaiseException,
+            ) as error:
+                raise _translate_database_error(error, user, profile) from error
         return user
 
     async def update(
@@ -144,18 +170,13 @@ class PostgresUserRepository(UserRepository):
                 row = _as_mapping(raw_row)
                 user.created_at = _as_datetime(row["registration_date"])
                 await self._update_profile(connection, user, profile)
-            except errors.UniqueViolation as error:
-                raise DuplicateResource(
-                    "user",
-                    f"email {user.email!r} is already registered.",
-                ) from error
-            except errors.ForeignKeyViolation as error:
-                raise ResourceNotFound(
-                    "site",
-                    profile.id_site if isinstance(profile, Client) else "unknown",
-                ) from error
-            except errors.CheckViolation as error:
-                raise InvalidInput("user or profile data violates a database rule.") from error
+            except (
+                errors.UniqueViolation,
+                errors.ForeignKeyViolation,
+                errors.CheckViolation,
+                errors.RaiseException,
+            ) as error:
+                raise _translate_database_error(error, user, profile) from error
         return user
 
     async def deactivate(self, id_user: int) -> User:
@@ -252,6 +273,34 @@ def _user_from_row(row: Mapping[str, Any]) -> User:
         active=row["active"],
         created_at=_as_datetime(row["registration_date"]),
     )
+
+
+def _translate_database_error(
+    error: errors.DatabaseError,
+    user: User,
+    profile: Trainer | Client | None,
+) -> Exception:
+    constraint_name = getattr(error.diag, "constraint_name", None)
+
+    if isinstance(error, errors.UniqueViolation):
+        if constraint_name in {"uq_app_user_email", "uq_user_email"}:
+            return DuplicateResource(
+                "user",
+                f"email {user.email!r} is already registered.",
+            )
+        return DuplicateResource("user profile", "the profile already exists.")
+
+    if isinstance(error, errors.ForeignKeyViolation):
+        if constraint_name == "fk_client_site" and isinstance(profile, Client):
+            return ResourceNotFound("site", profile.id_site)
+        return ResourceNotFound("user", user.id_user or "unknown")
+
+    if isinstance(error, errors.CheckViolation):
+        if constraint_name == "chk_client_age" and isinstance(profile, Client):
+            return InvalidInput(f"client age {profile.age!r} is outside the valid range.")
+        return InvalidInput("user or profile data violates a database rule.")
+
+    return InvalidInput("user or profile data violates a consistency rule.")
 
 
 def _as_datetime(value: date | datetime) -> datetime:
