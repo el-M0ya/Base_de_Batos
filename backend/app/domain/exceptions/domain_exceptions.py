@@ -60,6 +60,22 @@ class InvalidRoutineReference(DomainException):
 
 
 # ---------------------------------------------------------------------------
+# Routine generation strategy
+# ---------------------------------------------------------------------------
+class UnknownGenerationStrategy(DomainException):
+    """A routine-generation strategy name is not present in the registry."""
+
+    def __init__(self, name: object, available: tuple[str, ...] = ()) -> None:
+        self.name = name
+        self.available = available
+        available_names = ", ".join(available) if available else "none"
+        super().__init__(
+            f"Unknown routine generation strategy {name!r}. "
+            f"Available strategies: {available_names}."
+        )
+
+
+# ---------------------------------------------------------------------------
 # enGeration parameters
 # ---------------------------------------------------------------------------
 class InvalidParameters(DomainException):
