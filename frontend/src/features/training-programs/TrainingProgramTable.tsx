@@ -1,4 +1,5 @@
-import { DataTable, type DataTableColumn } from '../../shared/components/DataTable';
+import { DataTable } from '../../shared/components/DataTable/DataTable';
+import type { ColumnDef } from '../../shared/components/DataTable/columns';
 import type { TrainingProgram } from './types';
 
 /** Props for the training-program table. */
@@ -26,27 +27,23 @@ export function TrainingProgramTable({
   onEdit,
   onDelete,
 }: TrainingProgramTableProps) {
-  const columns: readonly DataTableColumn<TrainingProgram>[] = [
-    { key: 'name', header: 'Nombre' },
-    { key: 'objective', header: 'Objetivo' },
+  const columns: ColumnDef<TrainingProgram>[] = [
+    { accessor: 'name', header: 'Nombre' },
+    { accessor: 'objective', header: 'Objetivo' },
     {
-      key: 'muscleGroupIds',
+      accessor: 'muscleGroupIds',
       header: 'Grupos musculares',
-      render: (program) =>
-        program.muscleGroups?.map((group) => group.name).join(', ') ??
-        `${program.muscleGroupIds.length} configurado(s)`,
+      format: (value) => `${Array.isArray(value) ? value.length : 0} configurado(s)`,
     },
   ];
 
   return (
     <DataTable
       columns={columns}
-      data={data}
-      isLoading={isLoading}
-      getRowKey={(program) => program.id}
+      data={[...data]}
+      loading={isLoading}
       onEdit={onEdit}
       onDelete={onDelete}
-      emptyMessage="No hay programas de entrenamiento registrados."
       ariaLabel="Catálogo de programas de entrenamiento"
     />
   );

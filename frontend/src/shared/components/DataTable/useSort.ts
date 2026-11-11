@@ -14,7 +14,7 @@ import { useCallback, useMemo, useState } from 'react';
  * @param rows - Filas a ordenar.
  * @param initialAccessor - Clave de la fila por la que ordenar al empezar.
  */
-export function useSort<T extends Record<string, unknown>>(
+export function useSort<T extends object>(
   rows: T[],
   initialAccessor: keyof T,
 ) {

@@ -1,4 +1,5 @@
-import { DataTable, type DataTableColumn } from '../../shared/components/DataTable';
+import { DataTable } from '../../shared/components/DataTable/DataTable';
+import type { ColumnDef } from '../../shared/components/DataTable/columns';
 import type { Site } from './types';
 
 /** Props for the gym-site table. */
@@ -17,21 +18,20 @@ export interface SiteTableProps {
  * Catalog table for gym sites.
  *
  * @remarks
- * This wrapper is the feature boundary around the temporary shared
- * DataTable, so adopting the official E3-04 table will not affect the page.
+ * This wrapper adapts the feature model to the official shared DataTable.
  */
 export function SiteTable({ data, isLoading = false, onEdit, onDelete }: SiteTableProps) {
-  const columns: readonly DataTableColumn<Site>[] = [
-    { key: 'name', header: 'Nombre' },
-    { key: 'address', header: 'Dirección' },
+  const columns: ColumnDef<Site>[] = [
+    { accessor: 'name', header: 'Nombre' },
+    { accessor: 'address', header: 'Dirección' },
     {
-      key: 'registrationDate',
+      accessor: 'registrationDate',
       header: 'Registrado',
-      render: (site) =>
-        site.registrationDate === undefined
+      format: (value) =>
+        value === undefined
           ? '—'
           : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(
-              new Date(site.registrationDate),
+              new Date(String(value)),
             ),
     },
   ];
@@ -39,12 +39,10 @@ export function SiteTable({ data, isLoading = false, onEdit, onDelete }: SiteTab
   return (
     <DataTable
       columns={columns}
-      data={data}
-      isLoading={isLoading}
-      getRowKey={(site) => site.id}
+      data={[...data]}
+      loading={isLoading}
       onEdit={onEdit}
       onDelete={onDelete}
-      emptyMessage="No hay sitios registrados."
       ariaLabel="Catálogo de sitios de gimnasios"
     />
   );

@@ -1,4 +1,5 @@
-import { DataTable, type DataTableColumn } from '../../shared/components/DataTable';
+import { DataTable } from '../../shared/components/DataTable/DataTable';
+import type { ColumnDef } from '../../shared/components/DataTable/columns';
 import type { MuscleGroup } from '../../shared/types/muscleGroup';
 
 /** Props for the muscle-group table. */
@@ -26,17 +27,17 @@ export function MuscleGroupTable({
   onEdit,
   onDelete,
 }: MuscleGroupTableProps) {
-  const columns: readonly DataTableColumn<MuscleGroup>[] = [
-    { key: 'name', header: 'Nombre' },
-    { key: 'description', header: 'Descripción' },
+  const columns: ColumnDef<MuscleGroup>[] = [
+    { accessor: 'name', header: 'Nombre' },
+    { accessor: 'description', header: 'Descripción' },
     {
-      key: 'createdAt',
+      accessor: 'createdAt',
       header: 'Creado',
-      render: (group) =>
-        group.createdAt === undefined
+      format: (value) =>
+        value === undefined
           ? '—'
           : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(
-              new Date(group.createdAt),
+              new Date(String(value)),
             ),
     },
   ];
@@ -44,12 +45,10 @@ export function MuscleGroupTable({
   return (
     <DataTable
       columns={columns}
-      data={data}
-      isLoading={isLoading}
-      getRowKey={(group) => group.id}
+      data={[...data]}
+      loading={isLoading}
       onEdit={onEdit}
       onDelete={onDelete}
-      emptyMessage="No hay grupos musculares registrados."
       ariaLabel="Catálogo de grupos musculares"
     />
   );

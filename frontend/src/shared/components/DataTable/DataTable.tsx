@@ -14,8 +14,10 @@
  * @param loading - Cuando true, muestra el estado de carga en lugar de la tabla.
  * @param onSortChange - Se invoca cuando el usuario cambia el orden activo.
  */
+import { Pencil, Trash2 } from 'lucide-react';
 import { useSort } from './useSort';
 import type { ColumnDef, SortDirection } from './columns';
+import { Button } from '../Button';
 import styles from './DataTable.module.css';
 
 /**
@@ -35,6 +37,12 @@ export interface DataTableProps<T> {
    * Recibe la columna y la dirección resultante.
    */
   onSortChange?: (accessor: keyof T | null, direction: SortDirection) => void;
+  /** Invoked when the user requests editing a row. */
+  onEdit?: (row: T) => void;
+  /** Invoked when the user requests deleting a row. */
+  onDelete?: (row: T) => void;
+  /** Accessible label for the table. */
+  ariaLabel?: string;
 }
 
 /**
@@ -49,11 +57,14 @@ export interface DataTableProps<T> {
  * />
  * ```
  */
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   data,
   loading = false,
   onSortChange,
+  onEdit,
+  onDelete,
+  ariaLabel = 'Tabla de datos',
 }: DataTableProps<T>) {
   const firstSortable =
     columns.find((c) => c.sortable !== false)?.accessor ??
@@ -74,6 +85,7 @@ export function DataTable<T extends Record<string, unknown>>({
     onSortChange?.(accessor, direction);
   }
 
+  const hasActions = onEdit !== undefined || onDelete !== undefined;
   if (loading) {
     return (
       <div className={styles.loading} role="status" aria-label="Cargando">
@@ -87,7 +99,7 @@ export function DataTable<T extends Record<string, unknown>>({
   }
 
   return (
-    <table className={styles.table}>
+    <table className={styles.table} aria-label={ariaLabel}>
       <caption className={styles.caption}>Datos ({sorted.length})</caption>
       <thead className={styles.thead}>
         <tr>
@@ -140,6 +152,11 @@ export function DataTable<T extends Record<string, unknown>>({
               </th>
             );
           })}
+          {hasActions && (
+            <th className={styles.th} scope="col">
+              Acciones
+            </th>
+          )}
         </tr>
       </thead>
       <tbody className={styles.tbody}>
@@ -148,13 +165,41 @@ export function DataTable<T extends Record<string, unknown>>({
             {columns.map((column) => {
               const value = row[column.accessor];
               const text =
-                column.format !== undefined
+                column.render !== undefined
+                  ? column.render(row)
+                  : column.format !== undefined
                   ? column.format(value)
                   : String(value ?? '');
               return (
                 <td key={String(column.accessor)}>{text}</td>
               );
             })}
+            {hasActions && (
+              <td>
+                {onEdit !== undefined && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => onEdit(row)}
+                    aria-label={`Editar registro ${rowIndex + 1}`}
+                    title="Editar"
+                    icon={<Pencil size={16} aria-hidden="true" />}
+                  >
+                    Editar
+                  </Button>
+                )}
+                {onDelete !== undefined && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => onDelete(row)}
+                    aria-label={`Eliminar registro ${rowIndex + 1}`}
+                    title="Eliminar"
+                    icon={<Trash2 size={16} aria-hidden="true" />}
+                  >
+                    Eliminar
+                  </Button>
+                )}
+              </td>
+            )}
           </tr>
         ))}
       </tbody>
