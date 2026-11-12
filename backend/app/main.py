@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.adapters.routers.authorisations import router as authorisations_router
+from app.adapters.routers.sites import router as sites_router
 # A medida que implementes la infraestructura y los adaptadores, descomentarás estos imports:
 # from app.infrastructure.database import init_db_pool, close_db_pool
 # from app.adapters.routers import api_router
@@ -54,4 +55,5 @@ def health_check():
 
 # Registrar los routers de la capa de adaptadores cuando estén listos:
 # app.include_router(api_router, prefix="/api/v1")
-app.include_router(authorisations_router)
+app.include_router(authorisations_router, prefix="/api/v1")
+app.include_router(sites_router, prefix="/api/v1")
