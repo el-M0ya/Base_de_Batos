@@ -69,4 +69,6 @@ class UpdateUserUseCase:
         profile = build_profile(updated, input_dto.trainer, input_dto.client)
         saved = await self._users.update(updated, profile)
         profile = attach_profile_id(profile, saved)
+        if profile is None and saved.id_user is not None:
+            profile = await self._users.get_profile(saved.id_user)
         return UserOutputDTO.from_entity(saved, profile)

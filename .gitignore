@@ -12,6 +12,13 @@ coverage/
 !.env.example
 .venv
 
+# Cachés de Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
 # Registros y volcados de depuración
 logs/
 *.log

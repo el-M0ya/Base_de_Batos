@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from contextlib import asynccontextmanager
 from datetime import date, datetime, time
-from typing import Any
+from collections.abc import AsyncGenerator
+from typing import Any, cast
 
 from psycopg import AsyncConnection, errors
 
@@ -13,21 +15,20 @@ from app.application.exceptions import (
     InvalidInput,
     ResourceNotFound,
 )
+from app.application.ports.transaction_manager import TransactionManager
 from app.domain.entities.client import Client
 from app.domain.entities.trainer import Trainer
 from app.domain.entities.user import User
 from app.domain.repositories.user_repository import UserRepository
-from app.infrastructure.persistence.connection import (
-    connection_scope,
-    transaction_scope,
-)
-
 
 class PostgresUserRepository(UserRepository):
     """Persist users and their one-to-one specialization profiles."""
 
+    def __init__(self, transaction_manager: TransactionManager) -> None:
+        self._transaction_manager = transaction_manager
+
     async def get_by_id(self, id_user: int) -> User | None:
-        async with connection_scope() as connection:
+        async with self._connection_scope() as connection:
             cursor = await connection.execute(
                 """
                 SELECT id_user, name, email, password_hash, role, active,
@@ -41,7 +42,7 @@ class PostgresUserRepository(UserRepository):
         return _user_from_row(_as_mapping(row)) if row is not None else None
 
     async def get_by_email(self, email: str) -> User | None:
-        async with connection_scope() as connection:
+        async with self._connection_scope() as connection:
             cursor = await connection.execute(
                 """
                 SELECT id_user, name, email, password_hash, role, active,
@@ -55,7 +56,7 @@ class PostgresUserRepository(UserRepository):
         return _user_from_row(_as_mapping(row)) if row is not None else None
 
     async def list_users(self) -> tuple[User, ...]:
-        async with connection_scope() as connection:
+        async with self._connection_scope() as connection:
             cursor = await connection.execute(
                 """
                 SELECT id_user, name, email, password_hash, role, active,
@@ -68,7 +69,7 @@ class PostgresUserRepository(UserRepository):
         return tuple(_user_from_row(_as_mapping(row)) for row in rows)
 
     async def get_profile(self, id_user: int) -> Trainer | Client | None:
-        async with connection_scope() as connection:
+        async with self._connection_scope() as connection:
             cursor = await connection.execute(
                 """
                 SELECT u.id_user, u.name, u.email, u.password_hash, u.role,
@@ -103,7 +104,7 @@ class PostgresUserRepository(UserRepository):
         user: User,
         profile: Trainer | Client | None = None,
     ) -> User:
-        async with transaction_scope() as connection:
+        async with self._connection_scope() as connection:
             try:
                 cursor = await connection.execute(
                     """
@@ -142,7 +143,7 @@ class PostgresUserRepository(UserRepository):
         if user.id_user is None:
             raise InvalidInput("a persisted user identifier is required for update.")
 
-        async with transaction_scope() as connection:
+        async with self._connection_scope() as connection:
             try:
                 cursor = await connection.execute(
                     """
@@ -180,7 +181,7 @@ class PostgresUserRepository(UserRepository):
         return user
 
     async def deactivate(self, id_user: int) -> User:
-        async with transaction_scope() as connection:
+        async with self._connection_scope() as connection:
             cursor = await connection.execute(
                 """
                 UPDATE app_user
@@ -195,6 +196,24 @@ class PostgresUserRepository(UserRepository):
             if row is None:
                 raise ResourceNotFound("user", id_user)
         return _user_from_row(_as_mapping(row))
+
+    @asynccontextmanager
+    async def _connection_scope(
+        self,
+    ) -> AsyncGenerator[AsyncConnection[Any], None]:
+        """Use an ambient transaction or create one for this repository call."""
+        existing = self._transaction_manager.connection()
+        if existing is not None:
+            yield cast(AsyncConnection[Any], existing)
+            return
+
+        async with self._transaction_manager as transaction:
+            connection = transaction.connection()
+            if connection is None:
+                raise RuntimeError(
+                    "The transaction manager did not provide a database connection."
+                )
+            yield cast(AsyncConnection[Any], connection)
 
     async def _save_profile(
         self,
@@ -233,6 +252,8 @@ class PostgresUserRepository(UserRepository):
     ) -> None:
         if profile is None or user.id_user is None:
             return
+        # Role changes and removal of the previous specialization are deferred;
+        # E4-02 does not require reconciling historical profile references.
         if isinstance(profile, Trainer):
             profile.id_trainer = user.id_user
             await connection.execute(

@@ -21,4 +21,5 @@ class DeactivateUserUseCase:
             raise ResourceNotFound("user", input_dto.id_user)
 
         deactivated = await self._users.deactivate(input_dto.id_user)
-        return UserOutputDTO.from_entity(deactivated)
+        profile = await self._users.get_profile(input_dto.id_user)
+        return UserOutputDTO.from_entity(deactivated, profile)
