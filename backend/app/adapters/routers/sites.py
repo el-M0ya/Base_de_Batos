@@ -7,7 +7,10 @@ clients are associated with the site.
 
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Path, status
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.adapters.dependencies import (
     get_create_site_use_case,
@@ -15,11 +18,13 @@ from app.adapters.dependencies import (
     get_get_site_use_case,
     get_list_sites_use_case,
     get_update_site_use_case,
+    require_admin,
 )
 from app.application.dto.actor import ActorDTO
 from app.application.dto.site_dto import (
     CreateSiteInputDTO,
     DeactivateSiteInputDTO,
+    ListSitesInputDTO,
     SiteOutputDTO,
     UpdateSiteInputDTO,
 )
@@ -29,9 +34,32 @@ from app.application.exceptions import (
     PermissionDenied,
     ResourceNotFound,
 )
-from app.adapters.dependencies import _admin_actor
 
 router = APIRouter(prefix="/sites", tags=["sites"])
+
+
+class CreateSiteRequest(BaseModel):
+    """HTTP body for site creation; the actor comes from the bearer token."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=150)
+    address: str = Field(min_length=1, max_length=255)
+
+
+class UpdateSiteRequest(BaseModel):
+    """HTTP body for site updates; the actor comes from the bearer token."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Optional[str] = Field(default=None, min_length=1, max_length=150)
+    address: Optional[str] = Field(default=None, min_length=1, max_length=255)
+
+    @model_validator(mode="after")
+    def require_at_least_one_field(self) -> "UpdateSiteRequest":
+        if self.name is None and self.address is None:
+            raise ValueError("At least one of name or address must be provided.")
+        return self
 
 
 @router.post(
@@ -41,15 +69,15 @@ router = APIRouter(prefix="/sites", tags=["sites"])
     summary="Create a gym site",
 )
 async def create_site(
-    input_dto: CreateSiteInputDTO,
+    request: CreateSiteRequest,
+    actor: ActorDTO = Depends(require_admin),
     use_case=Depends(get_create_site_use_case),
 ) -> SiteOutputDTO:
     """Register a new gym site. Only administrators may create sites."""
-    actor = _admin_actor()
     create_dto = CreateSiteInputDTO(
         actor=actor,
-        name=input_dto.name,
-        address=input_dto.address,
+        name=request.name,
+        address=request.address,
     )
     try:
         return await use_case.execute(create_dto)
@@ -72,9 +100,10 @@ async def create_site(
 )
 async def get_site(
     id_site: int = Path(..., ge=1),
+    _actor: ActorDTO = Depends(require_admin),
     use_case=Depends(get_get_site_use_case),
 ) -> SiteOutputDTO:
-    """Return the site with the given identifier."""
+    """Return the site with the given identifier. Administrators only."""
     try:
         return await use_case.execute(id_site)
     except ResourceNotFound as error:
@@ -90,12 +119,10 @@ async def get_site(
     summary="List all sites",
 )
 async def list_sites(
+    actor: ActorDTO = Depends(require_admin),
     use_case=Depends(get_list_sites_use_case),
 ) -> list[SiteOutputDTO]:
-    """Return every site, ordered by name."""
-    actor = _admin_actor()
-    from app.application.dto.site_dto import ListSitesInputDTO
-
+    """Return every site, ordered by name. Administrators only."""
     list_dto = ListSitesInputDTO(actor=actor)
     return await use_case.execute(list_dto)
 
@@ -106,17 +133,17 @@ async def list_sites(
     summary="Update a site",
 )
 async def update_site(
-    input_dto: UpdateSiteInputDTO,
+    request: UpdateSiteRequest,
     id_site: int = Path(..., ge=1),
+    actor: ActorDTO = Depends(require_admin),
     use_case=Depends(get_update_site_use_case),
 ) -> SiteOutputDTO:
     """Update the name and/or address of an existing site."""
-    actor = _admin_actor()
     update_dto = UpdateSiteInputDTO(
         actor=actor,
         id_site=id_site,
-        name=input_dto.name,
-        address=input_dto.address,
+        name=request.name,
+        address=request.address,
     )
     try:
         return await use_case.execute(update_dto)
@@ -144,10 +171,10 @@ async def update_site(
 )
 async def deactivate_site(
     id_site: int = Path(..., ge=1),
+    actor: ActorDTO = Depends(require_admin),
     use_case=Depends(get_deactivate_site_use_case),
 ) -> None:
     """Deactivate a site. Rejected when clients are associated with it."""
-    actor = _admin_actor()
     deactivate_dto = DeactivateSiteInputDTO(actor=actor, id_site=id_site)
     try:
         await use_case.execute(deactivate_dto)

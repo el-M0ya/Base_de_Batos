@@ -5,6 +5,13 @@ dist-ssr/
 coverage/
 *.tsbuildinfo
 
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
 # Configuración local con datos sensibles (nunca se versionan)
 .env
 .env.local
