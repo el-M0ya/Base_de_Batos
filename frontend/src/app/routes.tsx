@@ -16,6 +16,7 @@ import { ComingSoonView } from './ComingSoonView';
 import { DashboardView } from './DashboardView';
 import { NotFoundView } from './NotFoundView';
 import { LoginPage } from '../features/auth/LoginPage';
+import { UsersPage } from '../features/users/UsersPage';
 import { messages } from '../shared/i18n/messages';
 import type { UserRole } from '../shared/types/roles';
 import type { UserCapabilities } from '../shared/types/roles';
@@ -81,7 +82,7 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/users',
-    element: () => <ComingSoonView section="Usuarios" />,
+    element: UsersPage,
     label: messages.nav.users,
     roles: ['administrator'],
   },
