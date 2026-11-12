@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Awaitable, Callable
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -29,9 +28,11 @@ def _response(status_code: int, code: str, message: str) -> JSONResponse:
 
 async def application_error_handler(
     request: Request,
-    error: ApplicationError,
+    error: Exception,
 ) -> JSONResponse:
     """Handle known application failures without leaking implementation data."""
+    if not isinstance(error, ApplicationError):
+        return _response(500, "internal_error", "An unexpected error occurred.")
     if isinstance(error, ResourceNotFound):
         return _response(404, "resource_not_found", str(error))
     if isinstance(error, DuplicateResource):
