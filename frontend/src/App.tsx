@@ -1,18 +1,20 @@
 import { AuthProvider } from './shared/auth/AuthContext';
-import { LoginPage } from './features/auth/LoginPage';
+import { Router } from './app/router';
 
 /**
- * Root component of the application.
+ * Componente raíz de la aplicación.
  *
  * @remarks
- * Wraps the app in `AuthProvider` so the session is available everywhere.
- * Temporarily shows the login screen directly. In E3-05 it is replaced by
- * the router with the layout and role-based navigation.
+ * Envía toda la aplicación en `AuthProvider` para que la sesión esté disponible
+ * en cualquier punto, y monta el enrutador (`Router`) con el application shell,
+ * la navegación y las rutas protegidas por rol/capacidad.
  */
 export function App() {
   return (
     <AuthProvider>
-      <LoginPage />
+      <Router />
     </AuthProvider>
   );
 }
+
+export default App;

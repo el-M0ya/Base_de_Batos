@@ -53,4 +53,24 @@ export const messages = {
     notAuthenticated: 'Debes iniciar sesión para acceder a esta página.',
     notAuthorized: 'No tienes permiso para acceder a esta página.',
   },
+  nav: {
+    home: 'Inicio',
+    exercises: 'Ejercicios',
+    routines: 'Rutinas',
+    reports: 'Informes',
+    users: 'Usuarios',
+    sites: 'Sedes',
+    programs: 'Programas',
+    muscleGroups: 'Grupos musculares',
+    logout: 'Cerrar sesión',
+  },
+  comingSoon: {
+    title: 'Próximamente',
+    description: 'Esta funcionalidad se implementará en una próxima entrega.',
+  },
+  notFound: {
+    title: 'Página no encontrada',
+    description: 'La ruta solicitada no existe.',
+    backHome: 'Volver a inicio',
+  },
 } as const;
