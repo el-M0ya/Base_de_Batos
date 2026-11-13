@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { MuscleGroupsPage } from '../features/muscle-groups/MuscleGroupsPage';
 import { SitesPage } from '../features/sites/SitesPage';
 import { TrainingProgramsPage } from '../features/training-programs/TrainingProgramsPage';
+import { ExercisesPage } from '../features/exercises/ExercisesPage';
 import { LoginPage } from '../features/auth/LoginPage';
 import { AdminLayout } from './layouts/AdminLayout';
+import ProtectedRoute from '../shared/auth/ProtectedRoute';
 import { appRoutes } from './routes';
 
 /** Normalizes the browser hash into a route path. */
@@ -60,6 +62,16 @@ export function AppRouter() {
       <AdminLayout currentPath={path}>
         <MuscleGroupsPage />
       </AdminLayout>
+    );
+  }
+
+  if (path === appRoutes.exercises) {
+    return (
+      <ProtectedRoute>
+        <AdminLayout currentPath={path}>
+          <ExercisesPage />
+        </AdminLayout>
+      </ProtectedRoute>
     );
   }
 

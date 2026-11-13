@@ -10,4 +10,5 @@ export const appRoutes = {
   sites: '/admin/sites',
   trainingPrograms: '/admin/training-programs',
   muscleGroups: '/admin/muscle-groups',
+  exercises: '/exercises',
 } as const;
