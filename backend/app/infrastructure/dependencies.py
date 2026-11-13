@@ -10,26 +10,27 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from psycopg import AsyncConnection
+
 from app.application.use_cases.create_exercise import CreateExerciseUseCase
 from app.application.use_cases.list_exercise_catalogs import (
     ListExerciseCatalogsUseCase,
 )
 from app.application.use_cases.list_exercises import ListExercisesUseCase
-from app.infrastructure.persistence.connection import get_db_pool
 from app.infrastructure.persistence.repositories.catalog_repository_sql import (
     PostgresCatalogRepository,
 )
 from app.infrastructure.persistence.repositories.exercise_repository_sql import (
-    PostgresExerciseRepository,
+    ExerciseRepositorySql,
 )
-from app.infrastructure.persistence.transaction import PostgresTransactionManager
+from app.infrastructure.persistence.transaction import PsqlTransactionManager
 
 
 @dataclass(frozen=True)
 class ExerciseDependencies:
     """Dependencies that participate in one request-scoped transaction."""
 
-    transaction: PostgresTransactionManager
+    transaction: PsqlTransactionManager
     create_exercise: CreateExerciseUseCase
     list_exercises: ListExercisesUseCase
     list_catalogs: ListExerciseCatalogsUseCase
@@ -37,9 +38,18 @@ class ExerciseDependencies:
 
 def build_exercise_dependencies() -> ExerciseDependencies:
     """Construct the exercise use cases and their concrete repositories."""
-    transaction = PostgresTransactionManager(get_db_pool())
-    connection_provider = lambda: transaction.connection
-    exercise_repository = PostgresExerciseRepository(connection_provider)
+    transaction = PsqlTransactionManager()
+
+    def connection_provider() -> AsyncConnection:
+        connection = transaction.connection()
+        if connection is None:
+            raise RuntimeError(
+                "No transaction active. Use the catalog repository inside "
+                "a TransactionManager block."
+            )
+        return connection
+
+    exercise_repository = ExerciseRepositorySql(transaction)
     catalog_repository = PostgresCatalogRepository(connection_provider)
 
     return ExerciseDependencies(
