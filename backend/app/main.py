@@ -4,6 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.adapters.routers.enrolments import router as enrolments_router
 from app.infrastructure.persistence.connection import init_db_pool, close_db_pool
 
+from app.adapters.routers.authorisations import router as authorisations_router
+# A medida que implementes la infraestructura y los adaptadores, descomentarás estos imports:
+# from app.infrastructure.database import init_db_pool, close_db_pool
+# from app.adapters.routers import api_router
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -49,3 +55,6 @@ def health_check():
 
 
 app.include_router(enrolments_router)
+# Registrar los routers de la capa de adaptadores cuando estén listos:
+# app.include_router(api_router, prefix="/api/v1")
+app.include_router(authorisations_router)

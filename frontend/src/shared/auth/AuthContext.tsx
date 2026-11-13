@@ -74,18 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }): React.React
   const isAuthenticated = user !== null;
 
   /** Guarda el token y el usuario en memoria y en `sessionStorage`. */
-  const persistSession = useCallback(
-    (authToken: string, authUser: AuthenticatedUser) => {
-      setToken(authToken);
-      setUser(authUser);
-      sessionStorage.setItem('forjafit:token', authToken);
-      sessionStorage.setItem(
-        'forjafit:user',
-        JSON.stringify(authUser),
-      );
-    },
-    [],
-  );
+  const persistSession = useCallback((authToken: string, authUser: AuthenticatedUser) => {
+    setToken(authToken);
+    setUser(authUser);
+    sessionStorage.setItem('forjafit:token', authToken);
+    sessionStorage.setItem('forjafit:user', JSON.stringify(authUser));
+  }, []);
 
   /** Limpia la sesión de memoria y de `sessionStorage`. */
   const clearSession = useCallback(() => {
@@ -151,15 +145,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.React
   }, [clearSession]);
 
   /** Comprueba si el usuario tiene el rol indicado. */
-  const hasRole = useCallback(
-    (role: UserRole): boolean => user?.role === role,
-    [user],
-  );
+  const hasRole = useCallback((role: UserRole): boolean => user?.role === role, [user]);
 
   /** Comprueba si el usuario tiene la capacidad indicada. */
   const hasCapability = useCallback(
-    (capability: keyof UserCapabilities): boolean =>
-      user?.capabilities[capability] === true,
+    (capability: keyof UserCapabilities): boolean => user?.capabilities[capability] === true,
     [user],
   );
 
@@ -175,7 +165,17 @@ export function AuthProvider({ children }: { children: ReactNode }): React.React
       hasRole,
       hasCapability,
     }),
-    [user, token, isAuthenticated, isLoading, login, logout, restoreSession, hasRole, hasCapability],
+    [
+      user,
+      token,
+      isAuthenticated,
+      isLoading,
+      login,
+      logout,
+      restoreSession,
+      hasRole,
+      hasCapability,
+    ],
   );
 
   // Validar la sesión almacenada con la API tras montar el proveedor.

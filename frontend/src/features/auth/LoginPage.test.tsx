@@ -72,10 +72,10 @@ describe('LoginPage', () => {
 
     // Successful login: no error alert, no "invalid credentials" message.
     await new Promise((resolve) => setTimeout(resolve, 600));
-    expect(screen.queryByText('Correo o contraseña incorrectos. Verifica tus credenciales.')).not.toBeInTheDocument();
-    expect(sessionStorage.getItem('forjafit:token')).toBe(
-      'demo:trainer@forjafit.demo',
-    );
+    expect(
+      screen.queryByText('Correo o contraseña incorrectos. Verifica tus credenciales.'),
+    ).not.toBeInTheDocument();
+    expect(sessionStorage.getItem('forjafit:token')).toBe('demo:trainer@forjafit.demo');
   });
 
   it('accepts client demo credentials', async () => {
@@ -88,9 +88,7 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Entrar' }));
 
     await new Promise((resolve) => setTimeout(resolve, 600));
-    expect(sessionStorage.getItem('forjafit:token')).toBe(
-      'demo:client@forjafit.demo',
-    );
+    expect(sessionStorage.getItem('forjafit:token')).toBe('demo:client@forjafit.demo');
   });
 
   it('accepts administrator demo credentials', async () => {
@@ -103,8 +101,6 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Entrar' }));
 
     await new Promise((resolve) => setTimeout(resolve, 600));
-    expect(sessionStorage.getItem('forjafit:token')).toBe(
-      'demo:admin@forjafit.demo',
-    );
+    expect(sessionStorage.getItem('forjafit:token')).toBe('demo:admin@forjafit.demo');
   });
 });
