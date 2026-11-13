@@ -2,7 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.adapters.routers._errors import install_error_handlers
 from app.adapters.routers.authorisations import router as authorisations_router
+from app.adapters.routers.exercises import router as exercises_router
 from app.adapters.routers.muscle_groups import router as muscle_groups_router
 from app.adapters.routers.sites import router as sites_router
 from app.adapters.routers.training_programs import router as training_programs_router
@@ -31,6 +33,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# The public error contract must be active before any route is served.
+install_error_handlers(app)
+
 # Configuración de CORS (Cross-Origin Resource Sharing) para permitir conexión con el Frontend
 app.add_middleware(
     CORSMiddleware,
@@ -56,6 +61,7 @@ def health_check():
 # Registrar los routers de la capa de adaptadores cuando estén listos:
 # app.include_router(api_router, prefix="/api/v1")
 app.include_router(authorisations_router)
+app.include_router(exercises_router, prefix="/api/v1")
 app.include_router(sites_router)
 app.include_router(muscle_groups_router, prefix="/api/v1")
 app.include_router(training_programs_router, prefix="/api/v1")

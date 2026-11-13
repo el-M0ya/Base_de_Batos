@@ -1,4 +1,4 @@
-"""Dependency providers for site and catalog management endpoints.
+"""Dependency providers for site, catalog and exercise endpoints.
 
 Wires the transaction manager, repositories, and use cases together so FastAPI
 endpoints can declare them with ``Depends``.
@@ -8,14 +8,16 @@ from __future__ import annotations
 
 from typing import AsyncGenerator
 
-from fastapi import Depends
+from fastapi import Depends, Header
 
+from app.adapters.routers._errors import to_http_exception
 from app.application.dto.actor import ActorDTO
 from app.application.dto.site_dto import (
     CreateSiteInputDTO,
     DeactivateSiteInputDTO,
     UpdateSiteInputDTO,
 )
+from app.application.exceptions import InvalidInput
 from app.application.services.muscle_group_resolver import MuscleGroupResolver
 from app.application.use_cases.create_muscle_group import CreateMuscleGroupUseCase
 from app.application.use_cases.create_site import CreateSiteUseCase
@@ -37,6 +39,7 @@ from app.application.use_cases.list_sites import ListSitesUseCase
 from app.application.use_cases.list_training_programs import (
     ListTrainingProgramsUseCase,
 )
+from app.application.use_cases.reclassify_exercise import ReclassifyExerciseUseCase
 from app.application.use_cases.set_training_program_muscle_groups import (
     SetTrainingProgramMuscleGroupsUseCase,
 )
@@ -45,7 +48,14 @@ from app.application.use_cases.update_site import UpdateSiteUseCase
 from app.application.use_cases.update_training_program import (
     UpdateTrainingProgramUseCase,
 )
+from app.domain.exceptions.domain_exceptions import DomainException
 from app.domain.value_objects.user_role import UserRole
+from app.infrastructure.persistence.repositories.catalog_repository_sql import (
+    CatalogRepositorySql,
+)
+from app.infrastructure.persistence.repositories.exercise_repository_sql import (
+    ExerciseRepositorySql,
+)
 from app.infrastructure.persistence.repositories.muscle_group_repository_sql import (
     MuscleGroupRepositorySql,
 )
@@ -221,6 +231,53 @@ async def get_set_training_program_muscle_groups_use_case(
 ) -> AsyncGenerator[SetTrainingProgramMuscleGroupsUseCase, None]:
     """Yield a ``SetTrainingProgramMuscleGroupsUseCase``."""
     yield SetTrainingProgramMuscleGroupsUseCase(repo, resolver)
+
+
+# ---------------------------------------------------------------------------
+# Exercise bank
+# ---------------------------------------------------------------------------
+
+
+async def get_exercise_repository(
+    tm: PsqlTransactionManager = Depends(get_transaction_manager),
+) -> AsyncGenerator[ExerciseRepositorySql, None]:
+    """Yield an ``ExerciseRepositorySql`` using the given transaction manager."""
+    yield ExerciseRepositorySql(tm)
+
+
+async def get_catalog_repository(
+    tm: PsqlTransactionManager = Depends(get_transaction_manager),
+) -> AsyncGenerator[CatalogRepositorySql, None]:
+    """Yield a ``CatalogRepositorySql`` using the given transaction manager."""
+    yield CatalogRepositorySql(tm)
+
+
+async def get_reclassify_exercise_use_case(
+    exercises: ExerciseRepositorySql = Depends(get_exercise_repository),
+    catalogs: CatalogRepositorySql = Depends(get_catalog_repository),
+) -> AsyncGenerator[ReclassifyExerciseUseCase, None]:
+    """Yield a ``ReclassifyExerciseUseCase`` with both repositories wired."""
+    yield ReclassifyExerciseUseCase(exercises, catalogs)
+
+
+async def get_actor(
+    x_user_id: int = Header(default=1, alias="X-User-Id", ge=1),
+    x_user_role: str = Header(default="TRAINER", alias="X-User-Role"),
+) -> ActorDTO:
+    """Return the authenticated actor from the provisional request headers.
+
+    Authentication is not implemented yet (E2-08). Until then the exercise
+    endpoint reads the actor from ``X-User-Id`` and ``X-User-Role`` so the
+    authorization rules can be exercised without leaking a default admin actor
+    into a trainer-only operation. The defaults keep local development usable.
+    """
+    try:
+        return ActorDTO(
+            id_user=x_user_id,
+            role=UserRole.from_value(x_user_role),
+        )
+    except DomainException as error:
+        raise to_http_exception(InvalidInput(str(error))) from error
 
 
 def _admin_actor() -> ActorDTO:

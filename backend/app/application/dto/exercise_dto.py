@@ -42,6 +42,43 @@ class CreateExerciseInputDTO:
 
 
 @dataclass(frozen=True)
+class ReclassifyExerciseInputDTO:
+    """Data required to reclassify an existing exercise (RF-15)."""
+
+    actor: ActorDTO
+    id_exercise: int
+    exercise_type: str
+    intensity: str
+    muscle_group_id: int
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.actor, ActorDTO):
+            raise InvalidDomainValue("actor", self.actor, "an ActorDTO instance")
+        if (
+            not isinstance(self.id_exercise, int)
+            or isinstance(self.id_exercise, bool)
+            or self.id_exercise <= 0
+        ):
+            raise InvalidDomainValue(
+                "id_exercise", self.id_exercise, "an integer greater than 0"
+            )
+        if (
+            not isinstance(self.muscle_group_id, int)
+            or isinstance(self.muscle_group_id, bool)
+            or self.muscle_group_id <= 0
+        ):
+            raise InvalidDomainValue(
+                "muscle_group_id", self.muscle_group_id, "an integer greater than 0"
+            )
+        if not isinstance(self.exercise_type, str) or not self.exercise_type.strip():
+            raise InvalidDomainValue(
+                "exercise_type", self.exercise_type, "a non-empty string"
+            )
+        if not isinstance(self.intensity, str) or not self.intensity.strip():
+            raise InvalidDomainValue("intensity", self.intensity, "a non-empty string")
+
+
+@dataclass(frozen=True)
 class ExerciseOutputDTO:
     """Flat representation of an exercise returned to the caller."""
 
