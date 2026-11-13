@@ -1,15 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.adapters.routers.enrolments import router as enrolments_router
-from app.infrastructure.persistence.connection import init_db_pool, close_db_pool
 
-from app.adapters.routers.sites import router as sites_router
-
+from app.adapters.routers.auth import router as auth_router
 from app.adapters.routers.authorisations import router as authorisations_router
-# A medida que implementes la infraestructura y los adaptadores, descomentarás estos imports:
-# from app.infrastructure.database import init_db_pool, close_db_pool
-# from app.adapters.routers import api_router
+from app.adapters.routers.sites import router as sites_router
+from app.infrastructure.persistence.connection import close_db_pool, init_db_pool
 
 
 @asynccontextmanager
@@ -18,11 +14,11 @@ async def lifespan(app: FastAPI):
     Maneja el ciclo de vida de la aplicación (Startup y Shutdown).
     Aquí se inicializará y cerrará el pool de conexiones a PostgreSQL.
     """
+    # --- STARTUP ---
     await init_db_pool()
-    try:
-        yield
-    finally:
-        await close_db_pool()
+    yield
+    # --- SHUTDOWN ---
+    await close_db_pool()
 
 
 app = FastAPI(
@@ -56,8 +52,7 @@ def health_check():
     }
 
 
-app.include_router(enrolments_router)
-# Registrar los routers de la capa de adaptadores cuando estén listos:
-# app.include_router(api_router, prefix="/api/v1")
-app.include_router(sites_router)
-app.include_router(authorisations_router)
+# Routers of the adapter layer.
+app.include_router(sites_router, prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1")
+app.include_router(authorisations_router, prefix="/api/v1")
