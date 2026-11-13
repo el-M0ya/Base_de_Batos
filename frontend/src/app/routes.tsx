@@ -23,6 +23,7 @@ import { TrainingProgramsPage } from '../features/training-programs/TrainingProg
 import { messages } from '../shared/i18n/messages';
 import type { UserRole } from '../shared/types/roles';
 import type { UserCapabilities } from '../shared/types/roles';
+import { ExercisesPage } from '../features/exercises/ExercisesPage';
 
 /**
  * Entrada de una ruta registrada.
@@ -67,7 +68,7 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/exercises',
-    element: () => <ComingSoonView section="Ejercicios" />,
+    element: ExercisesPage,
     label: messages.nav.exercises,
     roles: ['trainer', 'administrator'],
   },
