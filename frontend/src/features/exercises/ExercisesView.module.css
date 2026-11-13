@@ -1,0 +1,72 @@
+.view {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.header h1,
+.header p {
+  margin: 0;
+}
+
+.header p {
+  margin-top: 0.35rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger, #b91c1c);
+}
+
+.overlay {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(17 24 39 / 45%);
+}
+
+.modal {
+  width: min(100%, 34rem);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  background: var(--color-surface, #fff);
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 20%);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.modalHeader h2 {
+  margin: 0;
+}
+
+.close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
