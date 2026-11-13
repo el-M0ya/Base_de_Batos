@@ -16,6 +16,7 @@ import { ComingSoonView } from './ComingSoonView';
 import { DashboardView } from './DashboardView';
 import { NotFoundView } from './NotFoundView';
 import { LoginPage } from '../features/auth/LoginPage';
+import { UsersPage } from '../features/users/UsersPage';
 import { MuscleGroupsPage } from '../features/muscle-groups/MuscleGroupsPage';
 import { SitesPage } from '../features/sites/SitesPage';
 import { TrainingProgramsPage } from '../features/training-programs/TrainingProgramsPage';
@@ -84,7 +85,7 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/users',
-    element: () => <ComingSoonView section="Usuarios" />,
+    element: UsersPage,
     label: messages.nav.users,
     roles: ['administrator'],
   },
