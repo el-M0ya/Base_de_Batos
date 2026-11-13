@@ -79,6 +79,48 @@ describe('DataTable - renderizado', () => {
   });
 });
 
+describe('DataTable - acciones de edición', () => {
+  it('muestra la acción cuando canEdit devuelve true', () => {
+    render(
+      <DataTable<Row>
+        columns={columns}
+        data={data.slice(0, 1)}
+        onEdit={vi.fn()}
+        canEdit={() => true}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Editar registro 1' })).toBeInTheDocument();
+  });
+
+  it('oculta la acción cuando canEdit devuelve false', () => {
+    render(
+      <DataTable<Row>
+        columns={columns}
+        data={data.slice(0, 1)}
+        onEdit={vi.fn()}
+        canEdit={() => false}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: 'Editar registro 1' })).not.toBeInTheDocument();
+  });
+
+  it('muestra la acción solo en las filas editables', () => {
+    render(
+      <DataTable<Row>
+        columns={columns}
+        data={data.slice(0, 3)}
+        onEdit={vi.fn()}
+        canEdit={(row) => row.name === 'Zoe'}
+      />,
+    );
+
+    expect(screen.getAllByRole('button', { name: /Editar registro/ })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Editar registro 3' })).toBeInTheDocument();
+  });
+});
+
 describe('DataTable - ordenamiento', () => {
   it('ya está ordenado asc por nombre al montar', () => {
     renderTable();
