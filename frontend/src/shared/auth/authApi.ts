@@ -36,19 +36,13 @@ export interface AuthApi {
  */
 const authApiReal: AuthApi = {
   async login(): Promise<AuthenticatedUser> {
-    throw new Error(
-      'Autenticación real no disponible aún: los endpoints de backend no existen.',
-    );
+    throw new Error('Autenticación real no disponible aún: los endpoints de backend no existen.');
   },
   async logout(): Promise<void> {
-    throw new Error(
-      'Autenticación real no disponible aún: los endpoints de backend no existen.',
-    );
+    throw new Error('Autenticación real no disponible aún: los endpoints de backend no existen.');
   },
   async me(): Promise<AuthenticatedUser | null> {
-    throw new Error(
-      'Autenticación real no disponible aún: los endpoints de backend no existen.',
-    );
+    throw new Error('Autenticación real no disponible aún: los endpoints de backend no existen.');
   },
 };
 
@@ -56,8 +50,7 @@ const authApiReal: AuthApi = {
  * Modo de API activo: 'mock' (por defecto) o 'real'.
  * Se lee de `VITE_API_MODE`; cualquier otro valor se trata como mock.
  */
-const API_MODE: 'mock' | 'real' =
-  import.meta.env.VITE_API_MODE === 'real' ? 'real' : 'mock';
+const API_MODE: 'mock' | 'real' = import.meta.env.VITE_API_MODE === 'real' ? 'real' : 'mock';
 
 /**
  * Implementación de autenticación activa.
