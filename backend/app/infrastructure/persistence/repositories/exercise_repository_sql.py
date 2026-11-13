@@ -209,21 +209,33 @@ class ExerciseRepositorySql(ExerciseRepository):
             raise _translate_error(error) from error
 
     async def find_duplicate(
-        self, normalized_name: str, id_muscle_group: int
+        self,
+        normalized_name: str,
+        id_muscle_group: int,
+        exclude_id: Optional[int] = None,
     ) -> Optional[Exercise]:
         """Return the exercise that collides with the duplicate key (U-12).
 
         Duplicate detection uses the normalized name and the muscle group, so
-        the same name in another muscle group is not a duplicate.
+        the same name in another muscle group is not a duplicate. ``exclude_id``
+        lets an update ignore the exercise being reclassified.
         """
         try:
+            conditions = ["e.id_muscle_group = %s"]
+            params: list = [id_muscle_group]
+            if exclude_id is not None:
+                conditions.append("e.id_exercise <> %s")
+                params.append(exclude_id)
+
             cursor = await self._conn.execute(
-                _BASE_SELECT + " WHERE e.id_muscle_group = %s",
-                (id_muscle_group,),
+                _BASE_SELECT + " WHERE " + " AND ".join(conditions),
+                tuple(params),
             )
             rows = await cursor.fetchall()
             for row in rows:
                 entity = _row_to_exercise(row)
+                if exclude_id is not None and entity.id_exercise == exclude_id:
+                    continue
                 if entity.normalized_name == normalized_name:
                     return entity
             return None
