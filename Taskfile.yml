@@ -1,0 +1,114 @@
+version: '3'
+
+# Tareas frecuentes para Base de Batos.
+# Requisitos: Git, Node.js/npm y Docker Desktop.
+#
+# Para instalar Task, consulte https://taskfile.dev/installation/.
+
+tasks:
+  install:
+    desc: Instala las dependencias del frontend.
+    dir: frontend
+    cmds:
+      - npm install
+
+  dev:
+    desc: Inicia el servidor de desarrollo del frontend.
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  build:
+    desc: Comprueba los tipos y genera el build de producción del frontend.
+    dir: frontend
+    cmds:
+      - npm run build
+
+  preview:
+    desc: Sirve localmente el build de producción generado.
+    dir: frontend
+    cmds:
+      - npm run preview
+
+  lint:
+    desc: Ejecuta ESLint sobre el frontend.
+    dir: frontend
+    cmds:
+      - npm run lint
+
+  format-check:
+    desc: Comprueba que los archivos respeten el formato configurado.
+    dir: frontend
+    cmds:
+      - npm run format:check
+
+  test:
+    desc: Ejecuta las pruebas automatizadas del frontend.
+    dir: frontend
+    cmds:
+      - npm test
+
+  test-watch:
+    desc: Ejecuta las pruebas del frontend en modo observación.
+    dir: frontend
+    cmds:
+      - npm run test:watch
+
+  verify:
+    desc: Ejecuta las comprobaciones de tipos, lint, formato y pruebas.
+    dir: frontend
+    cmds:
+      - npm run typecheck
+      - npm run lint
+      - npm run format:check
+      - npm test
+
+  env-init:
+    desc: Crea el archivo local de variables de entorno a partir de la plantilla.
+    cmds:
+      - cp .env.example .env
+
+  services-up:
+    desc: Inicia PostgreSQL y Redis en segundo plano y espera sus healthchecks.
+    cmds:
+      - docker compose up -d --wait
+
+  services-down:
+    desc: Detiene los servicios de PostgreSQL y Redis sin eliminar sus volúmenes.
+    cmds:
+      - docker compose down
+
+  services-logs:
+    desc: Muestra los registros de los servicios de infraestructura.
+    cmds:
+      - docker compose logs -f postgres redis
+
+  services-reset:
+    desc: Detiene los servicios y elimina sus volúmenes de datos locales.
+    cmds:
+      - docker compose down -v
+
+  production-up:
+    desc: Construye y levanta el frontend junto con la infraestructura del proyecto.
+    cmds:
+      - docker compose --profile full up --build
+
+  production-down:
+    desc: Detiene todos los servicios del despliegue completo.
+    cmds:
+      - docker compose --profile full down
+
+  git-status:
+    desc: Muestra la rama actual y los cambios pendientes.
+    cmds:
+      - git status
+
+  git-branches:
+    desc: Lista las ramas locales y remotas disponibles.
+    cmds:
+      - git branch -a
+
+  git-update:
+    desc: Actualiza las referencias remotas sin modificar los archivos de trabajo.
+    cmds:
+      - git fetch --all --prune

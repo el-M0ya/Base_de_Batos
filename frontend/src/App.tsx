@@ -1,18 +1,18 @@
 import { AuthProvider } from './shared/auth/AuthContext';
-import { Router } from './app/router';
+import { AppRouter } from './app/router';
 
 /**
  * Componente raíz de la aplicación.
  *
  * @remarks
- * Envía toda la aplicación en `AuthProvider` para que la sesión esté disponible
- * en cualquier punto, y monta el enrutador (`Router`) con el application shell,
- * la navegación y las rutas protegidas por rol/capacidad.
+ * Wraps the app in `AuthProvider` so the session is available everywhere.
+ * The application router owns hash-based page selection, while feature pages
+ * remain isolated from one another and are composed by the app layer.
  */
 export function App() {
   return (
     <AuthProvider>
-      <Router />
+      <AppRouter />
     </AuthProvider>
   );
 }
