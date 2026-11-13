@@ -13,6 +13,7 @@ from app.domain.exceptions.domain_exceptions import (
     InvalidDomainValue,
     InvalidRoutineReference,
     InvalidRoutineStateTransition,
+    RejectedValidationRequiresObservations,
 )
 
 
@@ -121,9 +122,36 @@ class RoutineLifecycleTests(unittest.TestCase):
     def test_pending_review_can_be_rejected(self) -> None:
         routine = build_routine(status=RoutineStatus.PENDING_REVIEW)
 
-        routine.reject()
+        routine.reject("The routine does not match the program objective.")
 
         self.assertEqual(routine.status, RoutineStatus.REJECTED)
+
+    def test_pending_review_can_be_replaced(self) -> None:
+        routine = build_routine(status=RoutineStatus.PENDING_REVIEW)
+
+        routine.replace()
+
+        self.assertEqual(routine.status, RoutineStatus.REPLACED)
+
+    def test_rejection_requires_observations(self) -> None:
+        routine = build_routine(status=RoutineStatus.PENDING_REVIEW)
+
+        with self.assertRaises(RejectedValidationRequiresObservations):
+            routine.reject()
+        with self.assertRaises(RejectedValidationRequiresObservations):
+            routine.reject("   ")
+
+        self.assertEqual(routine.status, RoutineStatus.PENDING_REVIEW)
+
+    def test_replaced_routine_is_terminal(self) -> None:
+        routine = build_routine(status=RoutineStatus.REPLACED)
+
+        with self.assertRaises(InvalidRoutineStateTransition):
+            routine.submit_for_review()
+        with self.assertRaises(InvalidRoutineStateTransition):
+            routine.approve()
+        with self.assertRaises(InvalidRoutineStateTransition):
+            routine.reject("Reason")
 
     def test_rejected_routine_can_be_resubmitted(self) -> None:
         routine = build_routine(status=RoutineStatus.REJECTED)
@@ -154,6 +182,7 @@ class RoutineLifecycleTests(unittest.TestCase):
         pending = build_routine(status=RoutineStatus.PENDING_REVIEW)
         self.assertTrue(pending.can_transition_to(RoutineStatus.APPROVED))
         self.assertTrue(pending.can_transition_to(RoutineStatus.REJECTED))
+        self.assertTrue(pending.can_transition_to(RoutineStatus.REPLACED))
         self.assertFalse(pending.can_transition_to(RoutineStatus.PENDING_REVIEW))
 
     def test_invalid_transition_target_is_rejected(self) -> None:
@@ -167,6 +196,7 @@ class RoutineLifecycleTests(unittest.TestCase):
             build_routine(status=RoutineStatus.PENDING_REVIEW).can_be_edited()
         )
         self.assertFalse(build_routine(status=RoutineStatus.APPROVED).can_be_edited())
+        self.assertFalse(build_routine(status=RoutineStatus.REPLACED).can_be_edited())
 
     def test_state_queries_match_current_status(self) -> None:
         cases = (
@@ -174,6 +204,7 @@ class RoutineLifecycleTests(unittest.TestCase):
             (RoutineStatus.PENDING_REVIEW, "is_pending_review"),
             (RoutineStatus.APPROVED, "is_approved"),
             (RoutineStatus.REJECTED, "is_rejected"),
+            (RoutineStatus.REPLACED, "is_replaced"),
         )
 
         for status, method_name in cases:

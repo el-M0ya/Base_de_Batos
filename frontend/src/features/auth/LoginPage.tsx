@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '../../shared/auth/useAuth';
 import { messages } from '../../shared/i18n/messages';
 import { LoginView, type LoginFieldErrors } from './LoginView';
 
@@ -6,21 +7,6 @@ const t = messages.login;
 
 // Simple shape check: something@something.something
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/**
- * TEMPORARY fake login, so the screen can be tried without a backend.
- * TODO(E3-06): replace with `authApi` (mock/real) and the session context.
- */
-const DEMO_CREDENTIALS = { email: 'demo@forjafit.cu', password: 'forja2026' };
-const FAKE_DELAY_MS = 600;
-
-function fakeLogin(email: string, password: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(email === DEMO_CREDENTIALS.email && password === DEMO_CREDENTIALS.password);
-    }, FAKE_DELAY_MS);
-  });
-}
 
 /** Checks the fields on the client before calling the server. */
 function validate(email: string, password: string): LoginFieldErrors {
@@ -39,19 +25,23 @@ function validate(email: string, password: string): LoginFieldErrors {
 /**
  * Login screen container: holds the form state and the login logic,
  * and renders `LoginView` with it.
+ *
+ * @remarks
+ * Delegates the actual authentication to `useAuth` (backed by `authApi`),
+ * so it works with the mock implementation until backend endpoints exist.
  */
 export function LoginPage() {
+  const { login, isLoading } = useAuth();
+
   // --- State: everything that can change on this screen ---
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<LoginFieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit() {
     setFormError(null);
-    setSuccessMessage(null);
 
     const errors = validate(email, password);
     setFieldErrors(errors);
@@ -60,19 +50,23 @@ export function LoginPage() {
     }
 
     setIsSubmitting(true);
-    const isValid = await fakeLogin(email.trim(), password);
-    setIsSubmitting(false);
-
-    if (isValid) {
-      setSuccessMessage(t.demoSuccess);
-    } else {
-      setFormError(t.errors.invalidCredentials);
+    try {
+      await login(email.trim(), password);
+    } catch (error: unknown) {
+      setIsSubmitting(false);
+      const err = error as { status?: number; message?: string };
+      if (err.status === 401) {
+        setFormError(t.errors.invalidCredentials);
+      } else {
+        setFormError(t.sessionError);
+      }
+      return;
     }
+    setIsSubmitting(false);
   }
 
   function dismissMessage() {
     setFormError(null);
-    setSuccessMessage(null);
   }
 
   return (
@@ -81,8 +75,8 @@ export function LoginPage() {
       password={password}
       fieldErrors={fieldErrors}
       formError={formError}
-      successMessage={successMessage}
-      isSubmitting={isSubmitting}
+      successMessage={null}
+      isSubmitting={isSubmitting || isLoading}
       onEmailChange={setEmail}
       onPasswordChange={setPassword}
       onSubmit={() => void handleSubmit()}

@@ -1,18 +1,32 @@
-flowchart TD
-    A([Generation parameters submitted]) --> B{Input valid?}
-    B -- No --> C[Report validation errors]
-    C --> A
-    B -- Yes --> D[Generate routine proposal]
-    D --> E[Trainer reviews proposal]
-    E --> F{Accept as-is?}
-    F -- Yes --> G[Approve program]
-    F -- No --> H{Can be adjusted?}
-    H -- Yes --> I[Manually adjust routine]
-    I --> J[Review adjusted routine]
-    J --> K{Approved?}
-    K -- Yes --> G
-    K -- No --> L[Return for correction]
-    H -- No --> L
-    L --> D
-    G --> M[Assign program to client]
-    M --> N([Available to client])
+stateDiagram-v2
+    [*] --> DRAFT: Routine created from a proposal
+    DRAFT --> PENDING_REVIEW: submit_for_review()
+    PENDING_REVIEW --> APPROVED: approve()
+    PENDING_REVIEW --> REJECTED: reject(observations)
+    PENDING_REVIEW --> REPLACED: replace()
+    REJECTED --> PENDING_REVIEW: resubmit_for_review()
+    APPROVED --> [*]
+    REPLACED --> [*]
+
+    note right of DRAFT
+        DRAFT is the initial persisted status. A draft must be submitted
+        before it can enter the review lifecycle.
+    end note
+
+    note right of REJECTED
+        An unfavorable review requires non-empty observations (R10).
+    end note
+
+    note right of REPLACED
+        The replacement keeps a lineage reference to the routine it replaces
+        (R11). REPLACED is a domain state; the physical CHECK constraint and
+        the E1-08 trigger must be extended before it can be persisted.
+    end note
+
+    note right of PENDING_REVIEW
+        E1-08 trigger trg_sync_routine_status keeps the persisted status in
+        sync with the latest validation and only accepts
+        PENDING_REVIEW -> APPROVED/REJECTED. Domain transitions are stricter:
+        DRAFT must first be submitted, and only PENDING_REVIEW can be
+        approved, rejected or replaced.
+    end note

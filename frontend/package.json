@@ -20,6 +20,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.5",
     "@fontsource/manrope": "^5.3.0",
     "@fontsource/sora": "^5.3.0",
     "lucide-react": "^1.70.0",

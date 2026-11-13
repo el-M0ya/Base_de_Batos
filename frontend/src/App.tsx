@@ -1,12 +1,18 @@
-import { LoginPage } from './features/auth/LoginPage';
+import { AuthProvider } from './shared/auth/AuthContext';
+import { AppRouter } from './app/router';
 
 /**
  * Root component of the application.
  *
  * @remarks
- * Temporarily shows the login screen directly. In E3-05 it is replaced by
- * the router with the layout and role-based navigation.
+ * Wraps the app in `AuthProvider` so the session is available everywhere.
+ * The application router owns hash-based page selection, while feature pages
+ * remain isolated from one another and are composed by the app layer.
  */
 export function App() {
-  return <LoginPage />;
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  );
 }
