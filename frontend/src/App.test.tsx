@@ -6,11 +6,7 @@ describe('App', () => {
   it('renderiza el application shell con encabezado y botón de cierre de sesión', () => {
     renderWithProviders(<App />);
 
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Base de Batos' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Cerrar sesión' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Base de Batos' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cerrar sesión' })).toBeInTheDocument();
   });
 });

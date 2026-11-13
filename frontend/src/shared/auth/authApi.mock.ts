@@ -61,9 +61,7 @@ const SIMULATED_DELAY_MS = 400;
  * Devuelve `null` si las credenciales no coinciden.
  */
 function findUser(email: string, password: string): DemoUser | null {
-  return (
-    DEMO_USERS.find((u) => u.email === email.toLowerCase() && u.password === password) ?? null
-  );
+  return DEMO_USERS.find((u) => u.email === email.toLowerCase() && u.password === password) ?? null;
 }
 
 /**

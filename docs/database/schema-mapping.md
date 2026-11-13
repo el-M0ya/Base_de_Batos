@@ -101,6 +101,27 @@ The lifecycle requirements therefore exceed the current physical DDL.
 
 Script 002 declares `workout_program.id_workout_program` and `muscle_group.id_muscle_group` as `BIGINT`. The referencing columns in scripts 003 and 004 are `INTEGER`. Review and standardize identifier widths for consistency across the schema and repository DTOs.
 
+## 4.6 Routine structure: design report vs physical implementation
+
+**Schema discrepancy (§4.9 of the design report):**
+
+The design report places the JSONB variable structure in `ROUTINE.refEstructura`
+(a column on the routine relation), whereas issue E1-05 implemented the physical
+auxiliary table `routine_structure` (script `004_routines_and_structure.sql`)
+with a one-to-one primary-key/foreign-key relationship to `routine`.
+
+This implementation follows the physical schema: `routine_structure` stores the
+JSONB document, and `routine` has no `refEstructura` column. The domain layer
+(`RoutineStructure`) does not depend on this physical choice; the mapping is
+performed exclusively in the infrastructure adapter
+(`RoutineRepositorySql`).
+
+| Aspect | Design report (§4.9) | Physical implementation (script 004) |
+|---|---|---|
+| Location | `ROUTINE.refEstructura` column | `routine_structure.structure_json` JSONB |
+| Cardinality | Column on routine | 1:1 auxiliary table |
+| Enforced by repository | Application | Application transaction |
+
 ## 5. Requirements-to-relation traceability
 
 | Data requirement | Original relation(s) | Current physical table(s) or field(s) |
