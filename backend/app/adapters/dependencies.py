@@ -12,7 +12,9 @@ from typing import AsyncGenerator
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from typing import AsyncGenerator
 
+from fastapi import Depends
 from app.application.dto.actor import ActorDTO
 from app.application.dto.auth_dto import UserSessionDTO
 from app.application.exceptions import InvalidToken
@@ -60,6 +62,11 @@ def get_user_repository(
 ) -> UserRepository:
     return UserRepositorySql(tm)
 
+async def get_site_repository(
+    tm: PsqlTransactionManager = Depends(get_transaction_manager),
+) -> AsyncGenerator[SiteRepositorySql, None]:
+    """Yield a ``SiteRepositorySql`` using the given transaction manager."""
+    yield SiteRepositorySql(tm)
 
 def get_authorisation_repository(
     tm: PsqlTransactionManager = Depends(get_transaction_manager),
@@ -205,3 +212,41 @@ def get_list_sites_use_case(
     repo: SiteRepositorySql = Depends(get_site_repository),
 ) -> ListSitesUseCase:
     return ListSitesUseCase(repo)
+async def get_create_site_use_case(
+    repo: SiteRepositorySql = Depends(get_site_repository),
+) -> AsyncGenerator[CreateSiteUseCase, None]:
+    """Yield a ``CreateSiteUseCase`` using the given repository."""
+    yield CreateSiteUseCase(repo)
+
+
+async def get_get_site_use_case(
+    repo: SiteRepositorySql = Depends(get_site_repository),
+) -> AsyncGenerator[GetSiteUseCase, None]:
+    """Yield a ``GetSiteUseCase`` using the given repository."""
+    yield GetSiteUseCase(repo)
+
+
+async def get_update_site_use_case(
+    repo: SiteRepositorySql = Depends(get_site_repository),
+) -> AsyncGenerator[UpdateSiteUseCase, None]:
+    """Yield an ``UpdateSiteUseCase`` using the given repository."""
+    yield UpdateSiteUseCase(repo)
+
+
+async def get_deactivate_site_use_case(
+    repo: SiteRepositorySql = Depends(get_site_repository),
+) -> AsyncGenerator[DeactivateSiteUseCase, None]:
+    """Yield a ``DeactivateSiteUseCase`` using the given repository."""
+    yield DeactivateSiteUseCase(repo)
+
+
+async def get_list_sites_use_case(
+    repo: SiteRepositorySql = Depends(get_site_repository),
+) -> AsyncGenerator[ListSitesUseCase, None]:
+    """Yield a ``ListSitesUseCase`` using the given repository."""
+    yield ListSitesUseCase(repo)
+
+
+def _admin_actor() -> ActorDTO:
+    """Return the default administrator actor (temporary, before auth layer)."""
+    return _DEFAULT_ACTOR

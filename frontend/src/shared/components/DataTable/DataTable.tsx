@@ -39,6 +39,8 @@ export interface DataTableProps<T> {
   onSortChange?: (accessor: keyof T | null, direction: SortDirection) => void;
   /** Invoked when the user requests editing a row. */
   onEdit?: (row: T) => void;
+  /** Controls whether the edit action is shown for a row. */
+  canEdit?: (row: T) => boolean;
   /** Invoked when the user requests deleting a row. */
   onDelete?: (row: T) => void;
   /** Accessible label for the table. */
@@ -63,6 +65,7 @@ export function DataTable<T extends object>({
   loading = false,
   onSortChange,
   onEdit,
+  canEdit,
   onDelete,
   ariaLabel = 'Tabla de datos',
 }: DataTableProps<T>) {
@@ -160,7 +163,7 @@ export function DataTable<T extends object>({
             })}
             {hasActions && (
               <td>
-                {onEdit !== undefined && (
+                {onEdit !== undefined && canEdit?.(row) !== false && (
                   <Button
                     variant="ghost"
                     onClick={() => onEdit(row)}
