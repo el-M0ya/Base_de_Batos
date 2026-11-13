@@ -4,7 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.adapters.routers.auth import router as auth_router
 from app.adapters.routers.authorisations import router as authorisations_router
+from app.adapters.routers.muscle_groups import router as muscle_groups_router
 from app.adapters.routers.sites import router as sites_router
+from app.adapters.routers.training_programs import router as training_programs_router
 from app.infrastructure.persistence.connection import close_db_pool, init_db_pool
 
 
@@ -56,3 +58,5 @@ def health_check():
 app.include_router(sites_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(authorisations_router, prefix="/api/v1")
+app.include_router(muscle_groups_router, prefix="/api/v1")
+app.include_router(training_programs_router, prefix="/api/v1")
