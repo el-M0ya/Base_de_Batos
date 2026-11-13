@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.adapters.routers.enrolments import router as enrolments_router
+from app.infrastructure.persistence.connection import init_db_pool, close_db_pool
 
 from app.adapters.presentation.api.error_handlers import (
     application_error_handler,
