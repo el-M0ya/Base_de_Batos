@@ -29,7 +29,15 @@ function AuthProbe() {
 }
 
 /** Componente con botón de login para un usuario concreto. */
-function LoginButton({ email, password, testId }: { email: string; password: string; testId: string }) {
+function LoginButton({
+  email,
+  password,
+  testId,
+}: {
+  email: string;
+  password: string;
+  testId: string;
+}) {
   const { login } = useAuth();
   return (
     <button data-testid={testId} onClick={() => void login(email, password).catch(() => {})}>
@@ -86,7 +94,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await waitForAuth();
 
     // Remontar un probe para leer el estado tras el login (sessionStorage persiste).
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('trainer');
@@ -105,7 +117,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await u.click(getByTestId('login-trainer'));
     await waitForAuth();
 
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('trainer');
@@ -124,7 +140,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await u.click(getByTestId('login-admin'));
     await waitForAuth();
 
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('administrator');
@@ -143,7 +163,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await u.click(getByTestId('login-client'));
     await waitForAuth();
 
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('client');
@@ -194,7 +218,11 @@ describe('AuthContext - login, logout y restauración', () => {
 
     // Simular recarga: desmontar y montar un nuevo proveedor con AuthProbe.
     cleanup();
-    const { getByTestId: g2 } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g2 } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g2('user-email')).toHaveTextContent('client@forjafit.demo');
