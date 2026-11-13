@@ -6,9 +6,11 @@
  * rutas que requieren un rol o capacidad específicos. Las guardas son ayuda de
  * usabilidad, no seguridad: el backend autoriza en cada endpoint.
  *
- * Mientras no exista el enrutador (E3-05), la redirección se hace con
- * `window.location` dentro de un `useEffect`; al añadir el enrutador se
- * sustituirá por su `navigate`.
+ * La redirección se hace con `window.location` dentro de un `useEffect`, por
+ * lo que el componente funciona tanto dentro como fuera de un `Router` de
+ * React Router (por ejemplo, en pruebas de unidad aisladas). Cuando el
+ * enrutador de la aplicación está activo, la recarga restaurará la sesión desde
+ * `sessionStorage` y volverá a montar el router.
  */
 import { useEffect } from 'react';
 import type { UserRole } from '../types/roles';
@@ -50,7 +52,6 @@ export function ProtectedRoute({
   unauthorizedPath,
 }: ProtectedRouteProps): React.ReactNode {
   const { user, isAuthenticated, isLoading, hasRole, hasCapability } = useAuth();
-
   // Determinar si el usuario está autorizado y a dónde redirigir si no lo está.
   let isAuthorized = false;
   let redirectTo: string | null = null;
@@ -69,6 +70,8 @@ export function ProtectedRoute({
     isAuthorized = true;
   }
 
+  // Ejecutar la redirección como efecto secundario (no durante el render).
+  // Se llama siempre, incluso si redirectTo es null, para respetar las reglas de hooks.
   // Ejecutar la redirección como efecto secundario (no durante el render).
   // Se llama siempre, incluso si redirectTo es null, para respetar las reglas de hooks.
   useEffect(() => {
