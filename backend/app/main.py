@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.adapters.routers._errors import install_error_handlers
 from app.adapters.routers.auth import router as auth_router
 from app.adapters.routers.authorisations import router as authorisations_router
+from app.adapters.routers.enrolments import router as enrolments_router
 from app.adapters.routers.exercises import router as exercises_router
 from app.adapters.routers.muscle_groups import router as muscle_groups_router
 from app.adapters.routers.sites import router as sites_router
@@ -20,9 +21,11 @@ async def lifespan(app: FastAPI):
     """
     # --- STARTUP ---
     await init_db_pool()
-    yield
-    # --- SHUTDOWN ---
-    await close_db_pool()
+    try:
+        yield
+    finally:
+        # --- SHUTDOWN ---
+        await close_db_pool()
 
 
 app = FastAPI(
@@ -60,6 +63,7 @@ def health_check():
 
 
 # Routers of the adapter layer.
+app.include_router(enrolments_router)
 app.include_router(sites_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(authorisations_router, prefix="/api/v1")
