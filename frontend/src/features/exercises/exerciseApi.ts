@@ -1,10 +1,5 @@
 import { httpClient } from '../../shared/api/httpClient';
-import type {
-  Exercise,
-  ExerciseApi,
-  ExerciseCatalogs,
-  ExerciseClassificationInput,
-} from './types';
+import type { Exercise, ExerciseApi, ExerciseCatalogs, ExerciseClassificationInput } from './types';
 
 const EXERCISES_ENDPOINT = '/exercises';
 
@@ -57,15 +52,12 @@ function mapExercise(raw: RawExercise): Exercise {
     ...(raw.description === undefined || raw.description === null
       ? {}
       : { description: raw.description }),
-    ...(raw.registrationDate ?? raw.registration_date
+    ...((raw.registrationDate ?? raw.registration_date)
       ? { registrationDate: raw.registrationDate ?? raw.registration_date }
       : {}),
     exerciseType: raw.exerciseType ?? raw.exercise_type ?? '',
     intensity: raw.intensity,
-    muscleGroupId: requireIdentifier(
-      raw.muscleGroupId ?? raw.muscle_group_id,
-      'muscle_group_id',
-    ),
+    muscleGroupId: requireIdentifier(raw.muscleGroupId ?? raw.muscle_group_id, 'muscle_group_id'),
     muscleGroupName: raw.muscleGroupName ?? raw.muscle_group_name ?? '',
     trainerId: requireIdentifier(raw.trainerId ?? raw.trainer_id, 'trainer_id'),
   };
@@ -99,10 +91,7 @@ export const exerciseApi: ExerciseApi = {
   },
 
   /** Updates a classification and normalizes the returned exercise. */
-  async updateClassification(
-    id: string,
-    input: ExerciseClassificationInput,
-  ): Promise<Exercise> {
+  async updateClassification(id: string, input: ExerciseClassificationInput): Promise<Exercise> {
     const record = await httpClient.put<RawExercise>(
       `${EXERCISES_ENDPOINT}/${encodeURIComponent(id)}/classification`,
       input,

@@ -6,11 +6,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 import { getExerciseApi } from './exerciseApiSelector';
-import type {
-  Exercise,
-  ExerciseCatalogs,
-  ExerciseClassificationInput,
-} from './types';
+import type { Exercise, ExerciseCatalogs, ExerciseClassificationInput } from './types';
 
 /** Cache key for the exercise list. */
 export const exercisesQueryKey = ['exercises'] as const;
@@ -55,9 +51,7 @@ export function useUpdateExerciseClassification(): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, input }) =>
-      getExerciseApi().updateClassification(id, input),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: exercisesQueryKey }),
+    mutationFn: ({ id, input }) => getExerciseApi().updateClassification(id, input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: exercisesQueryKey }),
   });
 }

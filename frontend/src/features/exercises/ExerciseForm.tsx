@@ -63,7 +63,8 @@ export function ExerciseForm({
     event.preventDefault();
     const nextErrors: ExerciseFormErrors = {};
     if (muscleGroupId.trim() === '') nextErrors.muscleGroupId = 'El grupo muscular es obligatorio.';
-    if (exerciseType.trim() === '') nextErrors.exerciseType = 'El tipo de ejercicio es obligatorio.';
+    if (exerciseType.trim() === '')
+      nextErrors.exerciseType = 'El tipo de ejercicio es obligatorio.';
     if (intensity.trim() === '') nextErrors.intensity = 'La intensidad es obligatoria.';
 
     if (Object.keys(nextErrors).length > 0) {
@@ -90,12 +91,7 @@ export function ExerciseForm({
 
       <label className={styles.field}>
         <span>Descripción</span>
-        <textarea
-          className={styles.input}
-          value={exercise.description ?? ''}
-          readOnly
-          rows={3}
-        />
+        <textarea className={styles.input} value={exercise.description ?? ''} readOnly rows={3} />
       </label>
 
       {catalogsQuery.isLoading && (

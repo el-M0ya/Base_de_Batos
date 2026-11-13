@@ -29,11 +29,7 @@ const columns: ColumnDef<Exercise>[] = [
 /**
  * Displays exercises and exposes reclassification only to their creating trainer.
  */
-export function ExerciseTable({
-  exercises,
-  loading = false,
-  onReclassify,
-}: ExerciseTableProps) {
+export function ExerciseTable({ exercises, loading = false, onReclassify }: ExerciseTableProps) {
   const { user } = useAuth();
 
   const canEdit = (exercise: Exercise) =>

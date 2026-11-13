@@ -123,8 +123,6 @@ describe('ExerciseForm', () => {
       backendError: Object.assign(new Error('network'), { status: 0 }),
     });
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'No se pudo conectar con el servidor.',
-    );
+    expect(screen.getByRole('alert')).toHaveTextContent('No se pudo conectar con el servidor.');
   });
 });

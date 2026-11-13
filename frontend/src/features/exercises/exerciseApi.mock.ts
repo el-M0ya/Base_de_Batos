@@ -1,10 +1,5 @@
 import { ApiError } from '../../shared/api/apiError';
-import type {
-  Exercise,
-  ExerciseApi,
-  ExerciseCatalogs,
-  ExerciseClassificationInput,
-} from './types';
+import type { Exercise, ExerciseApi, ExerciseCatalogs, ExerciseClassificationInput } from './types';
 
 const catalogs: ExerciseCatalogs = {
   muscleGroups: [
@@ -104,10 +99,7 @@ export const exerciseApiMock: ExerciseApi = {
   },
 
   /** Updates a demo classification with the same validation errors as the API. */
-  async updateClassification(
-    id: string,
-    input: ExerciseClassificationInput,
-  ): Promise<Exercise> {
+  async updateClassification(id: string, input: ExerciseClassificationInput): Promise<Exercise> {
     validateInput(input);
     const current = records.find((record) => record.id === id);
     if (current === undefined) {

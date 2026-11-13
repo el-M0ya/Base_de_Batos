@@ -49,8 +49,5 @@ export interface ExerciseApi {
   /** Retrieves classification options for the exercise form. */
   getCatalogs(): Promise<ExerciseCatalogs>;
   /** Updates an exercise classification. */
-  updateClassification(
-    id: string,
-    input: ExerciseClassificationInput,
-  ): Promise<Exercise>;
+  updateClassification(id: string, input: ExerciseClassificationInput): Promise<Exercise>;
 }
