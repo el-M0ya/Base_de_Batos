@@ -100,11 +100,7 @@ export function UsersView({
       {error && (
         <div className="users-view__error" role="alert">
           {error}
-          <button
-            type="button"
-            className="users-view__error-dismiss"
-            onClick={onReload}
-          >
+          <button type="button" className="users-view__error-dismiss" onClick={onReload}>
             {messages.users.dismissError}
           </button>
         </div>
@@ -120,20 +116,12 @@ export function UsersView({
         {users.map((user) => (
           <div key={user.id} className="users-view__action-row">
             <span className="users-view__action-email">{user.email}</span>
-            <Button
-              variant="secondary"
-              onClick={() => onDeactivate(user.id)}
-              isLoading={loading}
-            >
+            <Button variant="secondary" onClick={() => onDeactivate(user.id)} isLoading={loading}>
               {user.status === 'active'
                 ? messages.users.deactivateButton
                 : messages.users.activateButton}
             </Button>
-            <Button
-              variant="secondary"
-              onClick={() => onEdit(user)}
-              isLoading={loading}
-            >
+            <Button variant="secondary" onClick={() => onEdit(user)} isLoading={loading}>
               {messages.users.editButton}
             </Button>
           </div>

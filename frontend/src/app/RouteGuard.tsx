@@ -39,22 +39,13 @@ export interface RouteGuardProps {
  *
  * @param props - Propiedades del guarda.
  */
-export function RouteGuard({
-  element,
-  roles,
-  capabilities,
-}: RouteGuardProps) {
+export function RouteGuard({ element, roles, capabilities }: RouteGuardProps) {
   const { isAuthenticated, hasRole, hasCapability } = useAuth();
 
-  const hasAnyRole =
-    !roles || roles.some((role) => hasRole(role));
+  const hasAnyRole = !roles || roles.some((role) => hasRole(role));
   const hasAnyCapability =
     !capabilities || capabilities.some((capability) => hasCapability(capability));
   const allowed = isAuthenticated && hasAnyRole && hasAnyCapability;
 
-  return (
-    <ProtectedRoute>
-      {allowed ? element : null}
-    </ProtectedRoute>
-  );
+  return <ProtectedRoute>{allowed ? element : null}</ProtectedRoute>;
 }

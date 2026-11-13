@@ -25,14 +25,7 @@ import type { UserAccount, UpdateUserInput } from '../../shared/types/users';
  * `UsersPage`.
  */
 export function UsersContainer() {
-  const {
-    users,
-    loading,
-    error,
-    reload,
-    updateUser,
-    deactivateUser,
-  } = useUsers();
+  const { users, loading, error, reload, updateUser, deactivateUser } = useUsers();
 
   const [editingUser, setEditingUser] = useState<UserAccount | null>(null);
 
@@ -67,9 +60,7 @@ export function UsersContainer() {
   }
 
   async function handleDeactivate(id: number) {
-    if (
-      !window.confirm('¿Estás seguro de que deseas desactivar esta cuenta?')
-    ) {
+    if (!window.confirm('¿Estás seguro de que deseas desactivar esta cuenta?')) {
       return;
     }
     await deactivateUser(id);
@@ -91,11 +82,7 @@ export function UsersContainer() {
           <h2>{`Editar ${editingUser.email}`}</h2>
           <p>{editingUser.role}</p>
           <p>{editingUser.status === 'active' ? 'Activa' : 'Inactiva'}</p>
-          <button
-            className="save-button"
-            onClick={handleSave}
-            disabled={loading}
-          >
+          <button className="save-button" onClick={handleSave} disabled={loading}>
             Guardar cambios
           </button>
           <button className="cancel-button" onClick={handleCancel}>

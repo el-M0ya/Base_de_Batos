@@ -145,6 +145,4 @@ export interface UserApiError {
  * @remarks
  * Un resultado es exitoso (`ok`) o fallido (`error`). Nunca ambos.
  */
-export type UserApiResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: UserApiError };
+export type UserApiResult<T> = { ok: true; data: T } | { ok: false; error: UserApiError };

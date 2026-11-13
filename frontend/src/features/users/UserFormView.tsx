@@ -97,10 +97,12 @@ export function UserFormView({
         </div>
       )}
 
-      <form onSubmit={(event: React.FormEvent) => {
-        event.preventDefault();
-        void onSubmit();
-      }}>
+      <form
+        onSubmit={(event: React.FormEvent) => {
+          event.preventDefault();
+          void onSubmit();
+        }}
+      >
         <TextField
           label={messages.users.form.emailLabel}
           placeholder={messages.users.form.emailPlaceholder}
@@ -163,9 +165,7 @@ export function UserFormView({
 
         <div className="user-form__actions">
           <Button variant="primary" type="submit" disabled={submitting}>
-            {creating
-              ? messages.users.form.createButton
-              : messages.users.form.saveButton}
+            {creating ? messages.users.form.createButton : messages.users.form.saveButton}
           </Button>
           <Button variant="secondary" type="button" onClick={onCancel}>
             {messages.users.form.cancelButton}

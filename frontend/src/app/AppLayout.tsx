@@ -2,10 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import type { NavLinkRenderProps } from 'react-router-dom';
 import { useAuth } from '../shared/auth/useAuth';
 import { messages } from '../shared/i18n/messages';
-import {
-  isMenuEntryVisible,
-  menuEntries,
-} from './routes';
+import { isMenuEntryVisible, menuEntries } from './routes';
 import styles from './AppLayout.module.css';
 
 /**
@@ -14,9 +11,7 @@ import styles from './AppLayout.module.css';
  * @param props - Propiedades de renderizado de `NavLink`.
  */
 const linkClass = (props: NavLinkRenderProps): string | undefined =>
-  props.isActive
-    ? `${styles.link} ${styles.linkActive}`
-    : styles.link;
+  props.isActive ? `${styles.link} ${styles.linkActive}` : styles.link;
 
 /**
  * Diseño de la aplicación: barra lateral de navegación, barra superior y área
@@ -48,8 +43,7 @@ export function AppLayout() {
               isMenuEntryVisible(
                 entry,
                 (role) => (user ? user.role === role : false),
-                (capability) =>
-                  user ? (user.capabilities[capability] === true) : false,
+                (capability) => (user ? user.capabilities[capability] === true : false),
               ),
             )
             .map((entry) => (

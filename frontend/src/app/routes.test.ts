@@ -7,10 +7,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { MenuEntry } from './routes';
-import {
-  isMenuEntryVisible,
-  menuEntries,
-} from './routes';
+import { isMenuEntryVisible, menuEntries } from './routes';
 import type { UserRole, UserCapabilities } from '../shared/types/roles';
 
 function sessionWith(
@@ -36,7 +33,11 @@ describe('isMenuEntryVisible', () => {
   it('muestra la ruta de inicio a cualquier usuario autenticado', () => {
     const home = entryFor('/');
     expect(
-      isMenuEntryVisible(home, () => false, () => false),
+      isMenuEntryVisible(
+        home,
+        () => false,
+        () => false,
+      ),
     ).toBe(true);
   });
 

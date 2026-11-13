@@ -27,10 +27,7 @@ export function UsersPage() {
         </div>
       )}
 
-      <button
-        className="users-page__create-button"
-        onClick={() => setShowForm(true)}
-      >
+      <button className="users-page__create-button" onClick={() => setShowForm(true)}>
         Crear cuenta
       </button>
     </section>

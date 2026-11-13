@@ -9,10 +9,7 @@
  * contenedor mediante `setBackendError`.
  */
 import { useState, useCallback } from 'react';
-import type {
-  CreateUserInput,
-  UpdateUserInput,
-} from '../../shared/types/users';
+import type { CreateUserInput, UpdateUserInput } from '../../shared/types/users';
 
 /**
  * Errores de campo del formulario.

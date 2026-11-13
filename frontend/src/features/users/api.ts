@@ -141,10 +141,7 @@ const usersApiMock: UsersApi = {
     return { ok: true, data: newUser };
   },
 
-  async updateUser(
-    id: number,
-    input: UpdateUserInput,
-  ): Promise<UserApiResult<UserAccount>> {
+  async updateUser(id: number, input: UpdateUserInput): Promise<UserApiResult<UserAccount>> {
     await withDelay(undefined);
 
     const index = DEMO_USERS.findIndex((u) => u.id === id);
@@ -233,14 +230,12 @@ const usersApiReal: UsersApi = {
  * E4-02 se suba y el backend exponga endpoints reales, se podrá cambiar a
  * 'real' sin modificar la UI.
  */
-const API_MODE: 'mock' | 'real' =
-  import.meta.env.VITE_API_MODE === 'real' ? 'real' : 'mock';
+const API_MODE: 'mock' | 'real' = import.meta.env.VITE_API_MODE === 'real' ? 'real' : 'mock';
 
 /**
  * Implementación de autenticación activa.
  */
-export const usersApi: UsersApi =
-  API_MODE === 'real' ? usersApiReal : usersApiMock;
+export const usersApi: UsersApi = API_MODE === 'real' ? usersApiReal : usersApiMock;
 
 /**
  * Extrae el mensaje de error de un resultado de API, o `null` si fue exitoso.
@@ -248,8 +243,6 @@ export const usersApi: UsersApi =
  * @param result - Resultado de una operación de la API.
  * @returns El mensaje de error, o `null` si la operación fue exitosa.
  */
-export function getApiErrorMessage(
-  result: UserApiResult<unknown>,
-): string | null {
+export function getApiErrorMessage(result: UserApiResult<unknown>): string | null {
   return result.ok ? null : result.error.message;
 }

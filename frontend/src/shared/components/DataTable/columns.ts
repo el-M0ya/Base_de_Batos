@@ -28,4 +28,7 @@ export interface ColumnDef<T> {
   sortable?: boolean;
   /** Convierte el valor crudo en texto para mostrar (opcional). */
   format?: (value: T[keyof T]) => string;
+  /** Renderiza contenido personalizado para una fila (opcional). */
+  render?: (row: T) => ReactNode;
 }
+import type { ReactNode } from 'react';

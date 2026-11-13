@@ -25,22 +25,21 @@ afterEach(() => {
   cleanup();
 });
 
-function renderRoute(
-  element: React.ReactNode,
-  roles?: string[],
-  capabilities?: string[],
-) {
+function renderRoute(element: React.ReactNode, roles?: string[], capabilities?: string[]) {
   return render(
     <AuthProvider>
       <MemoryRouter initialEntries={['/']}>
         <Routes>
-          <Route path="*" element={
-            <RouteGuard
-              roles={roles as unknown as UserRole[]}
-              capabilities={capabilities as unknown as (keyof UserCapabilities)[]}
-              element={element}
-            />
-          } />
+          <Route
+            path="*"
+            element={
+              <RouteGuard
+                roles={roles as unknown as UserRole[]}
+                capabilities={capabilities as unknown as (keyof UserCapabilities)[]}
+                element={element}
+              />
+            }
+          />
         </Routes>
       </MemoryRouter>
     </AuthProvider>,
@@ -59,9 +58,7 @@ describe('Componentes de ruta', () => {
   it('muestra el dashboard', () => {
     render(<DashboardView />);
 
-    expect(
-      screen.getByText(/Bienvenido al sistema de generación automática/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Bienvenido al sistema de generación automática/)).toBeInTheDocument();
   });
 
   it('muestra ComingSoonView con la sección indicada', () => {

@@ -31,21 +31,12 @@ export function UserFormContainer({
     password: '',
     role: 'client',
   } as CreateUserInput);
-  const {
-    fieldErrors,
-    backendError,
-    setBackendError,
-    validateCreate,
-    clearErrors,
-  } = useUserForm();
+  const { fieldErrors, backendError, setBackendError, validateCreate, clearErrors } = useUserForm();
   const { createUser, loading } = useUsers();
 
   const isCreating = loading || submitting;
 
-  function handleFieldChange(
-    field: keyof CreateUserInput,
-    value: string,
-  ) {
+  function handleFieldChange(field: keyof CreateUserInput, value: string) {
     setValues((prev: CreateUserInput) => {
       const next = { ...prev } as Record<string, unknown>;
       if (field === 'age' || field === 'idSite') {

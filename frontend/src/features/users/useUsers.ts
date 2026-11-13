@@ -26,9 +26,7 @@ export interface UseUsersReturn {
   /** Recarga la lista de usuarios desde la API. */
   reload: () => Promise<void>;
   /** Crea una nueva cuenta. */
-  createUser: (
-    input: Parameters<typeof usersApi.createUser>[0],
-  ) => Promise<UserAccount | null>;
+  createUser: (input: Parameters<typeof usersApi.createUser>[0]) => Promise<UserAccount | null>;
   /** Modifica una cuenta existente. */
   updateUser: (
     id: number,
@@ -102,9 +100,7 @@ export function useUsers(): UseUsersReturn {
     try {
       const result = await usersApi.updateUser(id, input);
       if (result.ok) {
-        setUsers((prev) =>
-          prev.map((u) => (u.id === id ? result.data : u)),
-        );
+        setUsers((prev) => prev.map((u) => (u.id === id ? result.data : u)));
         return result.data;
       }
       setError(getApiErrorMessage(result) ?? 'No se pudo modificar la cuenta.');
@@ -123,9 +119,7 @@ export function useUsers(): UseUsersReturn {
     try {
       const result = await usersApi.deactivateUser(id);
       if (result.ok) {
-        setUsers((prev) =>
-          prev.map((u) => (u.id === id ? { ...u, status: 'inactive' } : u)),
-        );
+        setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, status: 'inactive' } : u)));
         return true;
       }
       setError(getApiErrorMessage(result) ?? 'No se pudo desactivar la cuenta.');

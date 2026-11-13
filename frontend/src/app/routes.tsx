@@ -17,6 +17,9 @@ import { DashboardView } from './DashboardView';
 import { NotFoundView } from './NotFoundView';
 import { LoginPage } from '../features/auth/LoginPage';
 import { UsersPage } from '../features/users/UsersPage';
+import { MuscleGroupsPage } from '../features/muscle-groups/MuscleGroupsPage';
+import { SitesPage } from '../features/sites/SitesPage';
+import { TrainingProgramsPage } from '../features/training-programs/TrainingProgramsPage';
 import { messages } from '../shared/i18n/messages';
 import type { UserRole } from '../shared/types/roles';
 import type { UserCapabilities } from '../shared/types/roles';
@@ -88,19 +91,19 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/sites',
-    element: () => <ComingSoonView section="Sedes" />,
+    element: SitesPage,
     label: messages.nav.sites,
     roles: ['administrator'],
   },
   {
     path: '/programs',
-    element: () => <ComingSoonView section="Programas" />,
+    element: TrainingProgramsPage,
     label: messages.nav.programs,
     roles: ['administrator'],
   },
   {
     path: '/muscle-groups',
-    element: () => <ComingSoonView section="Grupos musculares" />,
+    element: MuscleGroupsPage,
     label: messages.nav.muscleGroups,
     roles: ['administrator'],
   },
@@ -133,10 +136,8 @@ export function isMenuEntryVisible(
   hasRole: (role: UserRole) => boolean,
   hasCapability: (capability: keyof UserCapabilities) => boolean,
 ): boolean {
-  const hasAnyRole =
-    !entry.roles || entry.roles.some((role) => hasRole(role));
+  const hasAnyRole = !entry.roles || entry.roles.some((role) => hasRole(role));
   const hasAnyCapability =
-    !entry.capabilities ||
-    entry.capabilities.some((capability) => hasCapability(capability));
+    !entry.capabilities || entry.capabilities.some((capability) => hasCapability(capability));
   return hasAnyRole && hasAnyCapability;
 }
