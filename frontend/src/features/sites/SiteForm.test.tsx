@@ -6,9 +6,7 @@ import { SiteForm } from './SiteForm';
 describe('SiteForm', () => {
   it('validates both required fields before calling the API', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
-    const { user } = renderWithProviders(
-      <SiteForm onSubmit={onSubmit} onCancel={vi.fn()} />,
-    );
+    const { user } = renderWithProviders(<SiteForm onSubmit={onSubmit} onCancel={vi.fn()} />);
 
     await user.click(screen.getByRole('button', { name: 'Crear sitio' }));
 
@@ -21,9 +19,7 @@ describe('SiteForm', () => {
     const onSubmit = vi
       .fn()
       .mockRejectedValue(new ApiError(409, 'Ya existe un sitio con ese nombre.', 'DUPLICATE_NAME'));
-    const { user } = renderWithProviders(
-      <SiteForm onSubmit={onSubmit} onCancel={vi.fn()} />,
-    );
+    const { user } = renderWithProviders(<SiteForm onSubmit={onSubmit} onCancel={vi.fn()} />);
 
     await user.type(screen.getByLabelText('Nombre del sitio'), '  Sede Centro  ');
     await user.type(screen.getByLabelText('Dirección'), '  Calle 10  ');

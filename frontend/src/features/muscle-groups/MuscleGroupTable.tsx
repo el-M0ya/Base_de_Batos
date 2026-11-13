@@ -36,9 +36,7 @@ export function MuscleGroupTable({
       format: (value) =>
         value === undefined
           ? '—'
-          : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(
-              new Date(String(value)),
-            ),
+          : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(new Date(String(value))),
     },
   ];
 

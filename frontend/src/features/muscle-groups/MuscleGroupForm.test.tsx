@@ -23,7 +23,9 @@ describe('MuscleGroupForm', () => {
   it('shows the server duplicate-name error', async () => {
     const onSubmit = vi
       .fn()
-      .mockRejectedValue(new ApiError(409, 'Ya existe un grupo muscular con ese nombre.', 'DUPLICATE_NAME'));
+      .mockRejectedValue(
+        new ApiError(409, 'Ya existe un grupo muscular con ese nombre.', 'DUPLICATE_NAME'),
+      );
     const { user } = renderForm(onSubmit);
 
     await user.type(screen.getByLabelText('Nombre'), 'Pecho');

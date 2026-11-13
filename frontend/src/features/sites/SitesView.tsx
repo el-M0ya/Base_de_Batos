@@ -61,7 +61,9 @@ export function SitesView() {
       await deleteMutation.mutateAsync(deletingSite.id);
       setDeletingSite(undefined);
     } catch (error) {
-      setOperationError(error instanceof ApiError ? error.message : 'No se pudo eliminar el sitio.');
+      setOperationError(
+        error instanceof ApiError ? error.message : 'No se pudo eliminar el sitio.',
+      );
     }
   }
 
@@ -71,7 +73,9 @@ export function SitesView() {
         <div>
           <p className={styles.eyebrow}>Administración</p>
           <h1 className={styles.title}>Sitios de gimnasios</h1>
-          <p className={styles.subtitle}>Gestiona las sedes donde se desarrollan los entrenamientos.</p>
+          <p className={styles.subtitle}>
+            Gestiona las sedes donde se desarrollan los entrenamientos.
+          </p>
         </div>
         <Button icon={<Plus size={18} aria-hidden="true" />} onClick={openCreateForm}>
           Nuevo sitio
@@ -131,7 +135,8 @@ export function SitesView() {
           </div>
         }
       >
-        ¿Seguro que deseas eliminar <strong>{deletingSite?.name}</strong>? Esta acción no se puede deshacer.
+        ¿Seguro que deseas eliminar <strong>{deletingSite?.name}</strong>? Esta acción no se puede
+        deshacer.
       </Modal>
     </main>
   );

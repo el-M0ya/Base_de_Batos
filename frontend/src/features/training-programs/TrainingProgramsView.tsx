@@ -145,7 +145,8 @@ export function TrainingProgramsView() {
           </div>
         }
       >
-        ¿Seguro que deseas eliminar <strong>{deletingProgram?.name}</strong>? Esta acción no se puede deshacer.
+        ¿Seguro que deseas eliminar <strong>{deletingProgram?.name}</strong>? Esta acción no se
+        puede deshacer.
       </Modal>
     </main>
   );

@@ -60,7 +60,11 @@ export function TrainingProgramMuscleGroups({
           ))}
         </div>
       )}
-      {error !== undefined && <p className={styles.error} role="alert">{error}</p>}
+      {error !== undefined && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
       <div className={styles.selected} aria-live="polite">
         <span className={styles.selectedLabel}>Configurados:</span>{' '}
         {selectedGroups.length === 0

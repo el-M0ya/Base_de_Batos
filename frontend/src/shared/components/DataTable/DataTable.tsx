@@ -67,13 +67,9 @@ export function DataTable<T extends object>({
   ariaLabel = 'Tabla de datos',
 }: DataTableProps<T>) {
   const firstSortable =
-    columns.find((c) => c.sortable !== false)?.accessor ??
-    (columns[0]?.accessor as keyof T);
+    columns.find((c) => c.sortable !== false)?.accessor ?? (columns[0]?.accessor as keyof T);
 
-  const { sorted, sortAccessor, sortDirection, setSort } = useSort(
-    data,
-    firstSortable,
-  );
+  const { sorted, sortAccessor, sortDirection, setSort } = useSort(data, firstSortable);
 
   const isEmpty = !loading && data.length === 0;
 
@@ -121,29 +117,19 @@ export function DataTable<T extends object>({
                   <button
                     onClick={() => handleHeaderClick(column.accessor)}
                     aria-sort={
-                      isActive
-                        ? sortDirection === 'asc'
-                          ? 'ascending'
-                          : 'descending'
-                        : undefined
+                      isActive ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined
                     }
                     aria-label={
                       isActive
                         ? `Ordenar ${column.header} ${
-                            sortDirection === 'asc'
-                              ? 'descendente'
-                              : 'ascendente'
+                            sortDirection === 'asc' ? 'descendente' : 'ascendente'
                           }`
                         : `Ordenar ${column.header} ascendente`
                     }
                   >
                     {column.header}
                     <span className={styles.sortIndicator}>
-                      {isActive
-                        ? sortDirection === 'asc'
-                          ? '▲'
-                          : '▼'
-                        : ''}
+                      {isActive ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                     </span>
                   </button>
                 ) : (
@@ -168,11 +154,9 @@ export function DataTable<T extends object>({
                 column.render !== undefined
                   ? column.render(row)
                   : column.format !== undefined
-                  ? column.format(value)
-                  : String(value ?? '');
-              return (
-                <td key={String(column.accessor)}>{text}</td>
-              );
+                    ? column.format(value)
+                    : String(value ?? '');
+              return <td key={String(column.accessor)}>{text}</td>;
             })}
             {hasActions && (
               <td>

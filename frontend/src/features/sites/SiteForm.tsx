@@ -58,7 +58,9 @@ export function SiteForm({
       await onSubmit({ name: name.trim(), address: address.trim() });
     } catch (error) {
       if (error instanceof ApiError) {
-        setServerError(error.isNetworkError() ? 'No se pudo conectar con el servidor.' : error.message);
+        setServerError(
+          error.isNetworkError() ? 'No se pudo conectar con el servidor.' : error.message,
+        );
       } else {
         setServerError('No se pudo guardar el sitio. Inténtalo nuevamente.');
       }

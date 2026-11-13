@@ -14,10 +14,7 @@ import { useCallback, useMemo, useState } from 'react';
  * @param rows - Filas a ordenar.
  * @param initialAccessor - Clave de la fila por la que ordenar al empezar.
  */
-export function useSort<T extends object>(
-  rows: T[],
-  initialAccessor: keyof T,
-) {
+export function useSort<T extends object>(rows: T[], initialAccessor: keyof T) {
   const [sortAccessor, setSortAccessor] = useState<keyof T>(initialAccessor);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -84,9 +81,7 @@ export function useSort<T extends object>(
   const setSort = useCallback(
     (accessor: keyof T) => {
       setSortAccessor(accessor);
-      setSortDirection((prev) =>
-        prev === 'asc' && accessor === sortAccessor ? 'desc' : 'asc',
-      );
+      setSortDirection((prev) => (prev === 'asc' && accessor === sortAccessor ? 'desc' : 'asc'));
     },
     [sortAccessor],
   );

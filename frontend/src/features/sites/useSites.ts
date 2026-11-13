@@ -41,11 +41,7 @@ export function useCreateSite(): UseMutationResult<Site, Error, SiteInput> {
  *
  * @returns Mutation state for the update operation.
  */
-export function useUpdateSite(): UseMutationResult<
-  Site,
-  Error,
-  { id: string; input: SiteInput }
-> {
+export function useUpdateSite(): UseMutationResult<Site, Error, { id: string; input: SiteInput }> {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, input }) => getSiteApi().update(id, input),

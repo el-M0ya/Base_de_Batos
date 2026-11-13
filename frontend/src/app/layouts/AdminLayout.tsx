@@ -31,7 +31,8 @@ export function AdminLayout({ currentPath, children }: AdminLayoutProps) {
     <div className={styles.shell}>
       <header className={styles.header}>
         <a className={styles.brand} href="#/admin/sites" onClick={closeMenu}>
-          Base de Batos<span className={styles.brandDot} aria-hidden="true" />
+          Base de Batos
+          <span className={styles.brandDot} aria-hidden="true" />
         </a>
         <button
           type="button"

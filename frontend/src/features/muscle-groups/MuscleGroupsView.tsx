@@ -78,7 +78,9 @@ export function MuscleGroupsView() {
         <div>
           <p className={styles.eyebrow}>Administración</p>
           <h1 className={styles.title}>Grupos musculares</h1>
-          <p className={styles.subtitle}>Gestiona el catálogo utilizado por los programas de entrenamiento.</p>
+          <p className={styles.subtitle}>
+            Gestiona el catálogo utilizado por los programas de entrenamiento.
+          </p>
         </div>
         <Button icon={<Plus size={18} aria-hidden="true" />} onClick={openCreateForm}>
           Nuevo grupo
@@ -92,7 +94,9 @@ export function MuscleGroupsView() {
             : 'No se pudo cargar el catálogo de grupos musculares.'}
         </Alert>
       )}
-      {operationError !== undefined && <Alert onDismiss={() => setOperationError(undefined)}>{operationError}</Alert>}
+      {operationError !== undefined && (
+        <Alert onDismiss={() => setOperationError(undefined)}>{operationError}</Alert>
+      )}
 
       <section className={styles.content} aria-label="Listado de grupos musculares">
         <MuscleGroupTable
@@ -136,7 +140,8 @@ export function MuscleGroupsView() {
           </div>
         }
       >
-        ¿Seguro que deseas eliminar <strong>{deletingGroup?.name}</strong>? Esta acción no se puede deshacer.
+        ¿Seguro que deseas eliminar <strong>{deletingGroup?.name}</strong>? Esta acción no se puede
+        deshacer.
       </Modal>
     </main>
   );

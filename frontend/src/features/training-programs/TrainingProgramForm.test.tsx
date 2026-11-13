@@ -11,11 +11,7 @@ describe('TrainingProgramForm', () => {
   it('allows selecting multiple muscle groups and submits their identifiers', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     const { user } = renderWithProviders(
-      <TrainingProgramForm
-        muscleGroups={groups}
-        onSubmit={onSubmit}
-        onCancel={vi.fn()}
-      />,
+      <TrainingProgramForm muscleGroups={groups} onSubmit={onSubmit} onCancel={vi.fn()} />,
     );
 
     await user.type(screen.getByLabelText('Nombre del programa'), 'Fuerza');

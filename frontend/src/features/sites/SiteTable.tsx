@@ -30,9 +30,7 @@ export function SiteTable({ data, isLoading = false, onEdit, onDelete }: SiteTab
       format: (value) =>
         value === undefined
           ? '—'
-          : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(
-              new Date(String(value)),
-            ),
+          : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(new Date(String(value))),
     },
   ];
 
