@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.adapters.routers.sites import router as sites_router
 
 from app.adapters.routers.authorisations import router as authorisations_router
+from app.adapters.routers.muscle_groups import router as muscle_groups_router
+from app.adapters.routers.training_programs import router as training_programs_router
 # A medida que implementes la infraestructura y los adaptadores, descomentarás estos imports:
 # from app.infrastructure.database import init_db_pool, close_db_pool
 # from app.adapters.routers import api_router
@@ -58,3 +60,5 @@ def health_check():
 # app.include_router(api_router, prefix="/api/v1")
 app.include_router(sites_router)
 app.include_router(authorisations_router)
+app.include_router(muscle_groups_router, prefix="/api/v1")
+app.include_router(training_programs_router, prefix="/api/v1")
