@@ -69,5 +69,57 @@ class ExerciseClassificationTests(unittest.TestCase):
             )
 
 
+class ExerciseReclassificationTests(unittest.TestCase):
+    def test_reclassify_preserves_identity_and_updates_classification(self) -> None:
+        original = Exercise(
+            id_exercise=15,
+            name="Remo con barra",
+            exercise_type=ExerciseType.STRENGTH,
+            intensity=IntensityLevel.HIGH,
+            muscle_group=MuscleGroup(1, "Pectoral"),
+            id_trainer_creator=10,
+            description="Barra y banco",
+            registration_date=date(2026, 1, 15),
+        )
+        back = MuscleGroup(2, "Espalda")
+
+        reclassified = original.reclassify(
+            exercise_type=ExerciseType.CARDIO,
+            intensity=IntensityLevel.LOW,
+            muscle_group=back,
+        )
+
+        self.assertIsNot(original, reclassified)
+        self.assertEqual(reclassified.id_exercise, original.id_exercise)
+        self.assertEqual(reclassified.name, original.name)
+        self.assertEqual(reclassified.description, original.description)
+        self.assertEqual(reclassified.registration_date, original.registration_date)
+        self.assertEqual(reclassified.id_trainer_creator, original.id_trainer_creator)
+        self.assertIs(reclassified.exercise_type, ExerciseType.CARDIO)
+        self.assertIs(reclassified.intensity, IntensityLevel.LOW)
+        self.assertEqual(reclassified.muscle_group, back)
+
+        # The original entity is immutable and must keep its classification.
+        self.assertIs(original.exercise_type, ExerciseType.STRENGTH)
+        self.assertIs(original.intensity, IntensityLevel.HIGH)
+        self.assertEqual(original.muscle_group.id_muscle_group, 1)
+
+    def test_reclassify_validates_the_new_catalog_values(self) -> None:
+        exercise = Exercise(
+            "Press",
+            ExerciseType.STRENGTH,
+            IntensityLevel.MEDIUM,
+            MuscleGroup(1, "Pectoral"),
+            10,
+        )
+
+        with self.assertRaises(InvalidDomainValue):
+            exercise.reclassify(
+                exercise_type=ExerciseType.STRENGTH,
+                intensity="extremo",
+                muscle_group=MuscleGroup(2, "Espalda"),
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

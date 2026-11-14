@@ -9,9 +9,13 @@ from app.adapters.presentation.api.error_handlers import (
 )
 from app.adapters.presentation.api.routes.catalogs import router as catalogs_router
 from app.adapters.presentation.api.routes.exercises import router as exercises_router
+from app.adapters.routers._errors import install_error_handlers
 from app.adapters.routers.auth import router as auth_router
 from app.adapters.routers.authorisations import router as authorisations_router
 from app.adapters.routers.enrolments import router as enrolments_router
+from app.adapters.routers.exercises import (
+    router as exercise_reclassification_router,
+)
 from app.adapters.routers.muscle_groups import router as muscle_groups_router
 from app.adapters.routers.sites import router as sites_router
 from app.adapters.routers.training_programs import router as training_programs_router
@@ -45,6 +49,10 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # The reclassification endpoints expose the public ``message/code/details``
+    # contract. Install its handlers before the application-level fallbacks.
+    install_error_handlers(application)
     application.add_exception_handler(ApplicationError, application_error_handler)
     application.add_exception_handler(Exception, unexpected_error_handler)
 
@@ -53,6 +61,7 @@ def create_app() -> FastAPI:
     application.include_router(authorisations_router, prefix="/api/v1")
     application.include_router(enrolments_router, prefix="/api/v1")
     application.include_router(exercises_router, prefix="/api/v1")
+    application.include_router(exercise_reclassification_router, prefix="/api/v1")
     application.include_router(catalogs_router, prefix="/api/v1")
     application.include_router(muscle_groups_router, prefix="/api/v1")
     application.include_router(training_programs_router, prefix="/api/v1")

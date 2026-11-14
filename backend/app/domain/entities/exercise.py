@@ -12,7 +12,7 @@ The entity models business invariants only:
 from __future__ import annotations
 
 import unicodedata
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime
 from typing import Optional
 
@@ -117,6 +117,26 @@ class Exercise:
 
     def belongs_to_muscle_group(self, id_muscle_group: int) -> bool:
         return self.muscle_group.id_muscle_group == id_muscle_group
+
+    def reclassify(
+        self,
+        *,
+        exercise_type: object,
+        intensity: object,
+        muscle_group: MuscleGroup,
+    ) -> "Exercise":
+        """Return a copy with a new classification (RF-15).
+
+        The identity, author, description and registration date are preserved.
+        ``replace`` rebuilds the immutable entity, so the new catalog values are
+        validated by ``__post_init__`` exactly like a newly created exercise.
+        """
+        return replace(
+            self,
+            exercise_type=exercise_type,
+            intensity=intensity,
+            muscle_group=muscle_group,
+        )
 
     def __str__(self) -> str:
         return (
