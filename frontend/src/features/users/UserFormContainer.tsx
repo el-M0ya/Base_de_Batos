@@ -11,6 +11,7 @@ import { useUserForm } from './useUserForm';
 import { useUsers } from './useUsers';
 import { UserFormView } from './UserFormView';
 import type { CreateUserInput } from '../../shared/types/users';
+import { messages } from '../../shared/i18n/messages';
 
 /**
  * Contenedor del formulario de creación de usuarios.
@@ -75,7 +76,7 @@ export function UserFormContainer({
         onCancel();
       }
     } catch {
-      setBackendError('No se pudo crear la cuenta.');
+      setBackendError(messages.users.errors.createFailed);
     } finally {
       setSubmitting(false);
     }

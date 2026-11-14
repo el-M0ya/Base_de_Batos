@@ -10,6 +10,9 @@
  */
 import { useState, useCallback } from 'react';
 import type { CreateUserInput, UpdateUserInput } from '../../shared/types/users';
+import { messages } from '../../shared/i18n/messages';
+
+const v = messages.users.validation;
 
 /**
  * Errores de campo del formulario.
@@ -80,25 +83,25 @@ export function useUserForm(): UseUserFormReturn {
 
     const email = input.email.trim();
     if (email === '') {
-      errors.email = 'Introduce tu correo electrónico.';
+      errors.email = v.emailRequired;
     } else if (!EMAIL_PATTERN.test(email)) {
-      errors.email = 'El correo no tiene un formato válido.';
+      errors.email = v.emailInvalid;
     }
 
     if (input.password === '') {
-      errors.password = 'Introduce una contraseña.';
+      errors.password = v.passwordRequired;
     }
 
     if (!['administrator', 'trainer', 'client'].includes(input.role)) {
-      errors.role = 'Selecciona un rol válido.';
+      errors.role = v.roleInvalid;
     }
 
     if (input.role === 'client') {
       if (!input.age || input.age <= 0) {
-        errors.age = 'Introduce una edad válida (mayor que cero).';
+        errors.age = v.ageInvalid;
       }
       if (!input.idSite || input.idSite <= 0) {
-        errors.idSite = 'Selecciona una sede.';
+        errors.idSite = v.siteRequired;
       }
     }
 
@@ -123,14 +126,14 @@ export function useUserForm(): UseUserFormReturn {
       input.idSite !== undefined;
 
     if (!hasAnyField) {
-      errors.role = 'Modifica al menos un campo.';
+      errors.role = v.noChanges;
     }
 
     if (input.age !== undefined && input.age <= 0) {
-      errors.age = 'La edad debe ser mayor que cero.';
+      errors.age = v.agePositive;
     }
     if (input.idSite !== undefined && input.idSite <= 0) {
-      errors.idSite = 'Selecciona una sede válida.';
+      errors.idSite = v.siteInvalid;
     }
 
     setFieldErrors(errors);

@@ -14,6 +14,7 @@ import { AppLayout } from './AppLayout';
 import { LoginPage } from '../features/auth/LoginPage';
 import { routes } from './routes';
 import { RouteGuard } from './RouteGuard';
+import { messages } from '../shared/i18n/messages';
 
 /** In mock mode the hash router is used for the static demo. */
 const useHashRouter = import.meta.env.VITE_API_MODE === 'mock';
@@ -31,7 +32,7 @@ export function AppRouter() {
   const { isLoading } = useAuth();
 
   if (isLoading) {
-    return <div data-testid="router-loading">Cargando…</div>;
+    return <div data-testid="router-loading">{messages.states.loading}</div>;
   }
 
   return (

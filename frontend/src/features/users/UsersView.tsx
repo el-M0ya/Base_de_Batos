@@ -36,9 +36,9 @@ export interface UsersViewProps {
  */
 function formatRole(value: string | number | undefined): string {
   const labels: Record<string, string> = {
-    administrator: 'Administrador',
-    trainer: 'Entrenador',
-    client: 'Cliente',
+    administrator: messages.users.form.roleAdministrator,
+    trainer: messages.users.form.roleTrainer,
+    client: messages.users.form.roleClient,
   };
   return labels[String(value)] ?? String(value ?? '');
 }
@@ -48,8 +48,8 @@ function formatRole(value: string | number | undefined): string {
  */
 function formatStatus(value: string | number | undefined): string {
   const labels: Record<string, string> = {
-    active: 'Activa',
-    inactive: 'Inactiva',
+    active: messages.users.status.active,
+    inactive: messages.users.status.inactive,
   };
   return labels[String(value)] ?? String(value ?? '');
 }

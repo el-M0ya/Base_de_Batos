@@ -1,5 +1,8 @@
 import type { MuscleGroup } from '../../shared/types/muscleGroup';
+import { messages } from '../../shared/i18n/messages';
 import styles from './TrainingProgramMuscleGroups.module.css';
+
+const t = messages.trainingPrograms.muscleGroupPicker;
 
 /** Props for the muscle-group association editor. */
 export interface TrainingProgramMuscleGroupsProps {
@@ -42,10 +45,10 @@ export function TrainingProgramMuscleGroups({
 
   return (
     <fieldset className={styles.fieldset} disabled={disabled}>
-      <legend className={styles.legend}>Grupos musculares</legend>
-      <p className={styles.hint}>Selecciona los grupos que cubre este programa.</p>
+      <legend className={styles.legend}>{t.legend}</legend>
+      <p className={styles.hint}>{t.hint}</p>
       {groups.length === 0 ? (
-        <p className={styles.empty}>No hay grupos musculares disponibles.</p>
+        <p className={styles.empty}>{t.empty}</p>
       ) : (
         <div className={styles.options}>
           {groups.map((group) => (
@@ -66,9 +69,9 @@ export function TrainingProgramMuscleGroups({
         </p>
       )}
       <div className={styles.selected} aria-live="polite">
-        <span className={styles.selectedLabel}>Configurados:</span>{' '}
+        <span className={styles.selectedLabel}>{t.selectedLabel}</span>{' '}
         {selectedGroups.length === 0
-          ? 'Ninguno'
+          ? t.noneSelected
           : selectedGroups.map((group) => group.name).join(', ')}
       </div>
     </fieldset>

@@ -1,3 +1,5 @@
+import { messages } from '../shared/i18n/messages';
+
 /**
  * Página 404: ruta no encontrada.
  *
@@ -8,8 +10,8 @@
 export function NotFoundView() {
   return (
     <section className="not-found">
-      <h1>Página no encontrada</h1>
-      <p>La ruta solicitada no existe.</p>
+      <h1>{messages.notFound.title}</h1>
+      <p>{messages.notFound.description}</p>
     </section>
   );
 }
