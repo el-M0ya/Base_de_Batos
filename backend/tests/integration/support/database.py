@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Optional
 
 import psycopg
+from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
 
 from app.core.config import get_settings
@@ -41,6 +42,7 @@ SCRIPT_FILES = [
     "006_integrity_constraints.sql",
     "007_consistency_triggers.sql",
     "008_catalog_seeds.sql",
+    "011_routine_parameters_full_generation.sql",
 ]
 
 _pool: Optional[AsyncConnectionPool] = None
