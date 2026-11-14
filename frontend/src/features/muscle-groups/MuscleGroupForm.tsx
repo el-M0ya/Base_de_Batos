@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { ApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
+import { TextArea } from '../../shared/components/TextArea';
 import { TextField } from '../../shared/components/TextField';
 import type { MuscleGroup, MuscleGroupInput } from '../../shared/types/muscleGroup';
 import { messages } from '../../shared/i18n/messages';
@@ -81,20 +82,13 @@ export function MuscleGroupForm({
         autoFocus
         disabled={isSubmitting}
       />
-      <div className={styles.descriptionField}>
-        <label className={styles.label} htmlFor="muscle-group-description">
-          {t.form.descriptionLabel}
-        </label>
-        <textarea
-          id="muscle-group-description"
-          className={styles.textarea}
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          placeholder={t.form.descriptionPlaceholder}
-          rows={4}
-          disabled={isSubmitting}
-        />
-      </div>
+      <TextArea
+        label={t.form.descriptionLabel}
+        value={description}
+        onChange={(event) => setDescription(event.target.value)}
+        placeholder={t.form.descriptionPlaceholder}
+        disabled={isSubmitting}
+      />
       <div className={styles.actions}>
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
           {common.cancel}

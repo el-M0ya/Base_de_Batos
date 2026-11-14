@@ -3,6 +3,7 @@ import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
 import { LoadingState } from '../../shared/components/LoadingState';
 import { SelectField, type SelectOption } from '../../shared/components/SelectField';
+import { TextArea } from '../../shared/components/TextArea';
 import { TextField } from '../../shared/components/TextField';
 import { useExerciseCatalogs } from './useExercises';
 import type { Exercise, ExerciseClassificationInput } from './types';
@@ -102,16 +103,12 @@ export function ExerciseForm({
 
       <TextField label={t.form.nameLabel} value={exercise.name} readOnly />
 
-      {/* TODO: replace with the shared TextArea component once it exists. */}
-      <label className={styles.field}>
-        <span className={styles.label}>{t.form.descriptionLabel}</span>
-        <textarea
-          className={styles.textarea}
-          value={exercise.description ?? ''}
-          readOnly
-          rows={3}
-        />
-      </label>
+      <TextArea
+        label={t.form.descriptionLabel}
+        value={exercise.description ?? ''}
+        readOnly
+        rows={3}
+      />
 
       {catalogsQuery.isLoading && <LoadingState message={t.form.catalogsLoading} />}
       {catalogsQuery.error !== null && catalogsQuery.error !== undefined && (
