@@ -143,9 +143,9 @@ export function TrainingProgramsView() {
           </div>
         }
       >
-        {t.delete.confirmBefore}
+        {common.deleteConfirm.before}
         <strong>{deletingProgram?.name}</strong>
-        {t.delete.confirmAfter}
+        {common.deleteConfirm.after}
       </Modal>
     </main>
   );

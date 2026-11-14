@@ -29,11 +29,22 @@ export const messages = {
   common: {
     adminEyebrow: 'Administración',
     cancel: 'Cancelar',
+    edit: 'Editar',
     delete: 'Eliminar',
     saveChanges: 'Guardar cambios',
     networkError: 'No se pudo conectar con el servidor.',
     requestFailed: 'La solicitud al servidor falló.',
     emptyValue: '—',
+    nameRequired: 'El nombre es obligatorio.',
+    // Table column headers shared by several tables.
+    columns: {
+      name: 'Nombre',
+    },
+    // Delete confirmation; the item name is rendered in bold between both parts.
+    deleteConfirm: {
+      before: '¿Seguro que deseas eliminar ',
+      after: '? Esta acción no se puede deshacer.',
+    },
   },
   dataTable: {
     defaultLabel: 'Tabla de datos',
@@ -41,8 +52,6 @@ export const messages = {
     empty: 'No hay datos disponibles',
     caption: (count: number) => `Datos (${count})`,
     actions: 'Acciones',
-    edit: 'Editar',
-    delete: 'Eliminar',
     editRow: (row: number) => `Editar registro ${row}`,
     deleteRow: (row: number) => `Eliminar registro ${row}`,
     sortBy: (column: string, direction: 'asc' | 'desc') =>
@@ -109,10 +118,8 @@ export const messages = {
       actions: 'Acciones',
     },
     createButton: 'Crear cuenta',
-    editButton: 'Editar',
     deactivateButton: 'Desactivar',
     activateButton: 'Activar',
-    dismissError: 'Descartar',
     status: {
       active: 'Activa',
       inactive: 'Inactiva',
@@ -154,8 +161,6 @@ export const messages = {
       ageLabel: 'Edad',
       siteLabel: 'Sede',
       createButton: 'Crear cuenta',
-      saveButton: 'Guardar cambios',
-      cancelButton: 'Cancelar',
     },
   },
   sites: {
@@ -168,7 +173,6 @@ export const messages = {
     deleteError: 'No se pudo eliminar la sede.',
     saveError: 'No se pudo guardar la sede. Inténtalo nuevamente.',
     table: {
-      name: 'Nombre',
       address: 'Dirección',
       registered: 'Registrado',
     },
@@ -177,7 +181,6 @@ export const messages = {
       editTitle: 'Editar sede',
       nameLabel: 'Nombre de la sede',
       namePlaceholder: 'Ej. Sede Vedado',
-      nameRequired: 'El nombre es obligatorio.',
       addressLabel: 'Dirección',
       addressPlaceholder: 'Ej. Calle 23, Vedado, La Habana',
       addressRequired: 'La dirección es obligatoria.',
@@ -185,9 +188,6 @@ export const messages = {
     },
     delete: {
       title: 'Eliminar sede',
-      // The site name is rendered in bold between these two parts.
-      confirmBefore: '¿Seguro que deseas eliminar ',
-      confirmAfter: '? Esta acción no se puede deshacer.',
     },
   },
   trainingPrograms: {
@@ -200,7 +200,6 @@ export const messages = {
     deleteError: 'No se pudo eliminar el programa.',
     saveError: 'No se pudo guardar el programa. Inténtalo nuevamente.',
     table: {
-      name: 'Nombre',
       objective: 'Objetivo',
       muscleGroups: 'Grupos musculares',
       configuredCount: (count: number) => `${count} configurado(s)`,
@@ -210,7 +209,6 @@ export const messages = {
       editTitle: 'Editar programa',
       nameLabel: 'Nombre del programa',
       namePlaceholder: 'Ej. Fuerza de tren superior',
-      nameRequired: 'El nombre es obligatorio.',
       objectiveLabel: 'Objetivo',
       objectivePlaceholder: 'Ej. Mejorar la fuerza general',
       objectiveRequired: 'El objetivo es obligatorio.',
@@ -228,9 +226,6 @@ export const messages = {
     },
     delete: {
       title: 'Eliminar programa',
-      // The program name is rendered in bold between these two parts.
-      confirmBefore: '¿Seguro que deseas eliminar ',
-      confirmAfter: '? Esta acción no se puede deshacer.',
     },
   },
   muscleGroups: {
@@ -243,7 +238,6 @@ export const messages = {
     deleteError: 'No se pudo eliminar el grupo muscular.',
     saveError: 'No se pudo guardar el grupo muscular. Inténtalo nuevamente.',
     table: {
-      name: 'Nombre',
       description: 'Descripción',
       created: 'Creado',
     },
@@ -252,16 +246,12 @@ export const messages = {
       editTitle: 'Editar grupo muscular',
       nameLabel: 'Nombre',
       namePlaceholder: 'Ej. Piernas',
-      nameRequired: 'El nombre es obligatorio.',
       descriptionLabel: 'Descripción',
       descriptionPlaceholder: 'Describe los músculos incluidos (opcional)',
       createButton: 'Crear grupo',
     },
     delete: {
       title: 'Eliminar grupo muscular',
-      // The group name is rendered in bold between these two parts.
-      confirmBefore: '¿Seguro que deseas eliminar ',
-      confirmAfter: '? Esta acción no se puede deshacer.',
     },
   },
   exercises: {
@@ -270,7 +260,6 @@ export const messages = {
     tableLabel: 'Tabla de ejercicios',
     loadError: 'No se pudieron cargar los ejercicios.',
     table: {
-      name: 'Nombre',
       muscleGroup: 'Grupo muscular',
       type: 'Tipo',
       intensity: 'Intensidad',

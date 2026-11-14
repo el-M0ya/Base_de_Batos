@@ -25,7 +25,7 @@ export interface SiteTableProps {
  */
 export function SiteTable({ data, isLoading = false, onEdit, onDelete }: SiteTableProps) {
   const columns: ColumnDef<Site>[] = [
-    { accessor: 'name', header: t.table.name },
+    { accessor: 'name', header: messages.common.columns.name },
     { accessor: 'address', header: t.table.address },
     {
       accessor: 'registrationDate',

@@ -31,7 +31,7 @@ export function TrainingProgramTable({
   onDelete,
 }: TrainingProgramTableProps) {
   const columns: ColumnDef<TrainingProgram>[] = [
-    { accessor: 'name', header: t.table.name },
+    { accessor: 'name', header: messages.common.columns.name },
     { accessor: 'objective', header: t.table.objective },
     {
       accessor: 'muscleGroupIds',

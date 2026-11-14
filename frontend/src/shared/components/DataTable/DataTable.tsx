@@ -169,10 +169,10 @@ export function DataTable<T extends object>({
                     variant="ghost"
                     onClick={() => onEdit(row)}
                     aria-label={t.editRow(rowIndex + 1)}
-                    title={t.edit}
+                    title={messages.common.edit}
                     icon={<Pencil size={16} aria-hidden="true" />}
                   >
-                    {t.edit}
+                    {messages.common.edit}
                   </Button>
                 )}
                 {onDelete !== undefined && (
@@ -180,10 +180,10 @@ export function DataTable<T extends object>({
                     variant="ghost"
                     onClick={() => onDelete(row)}
                     aria-label={t.deleteRow(rowIndex + 1)}
-                    title={t.delete}
+                    title={messages.common.delete}
                     icon={<Trash2 size={16} aria-hidden="true" />}
                   >
-                    {t.delete}
+                    {messages.common.delete}
                   </Button>
                 )}
               </td>
