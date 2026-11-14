@@ -39,7 +39,7 @@ export function TextArea({ label, error, hint, rows = 4, className, ...rest }: T
   // Unique ids so the label and messages are linked to THIS textarea.
   const textareaId = useId();
   const messageId = `${textareaId}-message`;
- 
+
   const hasError = error !== undefined && error !== '';
   const message = hasError ? error : hint;
 

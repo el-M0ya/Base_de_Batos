@@ -1,3 +1,5 @@
+import { plural } from './plural';
+
 /**
  * Todos los textos visibles de la interfaz, en español.
  *
@@ -202,7 +204,8 @@ export const messages = {
     table: {
       objective: 'Objetivo',
       muscleGroups: 'Grupos musculares',
-      configuredCount: (count: number) => `${count} configurado(s)`,
+      configuredCount: (count: number) =>
+        `${count} ${plural(count, { one: 'configurado', other: 'configurados' })}`,
     },
     form: {
       createTitle: 'Nuevo programa',
