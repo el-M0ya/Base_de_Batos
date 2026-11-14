@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../shared/auth/useAuth';
+import { Alert } from '../../shared/components/Alert';
+import { Modal } from '../../shared/components/Modal';
 import { ExerciseForm } from './ExerciseForm';
 import { ExerciseTable } from './ExerciseTable';
 import { useExercises, useUpdateExerciseClassification } from './useExercises';
@@ -38,6 +40,13 @@ export function ExercisesView() {
     setSelectedExercise(null);
   }
 
+  // Closing is ignored while saving, whatever the trigger (✕, Escape or a
+  // click outside), so the form is never dismissed halfway through a save.
+  function closeForm() {
+    if (updateMutation.isPending) return;
+    setSelectedExercise(null);
+  }
+
   return (
     <section className={styles.view} aria-labelledby="exercises-title">
       <div className={styles.header}>
@@ -48,9 +57,7 @@ export function ExercisesView() {
       </div>
 
       {exercisesQuery.error !== null && exercisesQuery.error !== undefined && (
-        <p className={styles.error} role="alert">
-          {exercisesQuery.error.message || t.loadError}
-        </p>
+        <Alert>{exercisesQuery.error.message || t.loadError}</Alert>
       )}
 
       <ExerciseTable
@@ -59,36 +66,17 @@ export function ExercisesView() {
         onReclassify={handleReclassify}
       />
 
-      {selectedExercise !== null && (
-        <div className={styles.overlay} role="presentation">
-          <div
-            className={styles.modal}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="exercise-form-title"
-          >
-            <div className={styles.modalHeader}>
-              <h2 id="exercise-form-title">{t.form.title}</h2>
-              <button
-                type="button"
-                className={styles.close}
-                onClick={() => setSelectedExercise(null)}
-                disabled={updateMutation.isPending}
-                aria-label={t.form.close}
-              >
-                ×
-              </button>
-            </div>
-            <ExerciseForm
-              exercise={selectedExercise}
-              onCancel={() => setSelectedExercise(null)}
-              onSubmit={handleSubmit}
-              isSubmitting={updateMutation.isPending}
-              backendError={updateMutation.error}
-            />
-          </div>
-        </div>
-      )}
+      <Modal isOpen={selectedExercise !== null} onClose={closeForm} title={t.form.title}>
+        {selectedExercise !== null && (
+          <ExerciseForm
+            exercise={selectedExercise}
+            onCancel={closeForm}
+            onSubmit={handleSubmit}
+            isSubmitting={updateMutation.isPending}
+            backendError={updateMutation.error}
+          />
+        )}
+      </Modal>
     </section>
   );
 }
