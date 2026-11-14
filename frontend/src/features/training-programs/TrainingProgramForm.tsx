@@ -7,7 +7,11 @@ import { TextField } from '../../shared/components/TextField';
 import { TrainingProgramMuscleGroups } from './TrainingProgramMuscleGroups';
 import type { MuscleGroup } from '../../shared/types/muscleGroup';
 import type { TrainingProgram, TrainingProgramInput } from './types';
+import { messages } from '../../shared/i18n/messages';
 import styles from './TrainingProgramForm.module.css';
+
+const t = messages.trainingPrograms;
+const common = messages.common;
 
 /** Props for the create/edit training-program form. */
 export interface TrainingProgramFormProps {
@@ -60,10 +64,10 @@ export function TrainingProgramForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: TrainingProgramFormErrors = {};
-    if (name.trim() === '') nextErrors.name = 'El nombre es obligatorio.';
-    if (objective.trim() === '') nextErrors.objective = 'El objetivo es obligatorio.';
+    if (name.trim() === '') nextErrors.name = t.form.nameRequired;
+    if (objective.trim() === '') nextErrors.objective = t.form.objectiveRequired;
     if (selectedIds.length === 0) {
-      nextErrors.muscleGroupIds = 'Selecciona al menos un grupo muscular.';
+      nextErrors.muscleGroupIds = t.form.muscleGroupsRequired;
     }
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
@@ -80,11 +84,9 @@ export function TrainingProgramForm({
       });
     } catch (error) {
       if (error instanceof ApiError) {
-        setServerError(
-          error.isNetworkError() ? 'No se pudo conectar con el servidor.' : error.message,
-        );
+        setServerError(error.isNetworkError() ? common.networkError : error.message);
       } else {
-        setServerError('No se pudo guardar el programa. Inténtalo nuevamente.');
+        setServerError(t.saveError);
       }
     }
   }
@@ -96,30 +98,30 @@ export function TrainingProgramForm({
         <Alert>
           {muscleGroupsError instanceof ApiError
             ? muscleGroupsError.message
-            : 'No se pudieron cargar los grupos musculares.'}
+            : t.form.muscleGroupsLoadError}
         </Alert>
       )}
       <TextField
-        label="Nombre del programa"
+        label={t.form.nameLabel}
         value={name}
         onChange={(event) => setName(event.target.value)}
         error={errors.name}
-        placeholder="Ej. Fuerza de tren superior"
+        placeholder={t.form.namePlaceholder}
         required
         autoFocus
         disabled={isSubmitting}
       />
       <TextField
-        label="Objetivo"
+        label={t.form.objectiveLabel}
         value={objective}
         onChange={(event) => setObjective(event.target.value)}
         error={errors.objective}
-        placeholder="Ej. Mejorar la fuerza general"
+        placeholder={t.form.objectivePlaceholder}
         required
         disabled={isSubmitting}
       />
       {isLoadingMuscleGroups ? (
-        <LoadingState message="Cargando grupos musculares…" />
+        <LoadingState message={t.form.muscleGroupsLoading} />
       ) : (
         <TrainingProgramMuscleGroups
           groups={muscleGroups}
@@ -131,10 +133,10 @@ export function TrainingProgramForm({
       )}
       <div className={styles.actions}>
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
-          Cancelar
+          {common.cancel}
         </Button>
         <Button type="submit" isLoading={isSubmitting}>
-          {initialValue === undefined ? 'Crear programa' : 'Guardar cambios'}
+          {initialValue === undefined ? t.form.createButton : common.saveChanges}
         </Button>
       </div>
     </form>

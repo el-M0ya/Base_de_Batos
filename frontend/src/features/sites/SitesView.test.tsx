@@ -26,10 +26,10 @@ describe('SitesView', () => {
 
     expect(screen.getByText('Sede Centro')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Nuevo sitio' }));
-    await user.type(screen.getByLabelText('Nombre del sitio'), 'Sede Norte');
+    await user.click(screen.getByRole('button', { name: 'Nueva sede' }));
+    await user.type(screen.getByLabelText('Nombre de la sede'), 'Sede Norte');
     await user.type(screen.getByLabelText('Dirección'), 'Calle 20');
-    await user.click(screen.getByRole('button', { name: 'Crear sitio' }));
+    await user.click(screen.getByRole('button', { name: 'Crear sede' }));
 
     expect(mocks.create).toHaveBeenCalledWith({ name: 'Sede Norte', address: 'Calle 20' });
   });

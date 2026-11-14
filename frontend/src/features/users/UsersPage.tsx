@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import { UsersContainer } from './UsersContainer';
 import { UserFormContainer } from './UserFormContainer';
+import { messages } from '../../shared/i18n/messages';
 
 /**
  * Página de administración de usuarios.
@@ -28,7 +29,7 @@ export function UsersPage() {
       )}
 
       <button className="users-page__create-button" onClick={() => setShowForm(true)}>
-        Crear cuenta
+        {messages.users.createButton}
       </button>
     </section>
   );

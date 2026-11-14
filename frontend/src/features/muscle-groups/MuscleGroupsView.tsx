@@ -13,7 +13,11 @@ import {
 import { MuscleGroupForm } from './MuscleGroupForm';
 import { MuscleGroupTable } from './MuscleGroupTable';
 import type { MuscleGroup, MuscleGroupInput } from '../../shared/types/muscleGroup';
+import { messages } from '../../shared/i18n/messages';
 import styles from './MuscleGroupsView.module.css';
+
+const t = messages.muscleGroups;
+const common = messages.common;
 
 /**
  * Presentational CRUD screen for the muscle-group catalog.
@@ -66,9 +70,7 @@ export function MuscleGroupsView() {
       await deleteMutation.mutateAsync(deletingGroup.id);
       setDeletingGroup(undefined);
     } catch (error) {
-      setOperationError(
-        error instanceof ApiError ? error.message : 'No se pudo eliminar el grupo muscular.',
-      );
+      setOperationError(error instanceof ApiError ? error.message : t.deleteError);
     }
   }
 
@@ -76,29 +78,25 @@ export function MuscleGroupsView() {
     <main className={styles.page}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Administración</p>
-          <h1 className={styles.title}>Grupos musculares</h1>
-          <p className={styles.subtitle}>
-            Gestiona el catálogo utilizado por los programas de entrenamiento.
-          </p>
+          <p className={styles.eyebrow}>{common.adminEyebrow}</p>
+          <h1 className={styles.title}>{t.title}</h1>
+          <p className={styles.subtitle}>{t.subtitle}</p>
         </div>
         <Button icon={<Plus size={18} aria-hidden="true" />} onClick={openCreateForm}>
-          Nuevo grupo
+          {t.createButton}
         </Button>
       </header>
 
       {groupsQuery.error !== null && groupsQuery.error !== undefined && (
         <Alert>
-          {groupsQuery.error instanceof ApiError
-            ? groupsQuery.error.message
-            : 'No se pudo cargar el catálogo de grupos musculares.'}
+          {groupsQuery.error instanceof ApiError ? groupsQuery.error.message : t.loadError}
         </Alert>
       )}
       {operationError !== undefined && (
         <Alert onDismiss={() => setOperationError(undefined)}>{operationError}</Alert>
       )}
 
-      <section className={styles.content} aria-label="Listado de grupos musculares">
+      <section className={styles.content} aria-label={t.listLabel}>
         <MuscleGroupTable
           data={groups}
           isLoading={groupsQuery.isLoading}
@@ -110,7 +108,7 @@ export function MuscleGroupsView() {
       <Modal
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        title={editingGroup === undefined ? 'Nuevo grupo muscular' : 'Editar grupo muscular'}
+        title={editingGroup === undefined ? t.form.createTitle : t.form.editTitle}
       >
         <MuscleGroupForm
           key={editingGroup?.id ?? 'new-muscle-group'}
@@ -124,24 +122,25 @@ export function MuscleGroupsView() {
       <Modal
         isOpen={deletingGroup !== undefined}
         onClose={() => setDeletingGroup(undefined)}
-        title="Eliminar grupo muscular"
+        title={t.delete.title}
         footer={
           <div className={styles.confirmActions}>
             <Button variant="secondary" onClick={() => setDeletingGroup(undefined)}>
-              Cancelar
+              {common.cancel}
             </Button>
             <Button
               onClick={() => void deleteGroup()}
               isLoading={deleteMutation.isPending}
               className={styles.deleteButton}
             >
-              Eliminar
+              {common.delete}
             </Button>
           </div>
         }
       >
-        ¿Seguro que deseas eliminar <strong>{deletingGroup?.name}</strong>? Esta acción no se puede
-        deshacer.
+        {t.delete.confirmBefore}
+        <strong>{deletingGroup?.name}</strong>
+        {t.delete.confirmAfter}
       </Modal>
     </main>
   );

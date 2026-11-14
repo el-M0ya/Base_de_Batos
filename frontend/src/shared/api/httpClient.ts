@@ -1,4 +1,5 @@
 import { ApiError } from './apiError';
+import { messages } from '../i18n/messages';
 
 /** Options shared by all HTTP requests. */
 export interface RequestOptions {
@@ -50,11 +51,11 @@ export class HttpClient {
     try {
       response = await fetch(url, requestInit);
     } catch {
-      throw new ApiError(0, 'No se pudo conectar con el servidor.');
+      throw new ApiError(0, messages.common.networkError);
     }
 
     if (!response.ok) {
-      let message = response.statusText || 'La solicitud al servidor falló.';
+      let message = response.statusText || messages.common.requestFailed;
       let code: string | undefined;
       let details: unknown;
 

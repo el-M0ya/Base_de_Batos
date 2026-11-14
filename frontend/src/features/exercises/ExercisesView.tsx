@@ -4,7 +4,10 @@ import { ExerciseForm } from './ExerciseForm';
 import { ExerciseTable } from './ExerciseTable';
 import { useExercises, useUpdateExerciseClassification } from './useExercises';
 import type { Exercise, ExerciseClassificationInput } from './types';
+import { messages } from '../../shared/i18n/messages';
 import styles from './ExercisesView.module.css';
+
+const t = messages.exercises;
 
 function isExerciseOwner(exercise: Exercise, user: ReturnType<typeof useAuth>['user']) {
   return user?.role === 'trainer' && String(exercise.trainerId) === String(user.id);
@@ -39,14 +42,14 @@ export function ExercisesView() {
     <section className={styles.view} aria-labelledby="exercises-title">
       <div className={styles.header}>
         <div>
-          <h1 id="exercises-title">Ejercicios</h1>
-          <p>Consulta y reclasifica los ejercicios que has creado.</p>
+          <h1 id="exercises-title">{t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
       </div>
 
       {exercisesQuery.error !== null && exercisesQuery.error !== undefined && (
         <p className={styles.error} role="alert">
-          {exercisesQuery.error.message || 'No se pudieron cargar los ejercicios.'}
+          {exercisesQuery.error.message || t.loadError}
         </p>
       )}
 
@@ -65,13 +68,13 @@ export function ExercisesView() {
             aria-labelledby="exercise-form-title"
           >
             <div className={styles.modalHeader}>
-              <h2 id="exercise-form-title">Reclasificar ejercicio</h2>
+              <h2 id="exercise-form-title">{t.form.title}</h2>
               <button
                 type="button"
                 className={styles.close}
                 onClick={() => setSelectedExercise(null)}
                 disabled={updateMutation.isPending}
-                aria-label="Cerrar formulario"
+                aria-label={t.form.close}
               >
                 ×
               </button>
