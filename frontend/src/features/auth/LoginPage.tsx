@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { sessionStore } from '../../shared/auth/sessionStore';
 import { useAuth } from '../../shared/auth/useAuth';
 import { messages } from '../../shared/i18n/messages';
+import { loginErrorMessage } from './loginErrorMessage';
 import { LoginView, type LoginFieldErrors } from './LoginView';
 
 const t = messages.login;
@@ -27,8 +29,9 @@ function validate(email: string, password: string): LoginFieldErrors {
  * and renders `LoginView` with it.
  *
  * @remarks
- * Delegates the actual authentication to `useAuth` (backed by `authApi`),
- * so it works with the mock implementation until backend endpoints exist.
+ * Delegates the actual authentication to `useAuth` (backed by `authApi`), so
+ * it works with both the mock and the real backend. When the previous session
+ * ended because the backend rejected its token, it shows an expiry notice.
  */
 export function LoginPage() {
   const { login, isLoading } = useAuth();
@@ -39,9 +42,17 @@ export function LoginPage() {
   const [fieldErrors, setFieldErrors] = useState<LoginFieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Read the "session expired" mark once; it is cleared in the effect below.
+  const [showExpiredNotice, setShowExpiredNotice] = useState(() => sessionStore.hasExpired());
+
+  // Clear the mark so the notice is not shown again on a later visit.
+  useEffect(() => {
+    sessionStore.clearExpired();
+  }, []);
 
   async function handleSubmit() {
     setFormError(null);
+    setShowExpiredNotice(false);
 
     const errors = validate(email, password);
     setFieldErrors(errors);
@@ -54,12 +65,7 @@ export function LoginPage() {
       await login(email.trim(), password);
     } catch (error: unknown) {
       setIsSubmitting(false);
-      const err = error as { status?: number; message?: string };
-      if (err.status === 401) {
-        setFormError(t.errors.invalidCredentials);
-      } else {
-        setFormError(t.sessionError);
-      }
+      setFormError(loginErrorMessage(error));
       return;
     }
     setIsSubmitting(false);
@@ -67,6 +73,7 @@ export function LoginPage() {
 
   function dismissMessage() {
     setFormError(null);
+    setShowExpiredNotice(false);
   }
 
   return (
@@ -75,6 +82,7 @@ export function LoginPage() {
       password={password}
       fieldErrors={fieldErrors}
       formError={formError}
+      noticeMessage={showExpiredNotice ? t.sessionExpired : null}
       successMessage={null}
       isSubmitting={isSubmitting || isLoading}
       onEmailChange={setEmail}

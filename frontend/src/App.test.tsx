@@ -41,4 +41,20 @@ describe('App', () => {
       await screen.findByRole('heading', { level: 1, name: 'Ejercicios' }, { timeout: 3000 }),
     ).toBeInTheDocument();
   });
+
+  // Regression: a failed login used to unmount the login page (the router showed
+  // "Cargando…" while logging in), so the error message was lost.
+  it('mantiene la pantalla de login y muestra el error si las credenciales fallan', async () => {
+    window.history.pushState({}, '', '/login');
+    const { user } = renderWithProviders(<App />);
+
+    await user.type(screen.getByLabelText('Correo electrónico'), 'trainer@forjafit.demo');
+    await user.type(screen.getByLabelText('Contraseña'), 'incorrecta');
+    await user.click(screen.getByRole('button', { name: 'Entrar' }));
+
+    expect(
+      await screen.findByText('Correo o contraseña incorrectos. Verifica tus credenciales.'),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Correo electrónico')).toHaveValue('trainer@forjafit.demo');
+  });
 });
