@@ -57,7 +57,9 @@ export function ExercisesView() {
       </div>
 
       {exercisesQuery.error !== null && exercisesQuery.error !== undefined && (
-        <Alert>{exercisesQuery.error.message || t.loadError}</Alert>
+        <p className={styles.error} role="alert">
+          {exercisesQuery.error.message || t.loadError}
+        </p>
       )}
 
       <ExerciseTable
@@ -66,17 +68,36 @@ export function ExercisesView() {
         onReclassify={handleReclassify}
       />
 
-      <Modal isOpen={selectedExercise !== null} onClose={closeForm} title={t.form.title}>
-        {selectedExercise !== null && (
-          <ExerciseForm
-            exercise={selectedExercise}
-            onCancel={closeForm}
-            onSubmit={handleSubmit}
-            isSubmitting={updateMutation.isPending}
-            backendError={updateMutation.error}
-          />
-        )}
-      </Modal>
+      {selectedExercise !== null && (
+        <div className={styles.overlay} role="presentation">
+          <div
+            className={styles.modal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="exercise-form-title"
+          >
+            <div className={styles.modalHeader}>
+              <h2 id="exercise-form-title">{t.form.title}</h2>
+              <button
+                type="button"
+                className={styles.close}
+                onClick={() => setSelectedExercise(null)}
+                disabled={updateMutation.isPending}
+                aria-label={t.form.close}
+              >
+                ×
+              </button>
+            </div>
+            <ExerciseForm
+              exercise={selectedExercise}
+              onCancel={() => setSelectedExercise(null)}
+              onSubmit={handleSubmit}
+              isSubmitting={updateMutation.isPending}
+              backendError={updateMutation.error}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

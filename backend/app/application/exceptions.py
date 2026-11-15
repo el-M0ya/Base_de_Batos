@@ -7,7 +7,10 @@ callers, independently of the delivery mechanism (HTTP, CLI, tests...):
 * ``DuplicateResource``       - the resource violates a uniqueness rule;
 * ``BusinessRuleViolation``   - the operation is valid but not allowed now;
 * ``PermissionDenied``        - the actor cannot perform the operation;
-* ``InvalidInput``            - the supplied data is not valid.
+* ``InvalidInput``            - the supplied data is not valid;
+* ``AuthenticationFailed``    - the credentials do not identify an active account;
+* ``InvalidToken``            - the access token is invalid or unusable;
+* ``ExpiredToken``            - the access token has expired.
 
 Domain errors are translated to ``InvalidInput`` at the use-case boundary, so
 callers never depend on the domain exception hierarchy.
@@ -69,3 +72,26 @@ class InvalidInput(ApplicationError):
     def __init__(self, detail: str) -> None:
         self.detail = detail
         super().__init__(f"Invalid input: {detail}")
+
+
+class AuthenticationFailed(ApplicationError):
+    """The supplied credentials are missing, invalid, or belong to an inactive account."""
+
+    def __init__(self, detail: str = "Invalid email or password.") -> None:
+        self.detail = detail
+        super().__init__(detail)
+
+
+class InvalidToken(ApplicationError):
+    """The access token is malformed, has an invalid signature, or is not usable."""
+
+    def __init__(self, detail: str = "The access token is invalid.") -> None:
+        self.detail = detail
+        super().__init__(detail)
+
+
+class ExpiredToken(InvalidToken):
+    """The access token was valid but its expiration time has passed."""
+
+    def __init__(self, detail: str = "The access token has expired.") -> None:
+        super().__init__(detail)
