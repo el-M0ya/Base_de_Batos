@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../shared/auth/useAuth';
+import { Alert } from '../../shared/components/Alert';
+import { Modal } from '../../shared/components/Modal';
 import { ExerciseForm } from './ExerciseForm';
 import { ExerciseTable } from './ExerciseTable';
 import { useExercises, useUpdateExerciseClassification } from './useExercises';
@@ -35,6 +37,13 @@ export function ExercisesView() {
       id: selectedExercise.id,
       input,
     });
+    setSelectedExercise(null);
+  }
+
+  // Closing is ignored while saving, whatever the trigger (✕, Escape or a
+  // click outside), so the form is never dismissed halfway through a save.
+  function closeForm() {
+    if (updateMutation.isPending) return;
     setSelectedExercise(null);
   }
 

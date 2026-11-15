@@ -1,4 +1,9 @@
 import { useState, type FormEvent } from 'react';
+import { Alert } from '../../shared/components/Alert';
+import { Button } from '../../shared/components/Button';
+import { LoadingState } from '../../shared/components/LoadingState';
+import { SelectField, type SelectOption } from '../../shared/components/SelectField';
+import { TextField } from '../../shared/components/TextField';
 import { useExerciseCatalogs } from './useExercises';
 import type { Exercise, ExerciseClassificationInput } from './types';
 import { messages } from '../../shared/i18n/messages';
@@ -79,19 +84,28 @@ export function ExerciseForm({
     await onSubmit({ muscleGroupId, exerciseType, intensity });
   }
 
+  // SelectField expects { value, label } pairs; the catalogs come in other shapes.
+  const muscleGroupOptions: SelectOption[] = (catalogsQuery.data?.muscleGroups ?? []).map(
+    (group) => ({ value: group.id, label: group.name }),
+  );
+  const typeOptions: SelectOption[] = (catalogsQuery.data?.exerciseTypes ?? []).map((type) => ({
+    value: type,
+    label: type,
+  }));
+  const intensityOptions: SelectOption[] = (catalogsQuery.data?.intensityLevels ?? []).map(
+    (level) => ({ value: level, label: level }),
+  );
+
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      {backendErrorMessage !== undefined && (
-        <p className={styles.error} role="alert">
-          {backendErrorMessage}
-        </p>
-      )}
+      {backendErrorMessage !== undefined && <Alert>{backendErrorMessage}</Alert>}
 
       <label className={styles.field}>
         <span>{t.form.nameLabel}</span>
         <input className={styles.input} value={exercise.name} readOnly />
       </label>
 
+      {/* TODO: replace with the shared TextArea component once it exists. */}
       <label className={styles.field}>
         <span>{t.form.descriptionLabel}</span>
         <textarea className={styles.input} value={exercise.description ?? ''} readOnly rows={3} />
@@ -103,9 +117,7 @@ export function ExerciseForm({
         </p>
       )}
       {catalogsQuery.error !== null && catalogsQuery.error !== undefined && (
-        <p className={styles.error} role="alert">
-          {catalogError}
-        </p>
+        <Alert>{catalogError}</Alert>
       )}
 
       <label className={styles.field}>

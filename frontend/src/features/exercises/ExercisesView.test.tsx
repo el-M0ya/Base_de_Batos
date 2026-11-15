@@ -103,6 +103,7 @@ const mutationState = {
 beforeEach(() => {
   queryState.data = [exercise];
   mutationState.error = null;
+  mutationState.isPending = false;
   mutationState.mutateAsync.mockClear();
 });
 
@@ -172,5 +173,24 @@ describe('ExercisesView', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'No tienes permiso para reclasificar este ejercicio.',
     );
+  });
+
+  it('closes the form with the modal close button', async () => {
+    const user = userEvent.setup();
+    renderView();
+    await user.click(screen.getByRole('button', { name: 'Reclasificar Press de banca' }));
+    await user.click(screen.getByRole('button', { name: 'Cerrar' }));
+
+    expect(screen.queryByTestId('exercise-form')).not.toBeInTheDocument();
+  });
+
+  it('keeps the form open while the update is being saved', async () => {
+    const user = userEvent.setup();
+    mutationState.isPending = true;
+    renderView();
+    await user.click(screen.getByRole('button', { name: 'Reclasificar Press de banca' }));
+    await user.click(screen.getByRole('button', { name: 'Cerrar' }));
+
+    expect(screen.getByTestId('exercise-form')).toBeInTheDocument();
   });
 });
