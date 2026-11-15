@@ -1,7 +1,8 @@
 import { DataTable } from '../../shared/components/DataTable/DataTable';
-import type { ColumnDef } from '../../shared/components/DataTable/columns';
+import type { SortDirection } from '../../shared/components/DataTable/columns';
 import { useAuth } from '../../shared/auth/useAuth';
 import { messages } from '../../shared/i18n/messages';
+import { exerciseColumns } from './exerciseColumns';
 import type { Exercise } from './types';
 
 const t = messages.exercises;
@@ -14,25 +15,19 @@ export interface ExerciseTableProps {
   loading?: boolean;
   /** Handles a permitted exercise reclassification request. */
   onReclassify: (exercise: Exercise) => void;
+  /** Notifies the active sort, so the page can export rows in the same order. */
+  onSortChange?: (accessor: keyof Exercise | null, direction: SortDirection) => void;
 }
-
-const columns: ColumnDef<Exercise>[] = [
-  { accessor: 'name', header: messages.common.columns.name },
-  { accessor: 'muscleGroupName', header: t.table.muscleGroup },
-  { accessor: 'exerciseType', header: t.table.type },
-  { accessor: 'intensity', header: t.table.intensity },
-  { accessor: 'trainerId', header: t.table.creator },
-  {
-    accessor: 'registrationDate',
-    header: t.table.registrationDate,
-    format: (value) => value ?? messages.common.emptyValue,
-  },
-];
 
 /**
  * Displays exercises and exposes reclassification only to their creating trainer.
  */
-export function ExerciseTable({ exercises, loading = false, onReclassify }: ExerciseTableProps) {
+export function ExerciseTable({
+  exercises,
+  loading = false,
+  onReclassify,
+  onSortChange,
+}: ExerciseTableProps) {
   const { user } = useAuth();
 
   const canEdit = (exercise: Exercise) =>
@@ -40,9 +35,10 @@ export function ExerciseTable({ exercises, loading = false, onReclassify }: Exer
 
   return (
     <DataTable
-      columns={columns}
+      columns={exerciseColumns}
       data={exercises}
       loading={loading}
+      onSortChange={onSortChange}
       onEdit={onReclassify}
       canEdit={canEdit}
       ariaLabel={t.tableLabel}

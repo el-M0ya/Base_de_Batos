@@ -30,5 +30,7 @@ export interface ColumnDef<T> {
   format?: (value: T[keyof T]) => string;
   /** Renderiza contenido personalizado para una fila (opcional). */
   render?: (row: T) => ReactNode;
+  /** Set to `false` to leave the column out of exported files (e.g. the PDF). */
+  exportable?: boolean;
 }
 import type { ReactNode } from 'react';

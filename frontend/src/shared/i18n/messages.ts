@@ -59,6 +59,77 @@ export const messages = {
     sortBy: (column: string, direction: 'asc' | 'desc') =>
       `Ordenar ${column} ${direction === 'asc' ? 'ascendente' : 'descendente'}`,
   },
+  pdfExport: {
+    button: 'Exportar PDF',
+    exporting: 'Exportando…',
+    hint: 'Exporta la vista activa respetando el orden actual de las columnas.',
+    failed: 'No se pudo generar el PDF. Inténtalo de nuevo.',
+    generatedOn: (date: string) => `Generado el ${date}`,
+  },
+  reports: {
+    title: 'Informes',
+    subtitle: 'Consulta las estadísticas del sistema y expórtalas a PDF.',
+    summary: (count: number) =>
+      `${count} ${plural(count, { one: 'informe', other: 'informes' })} para tu perfil`,
+    searchLabel: 'Buscar informes',
+    searchPlaceholder: 'Buscar por nombre, código o requisito',
+    filtersLabel: 'Filtrar informes por estado',
+    tabs: {
+      all: (count: number) => `Todos (${count})`,
+      available: (count: number) => `Disponibles (${count})`,
+      comingSoon: (count: number) => `Próximamente (${count})`,
+    },
+    status: {
+      comingSoon: 'Próximamente',
+    },
+    viewReport: 'Ver informe',
+    detail: {
+      back: 'Volver a informes',
+      comingSoonDescription: 'Este informe estará disponible en una próxima entrega.',
+      emptyTitle: 'No hay datos para los filtros seleccionados',
+      emptyDescription: 'Prueba con otros filtros para ver resultados.',
+      insufficientTitle: 'No hay datos suficientes para este análisis',
+      insufficientDescription: 'Se necesitan más registros para obtener un resultado fiable.',
+      notFoundTitle: 'Informe no encontrado',
+      notFoundDescription: 'El informe solicitado no existe.',
+      chartLoading: 'Cargando gráfica…',
+    },
+    sectionsLabel: 'Secciones del informe',
+    noResults: 'No hay informes que coincidan',
+    noResultsHint: 'Prueba con otra búsqueda u otra pestaña.',
+    items: {
+      rep01: {
+        title: 'Rutinas generadas por programa',
+        description: 'Rutinas de un programa con su entrenador, fecha y parámetros.',
+      },
+      rep02: {
+        title: 'Ejercicios más utilizados',
+        description:
+          'Ejercicios más usados en las rutinas finales, por intensidad y grupo muscular.',
+      },
+      rep03: {
+        title: 'Rutinas validadas por revisor',
+        description: 'Fecha, decisión y observaciones de cada validación.',
+      },
+      rep04: {
+        title: 'Desempeño de clientes en una rutina',
+        description: 'Sesiones y tasas de finalización por intensidad.',
+      },
+      rep05: {
+        title: 'Comparación de rutinas entre programas',
+        description: 'Distribución por grupo muscular e intensidad, y equilibrio.',
+      },
+      rep06: {
+        title: 'Análisis de rendimiento y abandono',
+        description: 'Tres consultas sobre rendimiento, abandono y ajustes por programa.',
+        sections: {
+          correlation: 'Correlación intensidad-rendimiento',
+          abandonment: 'Ejercicios con mayor abandono',
+          adjustments: 'Ajustes frente al promedio de la sede',
+        },
+      },
+    },
+  },
   dashboard: {
     title: 'Inicio',
     welcome: 'Bienvenido al sistema de generación automática de planes de entrenamiento.',
@@ -262,6 +333,7 @@ export const messages = {
     subtitle: 'Consulta y reclasifica los ejercicios que has creado.',
     tableLabel: 'Tabla de ejercicios',
     loadError: 'No se pudieron cargar los ejercicios.',
+    pdfFileName: 'ejercicios',
     table: {
       muscleGroup: 'Grupo muscular',
       type: 'Tipo',

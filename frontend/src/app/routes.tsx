@@ -24,6 +24,8 @@ import { messages } from '../shared/i18n/messages';
 import type { UserRole } from '../shared/types/roles';
 import type { UserCapabilities } from '../shared/types/roles';
 import { ExercisesPage } from '../features/exercises/ExercisesPage';
+import { ReportsIndexPage } from '../features/reports/ReportsIndexPage';
+import { ReportContainer } from '../features/reports/components/ReportContainer';
 
 /**
  * Entrada de una ruta registrada.
@@ -41,6 +43,8 @@ export interface RouteDefinition {
   capabilities?: (keyof UserCapabilities)[] | undefined;
   /** Ruta pública (no requiere sesión). */
   public?: boolean;
+  /** Keeps the route out of the navigation menu (e.g. detail pages). */
+  hideInMenu?: boolean;
 }
 
 /** Entrada del menú de navegación (sin componente, solo para mostrar). */
@@ -81,8 +85,15 @@ export const routes: RouteDefinition[] = [
   },
   {
     path: '/reports',
-    element: () => <ComingSoonView section="Informes" />,
+    element: ReportsIndexPage,
     label: messages.nav.reports,
+  },
+  {
+    // Report detail; each report checks its own roles from the registry.
+    path: '/reports/:id',
+    element: ReportContainer,
+    label: messages.nav.reports,
+    hideInMenu: true,
   },
   {
     path: '/users',
@@ -115,9 +126,9 @@ export const routes: RouteDefinition[] = [
   },
 ] as const;
 
-/** Entradas mostradas en el menú de navegación (sin la ruta de login ni 404). */
+/** Entradas mostradas en el menú de navegación (sin login, 404 ni rutas ocultas). */
 export const menuEntries: MenuEntry[] = routes
-  .filter((route) => route.path !== '/login' && route.path !== '*')
+  .filter((route) => route.path !== '/login' && route.path !== '*' && route.hideInMenu !== true)
   .map((route) => ({
     path: route.path,
     label: route.label,

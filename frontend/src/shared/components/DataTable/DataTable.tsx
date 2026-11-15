@@ -39,7 +39,7 @@ export interface DataTableProps<T> {
    * Notifica el cambio de orden activo.
    * Recibe la columna y la dirección resultante.
    */
-  onSortChange?: (accessor: keyof T | null, direction: SortDirection) => void;
+  onSortChange?: ((accessor: keyof T | null, direction: SortDirection) => void) | undefined;
   /** Invoked when the user requests editing a row. */
   onEdit?: (row: T) => void;
   /** Controls whether the edit action is shown for a row. */
