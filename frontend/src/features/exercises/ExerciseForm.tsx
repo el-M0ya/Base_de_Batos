@@ -101,7 +101,10 @@ export function ExerciseForm({
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       {backendErrorMessage !== undefined && <Alert>{backendErrorMessage}</Alert>}
 
-      <TextField label={t.form.nameLabel} value={exercise.name} readOnly />
+      <label className={styles.field}>
+        <span>{t.form.nameLabel}</span>
+        <input className={styles.input} value={exercise.name} readOnly />
+      </label>
 
       <TextArea
         label={t.form.descriptionLabel}
@@ -110,48 +113,91 @@ export function ExerciseForm({
         rows={3}
       />
 
-      {catalogsQuery.isLoading && <LoadingState message={t.form.catalogsLoading} />}
+      {catalogsQuery.isLoading && (
+        <p className={styles.status} role="status">
+          {t.form.catalogsLoading}
+        </p>
+      )}
       {catalogsQuery.error !== null && catalogsQuery.error !== undefined && (
         <Alert>{catalogError}</Alert>
       )}
 
-      <SelectField
-        label={t.form.muscleGroupLabel}
-        placeholder={t.form.muscleGroupPlaceholder}
-        options={muscleGroupOptions}
-        value={muscleGroupId}
-        onChange={(event) => setMuscleGroupId(event.target.value)}
-        error={errors.muscleGroupId}
-        disabled={isSubmitting}
-      />
+      <label className={styles.field}>
+        <span>{t.form.muscleGroupLabel}</span>
+        <select
+          className={styles.input}
+          value={muscleGroupId}
+          onChange={(event) => setMuscleGroupId(event.target.value)}
+          disabled={isSubmitting}
+          aria-invalid={errors.muscleGroupId !== undefined}
+        >
+          <option value="">{t.form.muscleGroupPlaceholder}</option>
+          {(catalogsQuery.data?.muscleGroups ?? []).map((group) => (
+            <option key={group.id} value={group.id}>
+              {group.name}
+            </option>
+          ))}
+        </select>
+        {errors.muscleGroupId !== undefined && (
+          <span className={styles.error} role="alert">
+            {errors.muscleGroupId}
+          </span>
+        )}
+      </label>
 
-      <SelectField
-        label={t.form.typeLabel}
-        placeholder={t.form.typePlaceholder}
-        options={typeOptions}
-        value={exerciseType}
-        onChange={(event) => setExerciseType(event.target.value)}
-        error={errors.exerciseType}
-        disabled={isSubmitting}
-      />
+      <label className={styles.field}>
+        <span>{t.form.typeLabel}</span>
+        <select
+          className={styles.input}
+          value={exerciseType}
+          onChange={(event) => setExerciseType(event.target.value)}
+          disabled={isSubmitting}
+          aria-invalid={errors.exerciseType !== undefined}
+        >
+          <option value="">{t.form.typePlaceholder}</option>
+          {(catalogsQuery.data?.exerciseTypes ?? []).map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+        {errors.exerciseType !== undefined && (
+          <span className={styles.error} role="alert">
+            {errors.exerciseType}
+          </span>
+        )}
+      </label>
 
-      <SelectField
-        label={t.form.intensityLabel}
-        placeholder={t.form.intensityPlaceholder}
-        options={intensityOptions}
-        value={intensity}
-        onChange={(event) => setIntensity(event.target.value)}
-        error={errors.intensity}
-        disabled={isSubmitting}
-      />
+      <label className={styles.field}>
+        <span>{t.form.intensityLabel}</span>
+        <select
+          className={styles.input}
+          value={intensity}
+          onChange={(event) => setIntensity(event.target.value)}
+          disabled={isSubmitting}
+          aria-invalid={errors.intensity !== undefined}
+        >
+          <option value="">{t.form.intensityPlaceholder}</option>
+          {(catalogsQuery.data?.intensityLevels ?? []).map((level) => (
+            <option key={level} value={level}>
+              {level}
+            </option>
+          ))}
+        </select>
+        {errors.intensity !== undefined && (
+          <span className={styles.error} role="alert">
+            {errors.intensity}
+          </span>
+        )}
+      </label>
 
       <div className={styles.actions}>
-        <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
+        <button type="button" onClick={onCancel} disabled={isSubmitting}>
           {common.cancel}
-        </Button>
-        <Button type="submit" isLoading={isSubmitting}>
-          {common.saveChanges}
-        </Button>
+        </button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? t.form.saving : common.saveChanges}
+        </button>
       </div>
     </form>
   );

@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS app_user (
     email                 VARCHAR(255)        NOT NULL,
     password_hash         VARCHAR(255)        NOT NULL,
     role                  VARCHAR(20)         NOT NULL,
+    is_active             BOOLEAN             NOT NULL DEFAULT TRUE,
     registration_date     DATE                NOT NULL DEFAULT CURRENT_DATE,
 
     CONSTRAINT uq_app_user_email
@@ -71,6 +72,7 @@ COMMENT ON COLUMN app_user.name              IS 'Full name of the user.';
 COMMENT ON COLUMN app_user.email             IS 'Unique email address used for authentication.';
 COMMENT ON COLUMN app_user.password_hash     IS 'Securely hashed password (bcrypt/argon2).';
 COMMENT ON COLUMN app_user.role              IS 'System role for authorization (ADMIN, TRAINER, CLIENT).';
+COMMENT ON COLUMN app_user.is_active         IS 'Whether the account can authenticate and be used (RI-01).';
 COMMENT ON COLUMN app_user.registration_date IS 'Date the account was created.';
 
 

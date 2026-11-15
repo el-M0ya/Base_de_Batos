@@ -15,12 +15,24 @@ class WorkoutProgramRepository(ABC):
     """Persistence operations for programs and their domain relationships."""
 
     @abstractmethod
+    async def save(self, program: WorkoutProgram) -> WorkoutProgram:
+        """Insert or update a program together with its covered groups."""
+
+    @abstractmethod
     async def get_by_id(self, id_workout_program: int) -> Optional[WorkoutProgram]:
         """Return a program by identifier, or ``None``."""
 
     @abstractmethod
+    async def get_by_name(self, name: str) -> Optional[WorkoutProgram]:
+        """Return a program by its normalized name, or ``None``."""
+
+    @abstractmethod
     async def list(self) -> list[WorkoutProgram]:
-        """Return all workout programs."""
+        """Return all workout programs ordered by name."""
+
+    @abstractmethod
+    async def delete(self, id_workout_program: int) -> None:
+        """Delete a program and its coverage, preserving referential integrity."""
 
     @abstractmethod
     async def list_covered_muscle_groups(

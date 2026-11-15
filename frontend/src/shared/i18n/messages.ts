@@ -271,6 +271,7 @@ export const messages = {
     },
     form: {
       title: 'Reclasificar ejercicio',
+      close: 'Cerrar formulario',
       nameLabel: 'Nombre',
       descriptionLabel: 'Descripción',
       catalogsLoading: 'Cargando catálogos…',
@@ -284,6 +285,7 @@ export const messages = {
       intensityLabel: 'Intensidad',
       intensityPlaceholder: 'Selecciona una intensidad',
       intensityRequired: 'La intensidad es obligatoria.',
+      saving: 'Guardando…',
     },
     // Fallback texts by HTTP status, used when the server sends no message.
     errors: {
