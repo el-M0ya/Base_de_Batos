@@ -105,3 +105,11 @@ describe('isMenuEntryVisible', () => {
     expect(isMenuEntryVisible(muscleGroups, hasRole, hasCapability)).toBe(true);
   });
 });
+
+describe('menuEntries', () => {
+  it('keeps detail routes such as /reports/:id out of the menu', () => {
+    const paths = menuEntries.map((entry) => entry.path);
+    expect(paths).not.toContain('/reports/:id');
+    expect(paths).toContain('/reports');
+  });
+});

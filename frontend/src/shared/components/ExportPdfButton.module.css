@@ -1,0 +1,6 @@
+/* Stacks the button and its error alert, aligned to the right of the header. */
+.wrapper {
+  display: grid;
+  justify-items: end;
+  gap: var(--space-2);
+}
