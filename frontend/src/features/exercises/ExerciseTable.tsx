@@ -1,7 +1,10 @@
 import { DataTable } from '../../shared/components/DataTable/DataTable';
 import type { ColumnDef } from '../../shared/components/DataTable/columns';
 import { useAuth } from '../../shared/auth/useAuth';
+import { messages } from '../../shared/i18n/messages';
 import type { Exercise } from './types';
+
+const t = messages.exercises;
 
 /** Props for the exercise catalog table. */
 export interface ExerciseTableProps {
@@ -14,15 +17,15 @@ export interface ExerciseTableProps {
 }
 
 const columns: ColumnDef<Exercise>[] = [
-  { accessor: 'name', header: 'Nombre' },
-  { accessor: 'muscleGroupName', header: 'Grupo muscular' },
-  { accessor: 'exerciseType', header: 'Tipo' },
-  { accessor: 'intensity', header: 'Intensidad' },
-  { accessor: 'trainerId', header: 'Creador' },
+  { accessor: 'name', header: t.table.name },
+  { accessor: 'muscleGroupName', header: t.table.muscleGroup },
+  { accessor: 'exerciseType', header: t.table.type },
+  { accessor: 'intensity', header: t.table.intensity },
+  { accessor: 'trainerId', header: t.table.creator },
   {
     accessor: 'registrationDate',
-    header: 'Fecha de registro',
-    format: (value) => value ?? '-',
+    header: t.table.registrationDate,
+    format: (value) => value ?? messages.common.emptyValue,
   },
 ];
 
@@ -42,7 +45,7 @@ export function ExerciseTable({ exercises, loading = false, onReclassify }: Exer
       loading={loading}
       onEdit={onReclassify}
       canEdit={canEdit}
-      ariaLabel="Tabla de ejercicios"
+      ariaLabel={t.tableLabel}
     />
   );
 }

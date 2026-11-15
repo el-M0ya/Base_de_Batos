@@ -18,7 +18,10 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useSort } from './useSort';
 import type { ColumnDef, SortDirection } from './columns';
 import { Button } from '../Button';
+import { messages } from '../../i18n/messages';
 import styles from './DataTable.module.css';
+
+const t = messages.dataTable;
 
 /**
  * Props de `DataTable`.
@@ -67,7 +70,7 @@ export function DataTable<T extends object>({
   onEdit,
   canEdit,
   onDelete,
-  ariaLabel = 'Tabla de datos',
+  ariaLabel = t.defaultLabel,
 }: DataTableProps<T>) {
   const firstSortable =
     columns.find((c) => c.sortable !== false)?.accessor ?? (columns[0]?.accessor as keyof T);
@@ -87,19 +90,19 @@ export function DataTable<T extends object>({
   const hasActions = onEdit !== undefined || onDelete !== undefined;
   if (loading) {
     return (
-      <div className={styles.loading} role="status" aria-label="Cargando">
-        Cargando…
+      <div className={styles.loading} role="status" aria-label={t.loadingLabel}>
+        {messages.states.loading}
       </div>
     );
   }
 
   if (isEmpty) {
-    return <div className={styles.empty}>No hay datos disponibles</div>;
+    return <div className={styles.empty}>{t.empty}</div>;
   }
 
   return (
     <table className={styles.table} aria-label={ariaLabel}>
-      <caption className={styles.caption}>Datos ({sorted.length})</caption>
+      <caption className={styles.caption}>{t.caption(sorted.length)}</caption>
       <thead className={styles.thead}>
         <tr>
           {columns.map((column) => {
@@ -124,10 +127,8 @@ export function DataTable<T extends object>({
                     }
                     aria-label={
                       isActive
-                        ? `Ordenar ${column.header} ${
-                            sortDirection === 'asc' ? 'descendente' : 'ascendente'
-                          }`
-                        : `Ordenar ${column.header} ascendente`
+                        ? t.sortBy(column.header, sortDirection === 'asc' ? 'desc' : 'asc')
+                        : t.sortBy(column.header, 'asc')
                     }
                   >
                     {column.header}
@@ -143,7 +144,7 @@ export function DataTable<T extends object>({
           })}
           {hasActions && (
             <th className={styles.th} scope="col">
-              Acciones
+              {t.actions}
             </th>
           )}
         </tr>
@@ -167,22 +168,22 @@ export function DataTable<T extends object>({
                   <Button
                     variant="ghost"
                     onClick={() => onEdit(row)}
-                    aria-label={`Editar registro ${rowIndex + 1}`}
-                    title="Editar"
+                    aria-label={t.editRow(rowIndex + 1)}
+                    title={t.edit}
                     icon={<Pencil size={16} aria-hidden="true" />}
                   >
-                    Editar
+                    {t.edit}
                   </Button>
                 )}
                 {onDelete !== undefined && (
                   <Button
                     variant="ghost"
                     onClick={() => onDelete(row)}
-                    aria-label={`Eliminar registro ${rowIndex + 1}`}
-                    title="Eliminar"
+                    aria-label={t.deleteRow(rowIndex + 1)}
+                    title={t.delete}
                     icon={<Trash2 size={16} aria-hidden="true" />}
                   >
-                    Eliminar
+                    {t.delete}
                   </Button>
                 )}
               </td>

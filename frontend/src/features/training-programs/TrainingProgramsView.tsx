@@ -14,7 +14,11 @@ import {
   useUpdateTrainingProgram,
 } from './useTrainingPrograms';
 import type { TrainingProgram, TrainingProgramInput } from './types';
+import { messages } from '../../shared/i18n/messages';
 import styles from './TrainingProgramsView.module.css';
+
+const t = messages.trainingPrograms;
+const common = messages.common;
 
 /**
  * Main CRUD view for training-program administration.
@@ -68,9 +72,7 @@ export function TrainingProgramsView() {
       await deleteMutation.mutateAsync(deletingProgram.id);
       setDeletingProgram(undefined);
     } catch (error) {
-      setOperationError(
-        error instanceof ApiError ? error.message : 'No se pudo eliminar el programa.',
-      );
+      setOperationError(error instanceof ApiError ? error.message : t.deleteError);
     }
   }
 
@@ -78,29 +80,25 @@ export function TrainingProgramsView() {
     <main className={styles.page}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Administración</p>
-          <h1 className={styles.title}>Programas de entrenamiento</h1>
-          <p className={styles.subtitle}>
-            Gestiona objetivos y grupos musculares cubiertos por cada programa.
-          </p>
+          <p className={styles.eyebrow}>{common.adminEyebrow}</p>
+          <h1 className={styles.title}>{t.title}</h1>
+          <p className={styles.subtitle}>{t.subtitle}</p>
         </div>
         <Button icon={<Plus size={18} aria-hidden="true" />} onClick={openCreateForm}>
-          Nuevo programa
+          {t.createButton}
         </Button>
       </header>
 
       {programsQuery.error !== null && programsQuery.error !== undefined && (
         <Alert>
-          {programsQuery.error instanceof ApiError
-            ? programsQuery.error.message
-            : 'No se pudo cargar el catálogo de programas.'}
+          {programsQuery.error instanceof ApiError ? programsQuery.error.message : t.loadError}
         </Alert>
       )}
       {operationError !== undefined && (
         <Alert onDismiss={() => setOperationError(undefined)}>{operationError}</Alert>
       )}
 
-      <section className={styles.content} aria-label="Listado de programas de entrenamiento">
+      <section className={styles.content} aria-label={t.listLabel}>
         <TrainingProgramTable
           data={programs}
           isLoading={programsQuery.isLoading}
@@ -112,7 +110,7 @@ export function TrainingProgramsView() {
       <Modal
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        title={editingProgram === undefined ? 'Nuevo programa' : 'Editar programa'}
+        title={editingProgram === undefined ? t.form.createTitle : t.form.editTitle}
       >
         <TrainingProgramForm
           key={editingProgram?.id ?? 'new-training-program'}
@@ -129,24 +127,25 @@ export function TrainingProgramsView() {
       <Modal
         isOpen={deletingProgram !== undefined}
         onClose={() => setDeletingProgram(undefined)}
-        title="Eliminar programa"
+        title={t.delete.title}
         footer={
           <div className={styles.confirmActions}>
             <Button variant="secondary" onClick={() => setDeletingProgram(undefined)}>
-              Cancelar
+              {common.cancel}
             </Button>
             <Button
               onClick={() => void deleteProgram()}
               isLoading={deleteMutation.isPending}
               className={styles.deleteButton}
             >
-              Eliminar
+              {common.delete}
             </Button>
           </div>
         }
       >
-        ¿Seguro que deseas eliminar <strong>{deletingProgram?.name}</strong>? Esta acción no se
-        puede deshacer.
+        {t.delete.confirmBefore}
+        <strong>{deletingProgram?.name}</strong>
+        {t.delete.confirmAfter}
       </Modal>
     </main>
   );

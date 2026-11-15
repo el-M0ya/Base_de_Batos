@@ -3,8 +3,12 @@ import { ApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
 import { TextField } from '../../shared/components/TextField';
+import { messages } from '../../shared/i18n/messages';
 import type { Site, SiteInput } from './types';
 import styles from './SiteForm.module.css';
+
+const t = messages.sites;
+const common = messages.common;
 
 /** Props for the create/edit site form. */
 export interface SiteFormProps {
@@ -45,8 +49,8 @@ export function SiteForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: SiteFormErrors = {};
-    if (name.trim() === '') nextErrors.name = 'El nombre es obligatorio.';
-    if (address.trim() === '') nextErrors.address = 'La dirección es obligatoria.';
+    if (name.trim() === '') nextErrors.name = t.form.nameRequired;
+    if (address.trim() === '') nextErrors.address = t.form.addressRequired;
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       return;
@@ -58,11 +62,9 @@ export function SiteForm({
       await onSubmit({ name: name.trim(), address: address.trim() });
     } catch (error) {
       if (error instanceof ApiError) {
-        setServerError(
-          error.isNetworkError() ? 'No se pudo conectar con el servidor.' : error.message,
-        );
+        setServerError(error.isNetworkError() ? common.networkError : error.message);
       } else {
-        setServerError('No se pudo guardar el sitio. Inténtalo nuevamente.');
+        setServerError(t.saveError);
       }
     }
   }
@@ -71,30 +73,30 @@ export function SiteForm({
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       {serverError !== undefined && <Alert>{serverError}</Alert>}
       <TextField
-        label="Nombre del sitio"
+        label={t.form.nameLabel}
         value={name}
         onChange={(event) => setName(event.target.value)}
         error={errors.name}
-        placeholder="Ej. Sede Vedado"
+        placeholder={t.form.namePlaceholder}
         required
         autoFocus
         disabled={isSubmitting}
       />
       <TextField
-        label="Dirección"
+        label={t.form.addressLabel}
         value={address}
         onChange={(event) => setAddress(event.target.value)}
         error={errors.address}
-        placeholder="Ej. Calle 23, Vedado, La Habana"
+        placeholder={t.form.addressPlaceholder}
         required
         disabled={isSubmitting}
       />
       <div className={styles.actions}>
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
-          Cancelar
+          {common.cancel}
         </Button>
         <Button type="submit" isLoading={isSubmitting}>
-          {initialValue === undefined ? 'Crear sitio' : 'Guardar cambios'}
+          {initialValue === undefined ? t.form.createButton : common.saveChanges}
         </Button>
       </div>
     </form>

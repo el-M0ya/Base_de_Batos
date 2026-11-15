@@ -1,6 +1,9 @@
 import { DataTable } from '../../shared/components/DataTable/DataTable';
 import type { ColumnDef } from '../../shared/components/DataTable/columns';
+import { messages } from '../../shared/i18n/messages';
 import type { Site } from './types';
+
+const t = messages.sites;
 
 /** Props for the gym-site table. */
 export interface SiteTableProps {
@@ -22,14 +25,14 @@ export interface SiteTableProps {
  */
 export function SiteTable({ data, isLoading = false, onEdit, onDelete }: SiteTableProps) {
   const columns: ColumnDef<Site>[] = [
-    { accessor: 'name', header: 'Nombre' },
-    { accessor: 'address', header: 'Dirección' },
+    { accessor: 'name', header: t.table.name },
+    { accessor: 'address', header: t.table.address },
     {
       accessor: 'registrationDate',
-      header: 'Registrado',
+      header: t.table.registered,
       format: (value) =>
         value === undefined
-          ? '—'
+          ? messages.common.emptyValue
           : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(new Date(String(value))),
     },
   ];
@@ -41,7 +44,7 @@ export function SiteTable({ data, isLoading = false, onEdit, onDelete }: SiteTab
       loading={isLoading}
       onEdit={onEdit}
       onDelete={onDelete}
-      ariaLabel="Catálogo de sitios de gimnasios"
+      ariaLabel={t.tableLabel}
     />
   );
 }

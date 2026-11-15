@@ -1,6 +1,9 @@
 import { DataTable } from '../../shared/components/DataTable/DataTable';
 import type { ColumnDef } from '../../shared/components/DataTable/columns';
+import { messages } from '../../shared/i18n/messages';
 import type { TrainingProgram } from './types';
+
+const t = messages.trainingPrograms;
 
 /** Props for the training-program table. */
 export interface TrainingProgramTableProps {
@@ -28,12 +31,12 @@ export function TrainingProgramTable({
   onDelete,
 }: TrainingProgramTableProps) {
   const columns: ColumnDef<TrainingProgram>[] = [
-    { accessor: 'name', header: 'Nombre' },
-    { accessor: 'objective', header: 'Objetivo' },
+    { accessor: 'name', header: t.table.name },
+    { accessor: 'objective', header: t.table.objective },
     {
       accessor: 'muscleGroupIds',
-      header: 'Grupos musculares',
-      format: (value) => `${Array.isArray(value) ? value.length : 0} configurado(s)`,
+      header: t.table.muscleGroups,
+      format: (value) => t.table.configuredCount(Array.isArray(value) ? value.length : 0),
     },
   ];
 
@@ -44,7 +47,7 @@ export function TrainingProgramTable({
       loading={isLoading}
       onEdit={onEdit}
       onDelete={onDelete}
-      ariaLabel="Catálogo de programas de entrenamiento"
+      ariaLabel={t.tableLabel}
     />
   );
 }

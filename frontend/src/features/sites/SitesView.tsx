@@ -4,11 +4,15 @@ import { ApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
 import { Modal } from '../../shared/components/Modal';
+import { messages } from '../../shared/i18n/messages';
 import { SiteForm } from './SiteForm';
 import { SiteTable } from './SiteTable';
 import { useCreateSite, useDeleteSite, useSites, useUpdateSite } from './useSites';
 import type { Site, SiteInput } from './types';
 import styles from './SitesView.module.css';
+
+const t = messages.sites;
+const common = messages.common;
 
 /**
  * Main CRUD view for the gym-site administration module.
@@ -61,9 +65,7 @@ export function SitesView() {
       await deleteMutation.mutateAsync(deletingSite.id);
       setDeletingSite(undefined);
     } catch (error) {
-      setOperationError(
-        error instanceof ApiError ? error.message : 'No se pudo eliminar el sitio.',
-      );
+      setOperationError(error instanceof ApiError ? error.message : t.deleteError);
     }
   }
 
@@ -71,29 +73,25 @@ export function SitesView() {
     <main className={styles.page}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Administración</p>
-          <h1 className={styles.title}>Sitios de gimnasios</h1>
-          <p className={styles.subtitle}>
-            Gestiona las sedes donde se desarrollan los entrenamientos.
-          </p>
+          <p className={styles.eyebrow}>{common.adminEyebrow}</p>
+          <h1 className={styles.title}>{t.title}</h1>
+          <p className={styles.subtitle}>{t.subtitle}</p>
         </div>
         <Button icon={<Plus size={18} aria-hidden="true" />} onClick={openCreateForm}>
-          Nuevo sitio
+          {t.createButton}
         </Button>
       </header>
 
       {sitesQuery.error !== null && sitesQuery.error !== undefined && (
         <Alert>
-          {sitesQuery.error instanceof ApiError
-            ? sitesQuery.error.message
-            : 'No se pudo cargar el catálogo de sitios.'}
+          {sitesQuery.error instanceof ApiError ? sitesQuery.error.message : t.loadError}
         </Alert>
       )}
       {operationError !== undefined && (
         <Alert onDismiss={() => setOperationError(undefined)}>{operationError}</Alert>
       )}
 
-      <section className={styles.content} aria-label="Listado de sitios de gimnasios">
+      <section className={styles.content} aria-label={t.listLabel}>
         <SiteTable
           data={sites}
           isLoading={sitesQuery.isLoading}
@@ -105,7 +103,7 @@ export function SitesView() {
       <Modal
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        title={editingSite === undefined ? 'Nuevo sitio' : 'Editar sitio'}
+        title={editingSite === undefined ? t.form.createTitle : t.form.editTitle}
       >
         <SiteForm
           key={editingSite?.id ?? 'new-site'}
@@ -119,24 +117,25 @@ export function SitesView() {
       <Modal
         isOpen={deletingSite !== undefined}
         onClose={() => setDeletingSite(undefined)}
-        title="Eliminar sitio"
+        title={t.delete.title}
         footer={
           <div className={styles.confirmActions}>
             <Button variant="secondary" onClick={() => setDeletingSite(undefined)}>
-              Cancelar
+              {common.cancel}
             </Button>
             <Button
               onClick={() => void deleteSite()}
               isLoading={deleteMutation.isPending}
               className={styles.deleteButton}
             >
-              Eliminar
+              {common.delete}
             </Button>
           </div>
         }
       >
-        ¿Seguro que deseas eliminar <strong>{deletingSite?.name}</strong>? Esta acción no se puede
-        deshacer.
+        {t.delete.confirmBefore}
+        <strong>{deletingSite?.name}</strong>
+        {t.delete.confirmAfter}
       </Modal>
     </main>
   );

@@ -1,6 +1,9 @@
 import { DataTable } from '../../shared/components/DataTable/DataTable';
 import type { ColumnDef } from '../../shared/components/DataTable/columns';
+import { messages } from '../../shared/i18n/messages';
 import type { MuscleGroup } from '../../shared/types/muscleGroup';
+
+const t = messages.muscleGroups;
 
 /** Props for the muscle-group table. */
 export interface MuscleGroupTableProps {
@@ -28,14 +31,14 @@ export function MuscleGroupTable({
   onDelete,
 }: MuscleGroupTableProps) {
   const columns: ColumnDef<MuscleGroup>[] = [
-    { accessor: 'name', header: 'Nombre' },
-    { accessor: 'description', header: 'Descripción' },
+    { accessor: 'name', header: t.table.name },
+    { accessor: 'description', header: t.table.description },
     {
       accessor: 'createdAt',
-      header: 'Creado',
+      header: t.table.created,
       format: (value) =>
         value === undefined
-          ? '—'
+          ? messages.common.emptyValue
           : new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(new Date(String(value))),
     },
   ];
@@ -47,7 +50,7 @@ export function MuscleGroupTable({
       loading={isLoading}
       onEdit={onEdit}
       onDelete={onDelete}
-      ariaLabel="Catálogo de grupos musculares"
+      ariaLabel={t.tableLabel}
     />
   );
 }

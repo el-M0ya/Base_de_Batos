@@ -12,6 +12,9 @@
 import { useState, useEffect } from 'react';
 import { usersApi, getApiErrorMessage } from './api';
 import type { UserAccount } from '../../shared/types/users';
+import { messages } from '../../shared/i18n/messages';
+
+const errorTexts = messages.users.errors;
 
 /**
  * Valor devuelto por `useUsers`.
@@ -55,10 +58,10 @@ export function useUsers(): UseUsersReturn {
       if (result.ok) {
         setUsers(result.data);
       } else {
-        setError(getApiErrorMessage(result) ?? 'No se pudieron cargar los usuarios.');
+        setError(getApiErrorMessage(result) ?? errorTexts.loadFailed);
       }
     } catch {
-      setError('No se pudieron cargar los usuarios.');
+      setError(errorTexts.loadFailed);
     } finally {
       setLoading(false);
     }
@@ -81,10 +84,10 @@ export function useUsers(): UseUsersReturn {
         setUsers((prev) => [...prev, result.data]);
         return result.data;
       }
-      setError(getApiErrorMessage(result) ?? 'No se pudo crear la cuenta.');
+      setError(getApiErrorMessage(result) ?? errorTexts.createFailed);
       return null;
     } catch {
-      setError('No se pudo crear la cuenta.');
+      setError(errorTexts.createFailed);
       return null;
     } finally {
       setLoading(false);
@@ -103,10 +106,10 @@ export function useUsers(): UseUsersReturn {
         setUsers((prev) => prev.map((u) => (u.id === id ? result.data : u)));
         return result.data;
       }
-      setError(getApiErrorMessage(result) ?? 'No se pudo modificar la cuenta.');
+      setError(getApiErrorMessage(result) ?? errorTexts.updateFailed);
       return null;
     } catch {
-      setError('No se pudo modificar la cuenta.');
+      setError(errorTexts.updateFailed);
       return null;
     } finally {
       setLoading(false);
@@ -122,10 +125,10 @@ export function useUsers(): UseUsersReturn {
         setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, status: 'inactive' } : u)));
         return true;
       }
-      setError(getApiErrorMessage(result) ?? 'No se pudo desactivar la cuenta.');
+      setError(getApiErrorMessage(result) ?? errorTexts.deactivateFailed);
       return false;
     } catch {
-      setError('No se pudo desactivar la cuenta.');
+      setError(errorTexts.deactivateFailed);
       return false;
     } finally {
       setLoading(false);
