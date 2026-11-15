@@ -80,6 +80,7 @@ export const messages = {
       emailInvalid: 'El correo no tiene un formato válido.',
       passwordRequired: 'Introduce tu contraseña.',
       invalidCredentials: 'Correo o contraseña incorrectos. Verifica tus credenciales.',
+      accountInactive: 'Tu cuenta está desactivada. Contacta con el administrador.',
     },
     demoSuccess: 'Credenciales correctas. Sesión iniciada.',
     sessionError: 'Error al iniciar sesión. Inténtalo de nuevo.',

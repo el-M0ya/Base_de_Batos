@@ -1,14 +1,18 @@
 /**
- * Contexto de sesión de autenticación.
+ * Authentication session context.
  *
  * @remarks
- * Almacena en memoria el usuario autenticado, su rol y sus capacidades.
- * El token se guarda tanto en memoria como en `sessionStorage` para que una
- * recarga de la página restaure la sesión en la misma pestaña.
- * Nunca se usa `localStorage`.
+ * Keeps the authenticated user, their role and capabilities in memory.
+ * The token is stored both in memory and in `sessionStorage` (see
+ * `sessionStore`) so a page reload restores the session in the same tab. On
+ * restore, the user is fetched again from the backend (`authApi.me`) to get
+ * their current role and capabilities.
  *
- * Este contexto vive en `shared/auth` porque el layout y varias features lo
- * necesitan, respetando las reglas de dependencia de E3-02.
+ * The provider tells `httpClient` how to get the token and what to do on a 401,
+ * so every request carries the session (E4-05).
+ *
+ * This context lives in `shared/auth` because the layout and several features
+ * need it, following the E3-02 dependency rules.
  */
 import {
   createContext,
@@ -16,138 +20,155 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
+import { httpClient } from '../api/httpClient';
 import type { AuthenticatedUser, UserCapabilities, UserRole } from '../types/roles';
 import { authApi } from './authApi';
+import { sessionStore } from './sessionStore';
 
 /**
- * Valor del contexto de autenticación.
+ * Value of the authentication context.
  */
 export interface AuthContextValue {
-  /** Usuario autenticado, o `null` si no hay sesión. */
+  /** Authenticated user, or `null` when there is no session. */
   user: AuthenticatedUser | null;
-  /** Token de sesión en memoria, o `null` si no hay sesión. */
+  /** Session token in memory, or `null` when there is no session. */
   token: string | null;
-  /** `true` si hay un usuario autenticado. */
+  /** `true` when a user is authenticated. */
   isAuthenticated: boolean;
-  /** `true` mientras se inicia sesión o se valida la sesión almacenada. */
+  /**
+   * `true` only while the stored session is being validated at startup.
+   *
+   * @remarks
+   * It does not change during `login`/`logout`: the router hides the whole app
+   * while it is `true`, and doing so on login would unmount the login page
+   * (losing its error message). Each form keeps its own submitting state.
+   */
   isLoading: boolean;
   /**
-   * Inicia sesión con correo y contraseña.
-   * Guarda el token en memoria y en `sessionStorage`.
+   * Logs in with email and password.
+   * Stores the token in memory and in `sessionStorage`.
    */
   login: (email: string, password: string) => Promise<void>;
-  /** Cierra la sesión: limpia memoria y `sessionStorage`. */
+  /** Logs out: clears memory and `sessionStorage`. */
   logout: () => Promise<void>;
   /**
-   * Restaura la sesión desde `sessionStorage` (por ejemplo, tras recargar).
+   * Restores the stored session (e.g. after a reload), validating the token
+   * with the backend.
    */
   restoreSession: () => Promise<void>;
-  /** Comprueba si el usuario tiene el rol indicado. */
+  /** Checks whether the user has the given role. */
   hasRole: (role: UserRole) => boolean;
-  /** Comprueba si el usuario tiene la capacidad indicada. */
+  /** Checks whether the user has the given capability. */
   hasCapability: (capability: keyof UserCapabilities) => boolean;
 }
 
-/** Contexto de React para la sesión de autenticación. */
+/** React context for the authentication session. */
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 /**
- * Proveedor de sesión. Debe envolver la aplicación (o al menos las partes que
- * necesitan autenticación).
+ * Session provider. It must wrap the application (or at least the parts that
+ * need authentication).
  *
- * @param children - Componentes hijos que consumen `useAuth`.
+ * @param children - Child components that consume `useAuth`.
  */
 export function AuthProvider({ children }: { children: ReactNode }): React.ReactNode {
-  // Inicializar estado desde sessionStorage (sin setState en efectos).
-  const [user, setUser] = useState<AuthenticatedUser | null>(() => {
-    const stored = sessionStorage.getItem('forjafit:user');
-    return stored ? JSON.parse(stored) : null;
-  });
-  const [token, setToken] = useState<string | null>(() => {
-    return sessionStorage.getItem('forjafit:token');
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(() => sessionStore.readToken());
+  // Without a token there is no session to restore: no user and nothing to wait for.
+  const [user, setUser] = useState<AuthenticatedUser | null>(() =>
+    token !== null ? sessionStore.readUser() : null,
+  );
+  const [isLoading, setIsLoading] = useState(token !== null);
+
+  // Copy of the token that updates immediately (without waiting for a new
+  // render), so httpClient never sends a stale token.
+  const tokenRef = useRef<string | null>(token);
 
   const isAuthenticated = user !== null;
 
-  /** Guarda el token y el usuario en memoria y en `sessionStorage`. */
+  /** Stores the token and user in memory and in `sessionStorage`. */
   const persistSession = useCallback((authToken: string, authUser: AuthenticatedUser) => {
+    tokenRef.current = authToken;
     setToken(authToken);
     setUser(authUser);
-    sessionStorage.setItem('forjafit:token', authToken);
-    sessionStorage.setItem('forjafit:user', JSON.stringify(authUser));
+    sessionStore.save(authToken, authUser);
   }, []);
 
-  /** Limpia la sesión de memoria y de `sessionStorage`. */
+  /** Clears the session from memory and `sessionStorage`. */
   const clearSession = useCallback(() => {
+    tokenRef.current = null;
     setToken(null);
     setUser(null);
-    sessionStorage.removeItem('forjafit:token');
-    sessionStorage.removeItem('forjafit:user');
+    sessionStore.clear();
   }, []);
 
-  /** Inicia sesión con correo y contraseña. */
+  // Plug the session into the HTTP client: token on every request, logout on 401.
+  useEffect(() => {
+    httpClient.setAuthHandlers({
+      getToken: () => tokenRef.current,
+      onUnauthorized: () => {
+        sessionStore.markExpired();
+        clearSession();
+      },
+    });
+    return () => httpClient.setAuthHandlers(null);
+  }, [clearSession]);
+
+  /** Logs in with email and password. */
   const login = useCallback(
     async (email: string, password: string): Promise<void> => {
-      setIsLoading(true);
-      try {
-        const authUser = await authApi.login(email, password);
-        const authToken = `demo:${authUser.email}`;
-        persistSession(authToken, authUser);
-      } finally {
-        setIsLoading(false);
-      }
+      const session = await authApi.login(email, password);
+      persistSession(session.token, session.user);
     },
     [persistSession],
   );
 
-  /** Cierra la sesión. */
+  /** Logs out. */
   const logout = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
     try {
       await authApi.logout();
     } finally {
       clearSession();
-      setIsLoading(false);
     }
   }, [clearSession]);
 
-  /** Restaura la sesión desde `sessionStorage`. */
+  /** Restores the stored session, asking the backend for the current user. */
   const restoreSession = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const storedToken = sessionStorage.getItem('forjafit:token');
-      const storedUser = sessionStorage.getItem('forjafit:user');
-
-      if (!storedToken || !storedUser) {
+      const storedToken = sessionStore.readToken();
+      if (!storedToken) {
         clearSession();
         return;
       }
-
-      // Verificar con la API que la sesión sigue siendo válida.
-      const authUser = await authApi.me();
-      if (!authUser) {
+      const freshUser = await authApi.me(storedToken);
+      if (freshUser) {
+        persistSession(storedToken, freshUser);
+      } else {
         clearSession();
-        return;
       }
-
-      const parsedUser: AuthenticatedUser = JSON.parse(storedUser);
-      setToken(storedToken);
-      setUser(parsedUser);
     } catch {
+      // The token cannot be verified (like backend down), so ask for a new login.
       clearSession();
     } finally {
       setIsLoading(false);
     }
-  }, [clearSession]);
+  }, [clearSession, persistSession]);
 
-  /** Comprueba si el usuario tiene el rol indicado. */
+  // Validate the stored session once, when the provider mounts. It is scheduled
+  // as an async task so state is not updated synchronously inside the effect.
+  useEffect(() => {
+    if (sessionStore.readToken() === null) return;
+    void Promise.resolve().then(restoreSession);
+  }, [restoreSession]);
+
+  /** Checks whether the user has the given role. */
   const hasRole = useCallback((role: UserRole): boolean => user?.role === role, [user]);
 
-  /** Comprueba si el usuario tiene la capacidad indicada. */
+  /** Checks whether the user has the given capability. */
   const hasCapability = useCallback(
     (capability: keyof UserCapabilities): boolean => user?.capabilities[capability] === true,
     [user],
@@ -178,30 +199,14 @@ export function AuthProvider({ children }: { children: ReactNode }): React.React
     ],
   );
 
-  // Validar la sesión almacenada con la API tras montar el proveedor.
-  // authApi.me() es asíncrona y no llama a setState de forma síncrona.
-  useEffect(() => {
-    void (async () => {
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-      const authUser = await authApi.me();
-      if (!authUser) {
-        clearSession();
-      }
-      setIsLoading(false);
-    })();
-  }, [token, clearSession]);
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 /**
- * Hook para consumir el contexto de autenticación.
+ * Hook to consume the authentication context.
  *
- * @returns El valor del contexto de autenticación.
- * @throws {Error} si se usa fuera de un `AuthProvider`.
+ * @returns The authentication context value.
+ * @throws {Error} when used outside an `AuthProvider`.
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthContextValue {

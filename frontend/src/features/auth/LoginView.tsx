@@ -26,6 +26,8 @@ export interface LoginViewProps {
   fieldErrors: LoginFieldErrors;
   /** General error shown in the alert box (e.g. wrong credentials). */
   formError: string | null;
+  /** Informational message shown in the alert box (e.g. the session expired). */
+  noticeMessage?: string | null;
   /** Success message shown in the alert box. */
   successMessage: string | null;
   /** True while the login request is in progress. */
@@ -52,6 +54,7 @@ export function LoginView({
   password,
   fieldErrors,
   formError,
+  noticeMessage = null,
   successMessage,
   isSubmitting,
   onEmailChange,
@@ -93,6 +96,11 @@ export function LoginView({
           {formError !== null && (
             <Alert variant="error" onDismiss={onDismissMessage}>
               {formError}
+            </Alert>
+          )}
+          {noticeMessage !== null && (
+            <Alert variant="info" onDismiss={onDismissMessage}>
+              {noticeMessage}
             </Alert>
           )}
           {successMessage !== null && (
