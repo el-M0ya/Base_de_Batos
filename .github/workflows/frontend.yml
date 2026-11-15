@@ -116,11 +116,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Docker image names must be lowercase; the repository name is not.
+      - name: Calcular el nombre de la imagen
+        run: echo "IMAGE_REPO=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
       - name: Construir y publicar
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
-          tags: ghcr.io/${{ github.repository }}/frontend:latest
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
