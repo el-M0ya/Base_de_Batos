@@ -101,7 +101,7 @@ export function UsersView({
         <div className="users-view__error" role="alert">
           {error}
           <button type="button" className="users-view__error-dismiss" onClick={onReload}>
-            {messages.users.dismissError}
+            {messages.alert.dismiss}
           </button>
         </div>
       )}
@@ -122,7 +122,7 @@ export function UsersView({
                 : messages.users.activateButton}
             </Button>
             <Button variant="secondary" onClick={() => onEdit(user)} isLoading={loading}>
-              {messages.users.editButton}
+              {messages.common.edit}
             </Button>
           </div>
         ))}

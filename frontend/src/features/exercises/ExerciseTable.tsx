@@ -17,7 +17,7 @@ export interface ExerciseTableProps {
 }
 
 const columns: ColumnDef<Exercise>[] = [
-  { accessor: 'name', header: t.table.name },
+  { accessor: 'name', header: messages.common.columns.name },
   { accessor: 'muscleGroupName', header: t.table.muscleGroup },
   { accessor: 'exerciseType', header: t.table.type },
   { accessor: 'intensity', header: t.table.intensity },

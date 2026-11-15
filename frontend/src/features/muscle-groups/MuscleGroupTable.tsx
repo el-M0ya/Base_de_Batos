@@ -31,7 +31,7 @@ export function MuscleGroupTable({
   onDelete,
 }: MuscleGroupTableProps) {
   const columns: ColumnDef<MuscleGroup>[] = [
-    { accessor: 'name', header: t.table.name },
+    { accessor: 'name', header: messages.common.columns.name },
     { accessor: 'description', header: t.table.description },
     {
       accessor: 'createdAt',

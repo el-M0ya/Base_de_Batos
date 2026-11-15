@@ -64,7 +64,7 @@ export function TrainingProgramForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: TrainingProgramFormErrors = {};
-    if (name.trim() === '') nextErrors.name = t.form.nameRequired;
+    if (name.trim() === '') nextErrors.name = common.nameRequired;
     if (objective.trim() === '') nextErrors.objective = t.form.objectiveRequired;
     if (selectedIds.length === 0) {
       nextErrors.muscleGroupIds = t.form.muscleGroupsRequired;

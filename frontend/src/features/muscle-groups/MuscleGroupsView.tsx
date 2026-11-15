@@ -138,9 +138,9 @@ export function MuscleGroupsView() {
           </div>
         }
       >
-        {t.delete.confirmBefore}
+        {common.deleteConfirm.before}
         <strong>{deletingGroup?.name}</strong>
-        {t.delete.confirmAfter}
+        {common.deleteConfirm.after}
       </Modal>
     </main>
   );

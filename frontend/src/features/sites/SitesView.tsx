@@ -133,9 +133,9 @@ export function SitesView() {
           </div>
         }
       >
-        {t.delete.confirmBefore}
+        {common.deleteConfirm.before}
         <strong>{deletingSite?.name}</strong>
-        {t.delete.confirmAfter}
+        {common.deleteConfirm.after}
       </Modal>
     </main>
   );

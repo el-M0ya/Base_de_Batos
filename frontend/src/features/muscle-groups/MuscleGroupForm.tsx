@@ -49,7 +49,7 @@ export function MuscleGroupForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: MuscleGroupFormErrors = {};
-    if (name.trim() === '') nextErrors.name = t.form.nameRequired;
+    if (name.trim() === '') nextErrors.name = common.nameRequired;
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       return;

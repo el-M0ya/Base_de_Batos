@@ -165,10 +165,10 @@ export function UserFormView({
 
         <div className="user-form__actions">
           <Button variant="primary" type="submit" disabled={submitting}>
-            {creating ? messages.users.form.createButton : messages.users.form.saveButton}
+            {creating ? messages.users.form.createButton : messages.common.saveChanges}
           </Button>
           <Button variant="secondary" type="button" onClick={onCancel}>
-            {messages.users.form.cancelButton}
+            {messages.common.cancel}
           </Button>
         </div>
       </form>
