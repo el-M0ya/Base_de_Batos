@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from pydantic import Field, SecretStr, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from psycopg.conninfo import make_conninfo
 
@@ -65,6 +65,37 @@ class Settings(BaseSettings):
         ge=1,
         validation_alias="DB_CONNECT_TIMEOUT_SECONDS",
     )
+
+    # Authentication. The default is deliberately development-only; deployments
+    # must provide a private value through the environment.
+    jwt_secret_key: SecretStr = Field(
+        default=SecretStr("dev-only-change-this-secret-key-please"),
+        validation_alias="JWT_SECRET_KEY",
+    )
+    jwt_algorithm: str = Field(
+        default="HS256",
+        validation_alias="JWT_ALGORITHM",
+    )
+    jwt_access_token_expire_minutes: int = Field(
+        default=30,
+        ge=1,
+        validation_alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES",
+    )
+
+    @field_validator("jwt_secret_key")
+    @classmethod
+    def _validate_jwt_secret(cls, value: SecretStr) -> SecretStr:
+        if len(value.get_secret_value()) < 32:
+            raise ValueError("JWT_SECRET_KEY must contain at least 32 characters")
+        return value
+
+    @field_validator("jwt_algorithm")
+    @classmethod
+    def _validate_jwt_algorithm(cls, value: str) -> str:
+        algorithm = value.strip().upper()
+        if algorithm not in {"HS256", "HS384", "HS512"}:
+            raise ValueError("JWT_ALGORITHM must be HS256, HS384 or HS512")
+        return algorithm
 
     @model_validator(mode="after")
     def _validate_pool_bounds(self) -> "Settings":
