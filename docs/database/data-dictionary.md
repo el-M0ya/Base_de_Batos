@@ -196,10 +196,12 @@
 | `intensity_level` | `VARCHAR(50)` | NOT NULL | — | Free-text target intensity |
 | `cardio_ratio` | `NUMERIC(5,2)` | NOT NULL | — | Cardio percentage/ratio |
 | `strength_ratio` | `NUMERIC(5,2)` | NOT NULL | — | Strength percentage/ratio |
+| `flexibility_ratio` | `NUMERIC(5,2)` | NOT NULL | `0` | Flexibility percentage/ratio |
+| `covered_muscle_group_ids` | `INTEGER[]` | NOT NULL | `{}` | Muscle groups covered when the routine was generated |
 
-**Constraints:** `fk_parameters_routine_routine` uses UPDATE/DELETE RESTRICT; `chk_parameters_routine_total_exercises` requires `total_exercises > 0`; `chk_parameters_routine_intensity_not_empty` requires a non-empty trimmed intensity string; `chk_parameters_routine_ratios` requires both ratios to be non-negative and their sum to be no greater than 100.
+**Constraints:** `fk_parameters_routine_routine` uses UPDATE/DELETE RESTRICT; `chk_parameters_routine_total_exercises` requires `total_exercises > 0`; `chk_parameters_routine_intensity_not_empty` requires a non-empty trimmed intensity string; `chk_parameters_routine_ratios` requires all three ratios to be non-negative and their sum to be no greater than 100.
 
-**Important:** no flexibility ratio or normalized intensity FK is declared.
+**Important:** the flexibility ratio and the muscle-group coverage snapshot are added by `011_routine_parameters_full_generation.sql` and persisted by the routine repository.
 
 ### 2.14 `contains` — routine/exercise composition
 
@@ -414,7 +416,7 @@ These are differences between the requirements catalogue and the current DDL, no
 - Standalone room-chief relation: no `room_chief` table.
 - Standalone intensity-level catalog: no `intensity_level` table.
 - Exercise intensity: no column in `exercise`.
-- Flexibility ratio / muscle-group coverage parameter: not present in `parameters_routine`.
+- Flexibility ratio / muscle-group coverage parameter: added to `parameters_routine` by `011_routine_parameters_full_generation.sql`.
 - Routine regeneration lineage: no source-routine FK on `routine`.
 - `REPLACED` routine state: excluded by `chk_routine_status`.
 - Routine structure is separate JSONB, not a relational set of nested block tables.

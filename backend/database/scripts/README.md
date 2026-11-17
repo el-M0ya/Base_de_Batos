@@ -18,6 +18,7 @@ Scripts must be executed in the following numeric order:
 | `006_integrity_constraints.sql` | #25 | Uniqueness (U-1–U-12), domain CHECKs, temporal CHECKs and supporting indexes |
 | `007_consistency_triggers.sql` | #26 | Model consistency triggers (role/specialization checks, routine state consistency, adjustment resolver validation) and cache invalidation hooks for Redis |
 | `008_catalog_seeds.sql` | #27 | Initial catalog data and SQL fixtures for development/testing |
+| `011_routine_parameters_full_generation.sql` | E6-02 | Adds the flexibility proportion and muscle-group coverage snapshot to `parameters_routine` |
 
 ## Initialize from Scratch
 
