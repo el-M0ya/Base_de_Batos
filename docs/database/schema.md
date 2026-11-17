@@ -10,10 +10,10 @@
 This document distinguishes three things that must not be conflated:
 
 1. **Declared physical DDL:** the table and column definitions actually present in SQL scripts 001–005. These definitions determine the physical names and types recorded below.
-2. **Integrity and trigger intent:** scripts 006 and 007, which add constraints, indexes, and cross-table checks. Script 006 currently contains references that do not match the DDL in scripts 001–005; those statements are listed as unresolved rather than described as successfully installed.
+2. **Integrity and trigger intent:** scripts 006 and 007, which add constraints, indexes, and cross-table checks. Script 006 now uses the declared physical column names; room-chief validation identity maps to the trainer relation.
 3. **Approved design relations:** the 21 original relations identified in the project design documentation. Their mapping is in [schema-mapping.md](schema-mapping.md).
 
-The SQL files currently declare **20 tables** across scripts 001–005. Of these, 19 are physical tables corresponding to original design relations and one is the additional `routine_structure` table. The original `ROOMCHIEF` and `INTENSITYLEVEL` relations do not have their own `CREATE TABLE` statements in the current scripts. `validate` nevertheless references `room_chief`, so the current sequence cannot create that table successfully without resolving the missing referenced relation.
+The SQL files declare **20 tables** across scripts 001–005, including the additional `routine_structure` table. The original `ROOMCHIEF` and `INTENSITYLEVEL` relations do not have independent tables: reviewers share trainer identity, and intensity is stored in `parameters_routine`. The validation foreign key targets `trainer`.
 
 This is a static review of the checked-in DDL. No live PostgreSQL instance was available through the repository connection, so this document does not claim that the complete initialization sequence has been executed successfully.
 
@@ -52,7 +52,7 @@ The complete field-by-field dictionary, including types, nullability, defaults, 
 | `parameters_routine` | One generation-parameter row per routine | `id_routine` | `routine(id_routine)` |
 | `contains` | Ordered exercise composition | `(id_routine, id_exercise, execution_order)` | `routine`, `exercise` |
 | `routine_structure` | Variable routine blocks in JSONB | `id_routine` | `routine(id_routine)` |
-| `validate` | Routine review/validation record | `id_validation` | `routine`, **missing** `room_chief` relation |
+| `validate` | Routine review/validation record | `id_validation` | `routine`, `trainer` reviewer |
 | `assignment` | Routine assigned to a client | `id_assignment` | `routine`, `client` |
 | `session` | Training session against an assignment | `id_session` | `assignment` |
 | `request` | Client adjustment request | `id_request` | `client`, `routine`, `trainer` |
@@ -155,31 +155,27 @@ Primary keys and unique constraints also create their supporting unique indexes 
 
 No report-specific index has been added in this documentation task. Add those only after the corresponding report SQL and filters are defined, using representative data and measured query plans (for example, `EXPLAIN (ANALYZE, BUFFERS)`). Do not infer an index solely from a report name.
 
-## 7. Unresolved mismatches in script 006
+## 7. Integrity constraints and remaining semantic differences
 
-Script 006 is not aligned with the physical columns and relation names created by scripts 001–005. These are implementation blockers, not silently applied schema facts:
+Script 006 uses the physical table and column names declared in scripts 001–005:
 
 | Statement in script 006 | Physical DDL in 001–005 | Required reconciliation |
 |---|---|---|
-| `ALTER TABLE "user"` | The table is named `app_user`. | Target the agreed physical table name. |
-| `ALTER TABLE intensity_level` | No `intensity_level` table is created. | Decide whether this catalog relation is required or whether intensity remains a routine parameter attribute; then align DDL and documentation. |
-| `contains.rest_seconds` | Column is `contains.rest_time_seconds`. | Use the declared column name and agree whether zero seconds is valid; script 004 currently allows zero. |
-| `session.intensity_perceived` | Column is `session.intensidad_percibida` (`VARCHAR(30)`). | Align name, type, and permitted range with the requirement before adding a CHECK. |
-| `routine.state` | Column is `routine.status`. | Use the declared column name. |
-| `routine.intensity_level` | No such column exists on `routine`; the current scalar is `parameters_routine.intensity_level`. | Decide the authoritative location and reference before adding an index. |
-| `assignment.end_date`, `assignment.assignment_date` | Columns are `fecha_fin` and `fecha_asignacion`. | Align temporal checks with the declared names. |
-| `session.start_time`, `session.end_time`, `session.session_date` | Columns are `hora_inicio`, `hora_fin`, and `fecha_sesion`. | Align temporal checks and indexes with the declared names. |
+| Email uniqueness | `app_user(email)` | Targets the existing physical relation. |
+| Session intensity | `session.intensidad_percibida` (`VARCHAR(30)`) | Allows null and validates numeric text from 1 to 10. |
+| Session uniqueness | `(id_assignment, fecha_sesion)` | Enforces one session per assignment and date. |
+| Assignment/session dates and times | `fecha_fin`, `fecha_asignacion`, `hora_inicio`, `hora_fin`, `fecha_sesion` | Temporal checks use the declared names. |
+| Routine indexes | `routine.status`; `parameters_routine.intensity_level` | Indexes point to the physical status and intensity columns. |
 
 Additional semantic conflicts:
 
 - Script 006 labels `UNIQUE(exercise.name, id_exercise_type, id_muscle_group)` as U-4. The requirements catalogue identifies the original exercise duplicate rule as U-12: `(exercise name, id_muscle_group)`. These are different uniqueness rules.
-- Script 006 labels session uniqueness as `UNIQUE(id_session, id_assignment)`. Since `id_session` is already the primary key, this does not enforce one session per assignment and date. The original rule describes uniqueness on `(id_assignment, fecha_sesion)`.
 - Script 006's `uq_routine_structure_routine` is redundant with `routine_structure.id_routine` already being the primary key.
 - Script 006's `chk_parameters_counts_positive` permits zero, while script 004's inline constraint requires `total_exercises > 0`.
 - Script 006 does not add a validation-before-routine-creation constraint; its `chk_validation_consistency` block is a placeholder containing only `NULL`.
 - The script's claimed uniqueness numbering does not match the source requirement numbering U-1 through U-12 in `docs/requirements/informational-requirements.md`.
 
-Because the first statement in 006 targets the absent `user` table, the script cannot complete against the schema created by the preceding scripts as written. Its later statements must not be represented as installed constraints or indexes until the script is reconciled and executed.
+The uniqueness numbering and exercise-identity semantics in 006 still differ from the source catalogue. The report-query work does not change those unrelated rules.
 
 ## 8. Trigger behavior in script 007
 
@@ -190,7 +186,7 @@ Script 007 declares these trigger mechanisms:
 3. `trg_sync_routine_status` on `validate`: accepts validation only while a routine is `PENDING_REVIEW`, then changes `routine.status` to `APPROVED` or `REJECTED`.
 4. `trg_verify_adjustment_trainer` on `adjustment_result`: verifies that the resolver is the trainer selected by the corresponding `request`.
 
-Script 007 does not define a `room_chief` table. This is important because script 005's `validate.id_room_chief` foreign key references that missing table. Script 007 also does not declare a Redis/cache-invalidation trigger, notwithstanding older environment-document wording.
+Script 007 does not define a separate `room_chief` table; validation references the trainer identity, and authorization checks remain in `authorises.can_validate`. Script 007 also does not declare a Redis/cache-invalidation trigger, notwithstanding older environment-document wording.
 
 Script 012 adds `REPLACED` to the routine status CHECK and adds the optional source-routine self-reference. Review rows remain attached to the source routine when it is replaced.
 

@@ -73,8 +73,8 @@ for script in \
   "${SCRIPTS_DIR}/006_integrity_constraints.sql" \
   "${SCRIPTS_DIR}/007_consistency_triggers.sql" \
   "${SCRIPTS_DIR}/008_catalog_seeds.sql" \
-  "${SCRIPTS_DIR}/010_add_user_is_active.sql"
-  "${SCRIPTS_DIR}/011_routine_parameters_full_generation.sql"
+  "${SCRIPTS_DIR}/010_add_user_is_active.sql" \
+  "${SCRIPTS_DIR}/011_routine_parameters_full_generation.sql" \
   "${SCRIPTS_DIR}/012_routine_replacement.sql"
 do
   if [[ -f "${script}" ]]; then
