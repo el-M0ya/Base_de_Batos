@@ -7,7 +7,9 @@ from app.domain.states.routine_state import RoutineState
 
 
 class RejectedState(RoutineState):
-    """A rejected routine can be corrected and resubmitted for review."""
+    """A rejected routine can be resubmitted or superseded by a successor."""
 
     status = RoutineStatus.REJECTED
-    allowed_transitions = frozenset({RoutineStatus.PENDING_REVIEW})
+    allowed_transitions = frozenset(
+        {RoutineStatus.PENDING_REVIEW, RoutineStatus.REPLACED}
+    )

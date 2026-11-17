@@ -48,7 +48,7 @@ The complete field-by-field dictionary, including types, nullability, defaults, 
 | `exercise` | Exercise catalog and authorship | `id_exercise` | `exercise_type`, `muscle_group`, `trainer` |
 | `authorises` | Trainer permissions per program | `(id_trainer, id_workout_program)` | `trainer`, `workout_program` |
 | `inscribed` | Client enrollment in a program | `(id_client, id_workout_program)` | `client`, `workout_program` |
-| `routine` | Routine header and status | `id_routine` | `workout_program`, `trainer`, optional `client` |
+| `routine` | Routine header, status, and successor lineage | `id_routine` | `workout_program`, `trainer`, optional `client`, optional source `routine` |
 | `parameters_routine` | One generation-parameter row per routine | `id_routine` | `routine(id_routine)` |
 | `contains` | Ordered exercise composition | `(id_routine, id_exercise, execution_order)` | `routine`, `exercise` |
 | `routine_structure` | Variable routine blocks in JSONB | `id_routine` | `routine(id_routine)` |
@@ -68,6 +68,7 @@ The complete field-by-field dictionary, including types, nullability, defaults, 
 - `trainer` to `workout_program`: many-to-many through `authorises`, with permission and validity attributes.
 - `client` to `workout_program`: many-to-many through `inscribed`, with enrollment date.
 - `workout_program` and `trainer` to `routine`: each routine has one required program and one required creator. A routine may also reference one client through nullable `routine.id_client`.
+- A successor routine may reference its source through `routine.id_routine_origin`; the partial unique index allows at most one successor per source.
 - `routine` to `parameters_routine`: one-to-zero-or-one in the DDL; the shared `id_routine` primary/foreign key prevents more than one parameter row.
 - `routine` to `routine_structure`: one-to-zero-or-one in the DDL; `id_routine` is both primary and foreign key. The application design expects the routine and structure to be persisted atomically.
 - `routine` to `exercise`: many-to-many through `contains`, which stores order, sets, repetitions, and rest.
@@ -121,7 +122,7 @@ The following constraints are present directly in scripts 001–005:
 | `contains` | `chk_contains_sets` | Sets is positive |
 | `contains` | `chk_contains_repetitions` | Repetitions is positive |
 | `contains` | `chk_contains_rest_time` | Rest time is zero or greater |
-| `routine` | `chk_routine_status` | Status is one of `DRAFT`, `PENDING_REVIEW`, `APPROVED`, `REJECTED` |
+| `routine` | `chk_routine_status` | Status is one of `DRAFT`, `PENDING_REVIEW`, `APPROVED`, `REJECTED`, `REPLACED` (updated by 012) |
 | `routine_structure` | `chk_routine_structure_json_object` | `structure_json` must be a JSON object |
 | `validate` | Primary key | `id_validation` |
 | `assignment` | Primary key | `id_assignment` |
@@ -191,7 +192,7 @@ Script 007 declares these trigger mechanisms:
 
 Script 007 does not define a `room_chief` table. This is important because script 005's `validate.id_room_chief` foreign key references that missing table. Script 007 also does not declare a Redis/cache-invalidation trigger, notwithstanding older environment-document wording.
 
-The current `routine.status` CHECK allows only `DRAFT`, `PENDING_REVIEW`, `APPROVED`, and `REJECTED`; it does not allow `REPLACED`. The lifecycle requirement for a replaced routine therefore needs a schema decision before it can be stored.
+Script 012 adds `REPLACED` to the routine status CHECK and adds the optional source-routine self-reference. Review rows remain attached to the source routine when it is replaced.
 
 ## 9. Other physical gaps to keep visible
 
@@ -202,7 +203,7 @@ The following requirement/schema differences are visible when the table DDL is c
 - There is no physical `intensity_level` catalog table. `parameters_routine.intensity_level` is free text.
 - `parameters_routine` stores only `cardio_ratio` and `strength_ratio`; it has no flexibility ratio or explicit muscle-group-coverage column.
 - `exercise` has no intensity column or foreign key. This follows the script 002 note that intensity is a routine attribute, but the older RI-11 text associates intensity with exercise information.
-- `routine` has no source-routine/origin column and its status CHECK has no `REPLACED` value, although the lifecycle requirements describe regeneration lineage.
+- `routine.id_routine_origin` and the `REPLACED` status are introduced by script 012 for successor lineage.
 - Script 002 uses `BIGINT` identity keys for programs and muscle groups, while related identifiers declared in scripts 003 and 004 are `INTEGER`. Confirm and standardize key widths before treating the schema as final.
 
 These gaps are recorded for reconciliation; this documentation issue does not alter SQL or invent new columns.

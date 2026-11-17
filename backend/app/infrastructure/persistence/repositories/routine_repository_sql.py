@@ -24,6 +24,7 @@ from psycopg.errors import (
 )
 
 from app.application.exceptions import (
+    BusinessRuleViolation,
     DuplicateResource,
     InvalidInput,
     ResourceNotFound,
@@ -102,10 +103,12 @@ class RoutineRepositorySql(RoutineRepository):
                     creation_date,
                     id_workout_program,
                     id_trainer_creator,
-                    id_client
-                ) VALUES (%s, %s, %s, %s, %s)
+                    id_client,
+                    id_routine_origin
+                ) VALUES (%s, %s, %s, %s, %s, %s)
                 RETURNING id_routine, status, creation_date,
-                          id_workout_program, id_trainer_creator, id_client
+                          id_workout_program, id_trainer_creator, id_client,
+                          id_routine_origin
                 """,
                 (
                     routine.status.value,
@@ -113,6 +116,7 @@ class RoutineRepositorySql(RoutineRepository):
                     routine.id_workout_program,
                     routine.id_trainer_creator,
                     routine.id_client,
+                    routine.id_routine_origin,
                 ),
             )
             row = await cursor.fetchone()
@@ -202,7 +206,7 @@ class RoutineRepositorySql(RoutineRepository):
                 status=RoutineStatus(row["status"]),
                 creation_date=row["creation_date"],
                 id_client=row["id_client"],
-                id_routine_origin=getattr(routine, "id_routine_origin", None),
+                id_routine_origin=row["id_routine_origin"],
             )
             return saved
         except (UniqueViolation, ForeignKeyViolation, CheckViolation) as error:
@@ -220,7 +224,8 @@ class RoutineRepositorySql(RoutineRepository):
             cursor = await self._conn.execute(
                 """
                 SELECT r.id_routine, r.status, r.creation_date,
-                       r.id_workout_program, r.id_trainer_creator, r.id_client
+                       r.id_workout_program, r.id_trainer_creator, r.id_client,
+                       r.id_routine_origin
                 FROM routine r
                 WHERE r.id_routine = %s
                 """,
@@ -237,6 +242,7 @@ class RoutineRepositorySql(RoutineRepository):
                 status=RoutineStatus(row["status"]),
                 creation_date=row["creation_date"],
                 id_client=row["id_client"],
+                id_routine_origin=row["id_routine_origin"],
             )
 
             # Parameters
@@ -308,7 +314,8 @@ class RoutineRepositorySql(RoutineRepository):
             cursor = await self._conn.execute(
                 """
                 SELECT id_routine, status, creation_date,
-                       id_workout_program, id_trainer_creator, id_client
+                       id_workout_program, id_trainer_creator, id_client,
+                       id_routine_origin
                 FROM routine
                 WHERE id_workout_program = %s
                 ORDER BY creation_date DESC, id_routine DESC
@@ -324,6 +331,7 @@ class RoutineRepositorySql(RoutineRepository):
                     status=RoutineStatus(row["status"]),
                     creation_date=row["creation_date"],
                     id_client=row["id_client"],
+                    id_routine_origin=row["id_routine_origin"],
                 )
                 for row in rows
             ]
@@ -399,5 +407,51 @@ class RoutineRepositorySql(RoutineRepository):
                 )
                 for row in rows
             ]
+        except (ForeignKeyViolation, CheckViolation) as error:
+            raise _translate_error(error) from error
+
+    async def mark_replaced(
+        self, id_routine: int, expected_status: RoutineStatus
+    ) -> Routine:
+        """Mark the source as replaced only after a linked successor exists.
+
+        The conditional update protects against stale callers and deliberately
+        leaves every row in ``validate`` untouched.
+        """
+        try:
+            cursor = await self._conn.execute(
+                """UPDATE routine AS source
+                   SET status = 'REPLACED'
+                   WHERE source.id_routine = %s
+                     AND source.status = %s
+                     AND EXISTS (
+                         SELECT 1 FROM routine AS successor
+                         WHERE successor.id_routine_origin = source.id_routine
+                     )
+                     AND EXISTS (
+                         SELECT 1 FROM validate AS review
+                         WHERE review.id_routine = source.id_routine
+                     )
+                   RETURNING source.id_routine, source.status,
+                             source.creation_date, source.id_workout_program,
+                             source.id_trainer_creator, source.id_client,
+                             source.id_routine_origin""",
+                (id_routine, expected_status.value),
+            )
+            row = await cursor.fetchone()
+            if row is None:
+                raise BusinessRuleViolation(
+                    "the routine changed or its successor was not persisted; "
+                    "the replacement was not completed."
+                )
+            return Routine(
+                id_routine=row["id_routine"],
+                status=RoutineStatus(row["status"]),
+                creation_date=row["creation_date"],
+                id_workout_program=row["id_workout_program"],
+                id_trainer_creator=row["id_trainer_creator"],
+                id_client=row["id_client"],
+                id_routine_origin=row["id_routine_origin"],
+            )
         except (ForeignKeyViolation, CheckViolation) as error:
             raise _translate_error(error) from error

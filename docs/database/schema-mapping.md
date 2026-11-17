@@ -35,7 +35,7 @@ The current scripts are not fully aligned with each other. In particular, script
 | R11 | `EXERCISE` | `exercise` | 003 | **Mapped with implementation differences.** The physical row references exercise type, muscle group, and creating trainer. It has no intensity column; script 002's note treats intensity as routine-level. |
 | R12 | `AUTHORISES` | `authorises` | 003 | **Mapped.** Composite PK is trainer/program; stores generation and validation flags and a validity period. |
 | R13 | `INSCRIBED` | `inscribed` | 003 | **Mapped.** Composite PK is client/program; stores enrollment date. |
-| R14 | `ROUTINE` | `routine` | 004 | **Mapped with gaps.** Stores program, creator, optional client, creation date, and status. No source-routine/origin FK is declared; status CHECK does not include `REPLACED`. |
+| R14 | `ROUTINE` | `routine` | 004, 012 | Stores program, creator, optional client, creation date, status, and optional `id_routine_origin` self-reference for a successor. Status CHECK includes `REPLACED`; a partial unique index permits one successor per source. |
 | R15 | `PARAMETERSROUTINE` | `parameters_routine` | 004 | **Mapped with reduced parameter fields.** One row per routine. Stores total count, target intensity, cardio ratio, and strength ratio. No flexibility ratio or separate muscle-group-coverage value is declared. |
 | R16 | `CONTAINS` | `contains` | 004 | **Mapped.** Associative routine/exercise table with execution order, sets, repetitions, and rest seconds. Composite PK includes routine, exercise, and execution order. |
 | R17 | `VALIDATE` | `validate` | 005 | **Table declared, but FK dependency is unresolved.** Stores routine, room-chief reference, validation date, decision, and observations. Its FK points to the missing `room_chief` table. |
@@ -137,7 +137,7 @@ performed exclusively in the infrastructure adapter
 | Exercise identity, author and classification | EXERCISE | `exercise`, with type/muscle-group FKs and trainer creator |
 | Trainer permissions | AUTHORISES | `authorises` |
 | Client enrollment | INSCRIBED | `inscribed` |
-| Routine provenance and status | ROUTINE | `routine`; no source-routine field and no `REPLACED` status |
+| Routine provenance and status | ROUTINE | `routine.id_routine_origin` self-FK and `REPLACED` lifecycle status (012) |
 | Routine generation parameters | PARAMETERSROUTINE | `parameters_routine`; two ratios only |
 | Ordered routine contents | CONTAINS | `contains` |
 | Variable nested routine blocks | Additional implementation table | `routine_structure.structure_json` (JSONB) |
