@@ -40,7 +40,7 @@ The current scripts are not fully aligned with each other. In particular, script
 | R16 | `CONTAINS` | `contains` | 004 | **Mapped.** Associative routine/exercise table with execution order, sets, repetitions, and rest seconds. Composite PK includes routine, exercise, and execution order. |
 | R17 | `VALIDATE` | `validate` | 005 | **Table declared, but FK dependency is unresolved.** Stores routine, room-chief reference, validation date, decision, and observations. Its FK points to the missing `room_chief` table. |
 | R18 | `ASSIGNMENT` | `assignment` | 005 | **Mapped.** Assignment has its own identity PK, routine/client FKs, assignment date, and nullable end date. |
-| R19 | `SESION` | `session` | 005 | **Mapped with translated column names.** References assignment, not client directly. Stores date, start/end time, perceived intensity text, completion flag, and observations. |
+| R19 | `SESION` | `session` | 005, 013 | **Mapped with translated column names.** References assignment, not client directly. Stores date, start/end time, perceived intensity, one completion flag for the whole session, and observations. Uniqueness is enforced for assignment/date; the client is derived from assignment. |
 | R20 | `REQUEST` | `request` | 005 | **Mapped with translated column names.** References client, routine, and selected trainer; stores date, reason, and status. |
 | R21 | `ADJUSTMENTRESULT` | `adjustment_result` | 005 | **Mapped with translated column names.** `id_request` is both PK and FK; stores response date, adjustment description, resulting routine, and resolving trainer. |
 

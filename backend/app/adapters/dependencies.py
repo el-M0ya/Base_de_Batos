@@ -42,6 +42,12 @@ from app.application.use_cases.list_sites import ListSitesUseCase
 from app.application.use_cases.list_training_programs import (
     ListTrainingProgramsUseCase,
 )
+from app.application.use_cases.list_training_sessions import (
+    ListTrainingSessionsUseCase,
+)
+from app.application.use_cases.register_training_session import (
+    RegisterTrainingSessionUseCase,
+)
 from app.application.use_cases.resolve_session import ResolveSessionUseCase
 from app.application.use_cases.reclassify_exercise import ReclassifyExerciseUseCase
 from app.application.use_cases.set_training_program_muscle_groups import (
@@ -60,6 +66,9 @@ from app.domain.value_objects.user_role import UserRole
 from app.infrastructure.persistence.repositories.authorisation_repository_sql import (
     AuthorisationRepositorySql,
 )
+from app.infrastructure.persistence.repositories.assignment_repository_sql import (
+    AssignmentRepositorySql,
+)
 from app.infrastructure.persistence.repositories.catalog_repository_sql import (
     CatalogRepositorySql,
 )
@@ -74,6 +83,9 @@ from app.infrastructure.persistence.repositories.site_repository_sql import (
 )
 from app.infrastructure.persistence.repositories.user_repository_sql import (
     UserRepositorySql,
+)
+from app.infrastructure.persistence.repositories.session_repository_sql import (
+    SessionRepositorySql,
 )
 from app.infrastructure.persistence.repositories.workout_program_repository_sql import (
     WorkoutProgramRepositorySql,
@@ -367,6 +379,34 @@ async def get_exercise_repository(
 ) -> AsyncGenerator[ExerciseRepositorySql, None]:
     """Yield an ``ExerciseRepositorySql`` using the given transaction manager."""
     yield ExerciseRepositorySql(tm)
+
+
+async def get_assignment_repository(
+    tm: PsqlTransactionManager = Depends(get_transaction_manager),
+) -> AsyncGenerator[AssignmentRepositorySql, None]:
+    """Yield an assignment repository for ownership and date validation."""
+    yield AssignmentRepositorySql(tm)
+
+
+async def get_session_repository(
+    tm: PsqlTransactionManager = Depends(get_transaction_manager),
+) -> AsyncGenerator[SessionRepositorySql, None]:
+    """Yield a session repository bound to the request transaction."""
+    yield SessionRepositorySql(tm)
+
+
+def get_register_training_session_use_case(
+    assignments: AssignmentRepositorySql = Depends(get_assignment_repository),
+    sessions: SessionRepositorySql = Depends(get_session_repository),
+) -> RegisterTrainingSessionUseCase:
+    return RegisterTrainingSessionUseCase(assignments, sessions)
+
+
+def get_list_training_sessions_use_case(
+    assignments: AssignmentRepositorySql = Depends(get_assignment_repository),
+    sessions: SessionRepositorySql = Depends(get_session_repository),
+) -> ListTrainingSessionsUseCase:
+    return ListTrainingSessionsUseCase(assignments, sessions)
 
 
 async def get_catalog_repository(

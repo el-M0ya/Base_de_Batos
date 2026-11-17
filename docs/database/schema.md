@@ -122,6 +122,9 @@ The following constraints are present directly in scripts 001–005:
 | `contains` | `chk_contains_repetitions` | Repetitions is positive |
 | `contains` | `chk_contains_rest_time` | Rest time is zero or greater |
 | `routine` | `chk_routine_status` | Status is one of `DRAFT`, `PENDING_REVIEW`, `APPROVED`, `REJECTED` |
+| `session` | `uq_session_assignment_date` | One session per assignment and calendar date |
+| `session` | `chk_session_intensity_perceived_range` | Optional stored intensity is a value from 1 to 10 |
+| `session` | `chk_session_time_range` | End time is equal to or later than start time |
 | `routine_structure` | `chk_routine_structure_json_object` | `structure_json` must be a JSON object |
 | `validate` | Primary key | `id_validation` |
 | `assignment` | Primary key | `id_assignment` |
@@ -154,31 +157,27 @@ Primary keys and unique constraints also create their supporting unique indexes 
 
 No report-specific index has been added in this documentation task. Add those only after the corresponding report SQL and filters are defined, using representative data and measured query plans (for example, `EXPLAIN (ANALYZE, BUFFERS)`). Do not infer an index solely from a report name.
 
-## 7. Unresolved mismatches in script 006
+## 7. Reconciled constraints for sessions
 
-Script 006 is not aligned with the physical columns and relation names created by scripts 001–005. These are implementation blockers, not silently applied schema facts:
+Script 006 now uses the declared physical names for session and assignment constraints. Script 013 adds a trigger to reject session dates before their assignment date. The session stores the client only through its assignment.
 
 | Statement in script 006 | Physical DDL in 001–005 | Required reconciliation |
 |---|---|---|
-| `ALTER TABLE "user"` | The table is named `app_user`. | Target the agreed physical table name. |
-| `ALTER TABLE intensity_level` | No `intensity_level` table is created. | Decide whether this catalog relation is required or whether intensity remains a routine parameter attribute; then align DDL and documentation. |
-| `contains.rest_seconds` | Column is `contains.rest_time_seconds`. | Use the declared column name and agree whether zero seconds is valid; script 004 currently allows zero. |
-| `session.intensity_perceived` | Column is `session.intensidad_percibida` (`VARCHAR(30)`). | Align name, type, and permitted range with the requirement before adding a CHECK. |
-| `routine.state` | Column is `routine.status`. | Use the declared column name. |
-| `routine.intensity_level` | No such column exists on `routine`; the current scalar is `parameters_routine.intensity_level`. | Decide the authoritative location and reference before adding an index. |
-| `assignment.end_date`, `assignment.assignment_date` | Columns are `fecha_fin` and `fecha_asignacion`. | Align temporal checks with the declared names. |
-| `session.start_time`, `session.end_time`, `session.session_date` | Columns are `hora_inicio`, `hora_fin`, and `fecha_sesion`. | Align temporal checks and indexes with the declared names. |
+| `contains.rest_seconds` | Column is `contains.rest_time_seconds`. | Fixed in script 006. |
+| `session.intensity_perceived` | Column is `session.intensidad_percibida` (`VARCHAR(30)`). | Script 006 validates the stored numeric text from 1 to 10. |
+| `routine.state` and `routine.intensity_level` | Physical columns are `routine.status` and `parameters_routine.intensity_level`. | Fixed in script 006. |
+| Assignment/session temporal columns | Physical names are Spanish (`fecha_fin`, `fecha_asignacion`, `hora_inicio`, `hora_fin`, `fecha_sesion`). | Fixed in script 006; assignment-date cross-table rule is in script 013. |
 
 Additional semantic conflicts:
 
 - Script 006 labels `UNIQUE(exercise.name, id_exercise_type, id_muscle_group)` as U-4. The requirements catalogue identifies the original exercise duplicate rule as U-12: `(exercise name, id_muscle_group)`. These are different uniqueness rules.
-- Script 006 labels session uniqueness as `UNIQUE(id_session, id_assignment)`. Since `id_session` is already the primary key, this does not enforce one session per assignment and date. The original rule describes uniqueness on `(id_assignment, fecha_sesion)`.
+- Script 006 enforces session uniqueness on `(id_assignment, fecha_sesion)` as required by issue #129.
 - Script 006's `uq_routine_structure_routine` is redundant with `routine_structure.id_routine` already being the primary key.
 - Script 006's `chk_parameters_counts_positive` permits zero, while script 004's inline constraint requires `total_exercises > 0`.
 - Script 006 does not add a validation-before-routine-creation constraint; its `chk_validation_consistency` block is a placeholder containing only `NULL`.
 - The script's claimed uniqueness numbering does not match the source requirement numbering U-1 through U-12 in `docs/requirements/informational-requirements.md`.
 
-Because the first statement in 006 targets the absent `user` table, the script cannot complete against the schema created by the preceding scripts as written. Its later statements must not be represented as installed constraints or indexes until the script is reconciled and executed.
+The remaining mismatches above concern separate uniqueness semantics and constraints; the session registration path uses the corrected physical session and assignment columns.
 
 ## 8. Trigger behavior in script 007
 
