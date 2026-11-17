@@ -16,15 +16,15 @@ Three implementation decisions affect the mapping:
 - **Intensity:** script 002 explicitly says intensity is an attribute of a routine, not a separate catalog. The actual DDL places the value in `parameters_routine.intensity_level`; it does not create an `intensity_level` catalog table or put intensity on `routine`.
 - **Variable routine blocks:** the additional `routine_structure` table stores a JSONB document in PostgreSQL, with a one-to-one primary-key/foreign-key relationship to `routine`.
 
-The current scripts are not fully aligned with each other. In particular, script 005 still references `room_chief`, even though scripts 001–004 do not create that table. Script 006 also contains stale table and column names. These are recorded in the mapping; they are not silently treated as resolved.
+Room chiefs do not have a separate table in this physical model. Review identity is the trainer ID, with `authorises.can_validate` granting program-specific review capability; script 005 points `validate.id_room_chief` to `trainer.id_trainer`. Script 006 uses the declared physical column names for the constraints and indexes used by these tables.
 
 ## 2. Mapping of the 21 original relations
 
 | Original ID | Original design relation | Current physical representation | SQL source | Mapping status and notes |
 |---|---|---|---|---|
-| R1 | `USER` | `app_user` | 001 | **Mapped with renamed table.** The physical table stores the account identifier, name, email, password hash, role, and registration date. It has no active/inactive column in the current DDL, although RI-01 calls for that state. |
+| R1 | `USER` | `app_user` | 001, 010 | **Mapped with renamed table.** The physical table stores the account identifier, name, email, password hash, role, active state, and registration date. |
 | R2 | `TRAINER` | `trainer` | 001 | **Mapped.** A 1:1 specialization of `app_user`; `id_trainer` is both PK and FK to `app_user.id_user`. Specialty is stored in `specialty`. |
-| R3 | `ROOMCHIEF` | No independent table; partially represented by `trainer.specialty` | Comment in 001; reference in 005 | **Not fully mapped.** Script 001 comments that `ROOM_CHIEF` is integrated as a trainer specialty. Script 005 nevertheless declares `validate.id_room_chief` as an FK to `room_chief(id_room_chief)`, a relation that is not created by the checked-in table scripts. The DDL sequence therefore has an unresolved missing referenced table. The `authorises.can_validate` flag separately models validation capability by program; this is not a substitute FK target for `validate.id_room_chief`. |
+| R3 | `ROOMCHIEF` | `trainer` identity plus validation authorization | 001, 003, 005 | Room chiefs share the trainer identity; `validate.id_room_chief` references `trainer.id_trainer`, while `authorises.can_validate` controls whether that trainer may review a program. |
 | R4 | `SITE` | `site` | 001 | **Mapped.** Physical name is unchanged. |
 | R5 | `CLIENT` | `client` | 001 | **Mapped.** A 1:1 specialization of `app_user`; includes age and required site FK. |
 | R6 | `WORKOUTPROGRAM` | `workout_program` | 002 | **Mapped.** Physical table stores unique name and objective. Its key is `BIGINT`. |
@@ -38,7 +38,7 @@ The current scripts are not fully aligned with each other. In particular, script
 | R14 | `ROUTINE` | `routine` | 004, 012 | Stores program, creator, optional client, creation date, status, and optional `id_routine_origin` self-reference for a successor. Status CHECK includes `REPLACED`; a partial unique index permits one successor per source. |
 | R15 | `PARAMETERSROUTINE` | `parameters_routine` | 004 | **Mapped with reduced parameter fields.** One row per routine. Stores total count, target intensity, cardio ratio, and strength ratio. No flexibility ratio or separate muscle-group-coverage value is declared. |
 | R16 | `CONTAINS` | `contains` | 004 | **Mapped.** Associative routine/exercise table with execution order, sets, repetitions, and rest seconds. Composite PK includes routine, exercise, and execution order. |
-| R17 | `VALIDATE` | `validate` | 005 | **Table declared, but FK dependency is unresolved.** Stores routine, room-chief reference, validation date, decision, and observations. Its FK points to the missing `room_chief` table. |
+| R17 | `VALIDATE` | `validate` | 005 | Stores routine, trainer reviewer, validation date, decision, and observations. The reviewer ID references `trainer`. |
 | R18 | `ASSIGNMENT` | `assignment` | 005 | **Mapped.** Assignment has its own identity PK, routine/client FKs, assignment date, and nullable end date. |
 | R19 | `SESION` | `session` | 005 | **Mapped with translated column names.** References assignment, not client directly. Stores date, start/end time, perceived intensity text, completion flag, and observations. |
 | R20 | `REQUEST` | `request` | 005 | **Mapped with translated column names.** References client, routine, and selected trainer; stores date, reason, and status. |
@@ -70,9 +70,9 @@ The implementation choice is PostgreSQL JSONB. The requirement to preserve varia
 - Persisted role CHECK values: `ADMIN`, `TRAINER`, `CLIENT`.
 - `trainer.specialty` can hold `ROOM_CHIEF` as descriptive specialization according to the script comment.
 - `authorises.can_validate` is a trainer/program capability.
-- No physical `room_chief` table is created, but `validate.id_room_chief` references it.
+- No separate physical `room_chief` table is created; `validate.id_room_chief` references `trainer.id_trainer`.
 
-The team must decide the single canonical representation for the reviewer FK and align script 005, user role rules, and trigger behavior. Do not claim that the `validate` FK is satisfied by `trainer.specialty`; those are different relation targets.
+The physical reviewer reference is the trainer identity; the `can_validate` authorization remains a separate per-program permission check.
 
 ### 4.2 Intensity representation
 
@@ -80,7 +80,7 @@ The team must decide the single canonical representation for the reviewer FK and
 - `parameters_routine.intensity_level` is `VARCHAR(50) NOT NULL`.
 - `routine` has no `intensity_level` column.
 - `exercise` has no intensity column.
-- Script 006 attempts to create an index on `routine.intensity_level`, which is not a declared column.
+- Script 006 indexes `parameters_routine.intensity_level`.
 
 A normalized intensity catalog would require an approved schema change; this documentation does not invent one.
 
@@ -128,12 +128,12 @@ performed exclusively in the infrastructure adapter
 |---|---|---|
 | User identity, email, password, role | USER | `app_user` |
 | Trainer specialization | TRAINER | `trainer` |
-| Room-chief review identity | ROOMCHIEF, VALIDATE | Partly `trainer.specialty`; `validate.id_room_chief` FK currently unresolved |
+| Room-chief review identity | ROOMCHIEF, VALIDATE | Trainer identity in `validate.id_room_chief`; validation capability in `authorises.can_validate` |
 | Client age and site | CLIENT, SITE | `client`, `site` |
 | Program objective | WORKOUTPROGRAM | `workout_program` |
 | Program muscle-group coverage | COVERS, WORKOUTPROGRAM, MUSCLEGROUP | `covers`, `workout_program`, `muscle_group` |
 | Exercise type catalog | EXERCISETYPE | `exercise_type` |
-| Intensity catalog | INTENSITYLEVEL | No catalog; free-text `parameters_routine.intensity_level` |
+| Intensity catalog | INTENSITYLEVEL | No independent catalog; free-text `parameters_routine.intensity_level` |
 | Exercise identity, author and classification | EXERCISE | `exercise`, with type/muscle-group FKs and trainer creator |
 | Trainer permissions | AUTHORISES | `authorises` |
 | Client enrollment | INSCRIBED | `inscribed` |
@@ -141,7 +141,7 @@ performed exclusively in the infrastructure adapter
 | Routine generation parameters | PARAMETERSROUTINE | `parameters_routine`; two ratios only |
 | Ordered routine contents | CONTAINS | `contains` |
 | Variable nested routine blocks | Additional implementation table | `routine_structure.structure_json` (JSONB) |
-| Review/decision history | VALIDATE | `validate`, but missing `room_chief` FK target |
+| Review/decision history | VALIDATE | `validate`; reviewer FK targets `trainer` |
 | Client routine assignment | ASSIGNMENT | `assignment` |
 | Training session | SESION | `session` |
 | Adjustment request | REQUEST | `request` |

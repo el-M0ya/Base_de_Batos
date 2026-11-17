@@ -4,8 +4,7 @@
 -- relations defined in the approved MERX.
 --
 -- Prerequisite: the base relations must already exist:
---   routine(id_routine), room_chief(id_room_chief), client(id_client),
---   trainer(id_trainer)
+--   routine(id_routine), trainer(id_trainer), client(id_client)
 --
 -- This script focuses on table structure, primary keys and referential
 -- integrity. Domain, uniqueness and temporal business rules are handled
@@ -32,7 +31,7 @@ CREATE TABLE IF NOT EXISTS validate (
 
     CONSTRAINT fk_validate_room_chief
         FOREIGN KEY (id_room_chief)
-        REFERENCES room_chief (id_room_chief)
+        REFERENCES trainer (id_trainer)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
