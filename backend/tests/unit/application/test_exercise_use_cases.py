@@ -23,6 +23,7 @@ from app.application.dto.actor import ActorDTO
 from app.application.dto.exercise_dto import (
     CreateExerciseInputDTO,
     ListExercisesInputDTO,
+    ReclassifyExerciseInputDTO,
 )
 from app.application.exceptions import (
     DuplicateResource,
@@ -33,6 +34,7 @@ from app.application.exceptions import (
 from app.application.use_cases.create_exercise import CreateExerciseUseCase
 from app.application.use_cases.list_exercise_catalogs import ListExerciseCatalogsUseCase
 from app.application.use_cases.list_exercises import ListExercisesUseCase
+from app.application.use_cases.reclassify_exercise import ReclassifyExerciseUseCase
 from app.domain.entities.muscle_group import MuscleGroup
 from app.domain.exceptions.domain_exceptions import InvalidDomainValue
 
@@ -50,6 +52,9 @@ class ExerciseUseCaseTestCase(unittest.IsolatedAsyncioTestCase):
         self.create_use_case = CreateExerciseUseCase(self.exercises, self.catalogs)
         self.list_use_case = ListExercisesUseCase(self.exercises)
         self.catalogs_use_case = ListExerciseCatalogsUseCase(self.catalogs)
+        self.reclassify_use_case = ReclassifyExerciseUseCase(
+            self.exercises, self.catalogs
+        )
 
         self.trainer = ActorDTO(id_user=7, role="TRAINER")
         self.admin = ActorDTO(id_user=1, role="ADMIN")
@@ -69,6 +74,19 @@ class ExerciseUseCaseTestCase(unittest.IsolatedAsyncioTestCase):
         data.update(overrides)
         return await self.create_use_case.execute(
             CreateExerciseInputDTO(**data)  # type: ignore[arg-type]
+        )
+
+    async def reclassify(self, id_exercise: int, **overrides: object):
+        data: dict[str, object] = {
+            "actor": self.trainer,
+            "id_exercise": id_exercise,
+            "exercise_type": "cardio",
+            "intensity": "low",
+            "muscle_group_id": BACK.id_muscle_group,
+        }
+        data.update(overrides)
+        return await self.reclassify_use_case.execute(
+            ReclassifyExerciseInputDTO(**data)  # type: ignore[arg-type]
         )
 
 
@@ -148,6 +166,141 @@ class CreateExerciseTests(ExerciseUseCaseTestCase):
                 exercise_type="strength",
                 intensity="high",
                 muscle_group_id=0,
+            )
+
+
+class ReclassifyExerciseTests(ExerciseUseCaseTestCase):
+    async def asyncSetUp(self) -> None:
+        self.exercise = await self.create_exercise(
+            name="Press de banca",
+            description="Barra y banco",
+            exercise_type="strength",
+            intensity="high",
+        )
+
+    async def stored_exercise(self):
+        return await self.exercises.get_by_id(self.exercise.id_exercise)
+
+    async def test_creator_reclassifies_all_three_catalog_values(self) -> None:
+        output = await self.reclassify(self.exercise.id_exercise)
+
+        self.assertEqual(output.id_exercise, self.exercise.id_exercise)
+        self.assertEqual(output.name, self.exercise.name)
+        self.assertEqual(output.description, self.exercise.description)
+        self.assertEqual(output.registration_date, self.exercise.registration_date)
+        self.assertEqual(output.trainer_id, self.trainer.id_user)
+        self.assertEqual(output.exercise_type, "cardio")
+        self.assertEqual(output.intensity, "bajo")
+        self.assertEqual(output.muscle_group_id, BACK.id_muscle_group)
+        self.assertEqual(output.muscle_group_name, BACK.name)
+        self.assertEqual(self.exercises.count(), 1)
+
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.exercise_type.value, "cardio")
+        self.assertEqual(stored.intensity.value, "bajo")
+        self.assertEqual(stored.muscle_group, BACK)
+
+    async def test_another_trainer_cannot_reclassify(self) -> None:
+        another_trainer = ActorDTO(id_user=8, role="TRAINER")
+
+        with self.assertRaises(PermissionDenied):
+            await self.reclassify(
+                self.exercise.id_exercise,
+                actor=another_trainer,
+            )
+
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.exercise_type.value, "fuerza")
+        self.assertEqual(stored.intensity.value, "alto")
+        self.assertEqual(stored.muscle_group, CHEST)
+
+    async def test_administrator_cannot_reclassify(self) -> None:
+        with self.assertRaises(PermissionDenied):
+            await self.reclassify(self.exercise.id_exercise, actor=self.admin)
+
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.muscle_group, CHEST)
+
+    async def test_client_cannot_reclassify(self) -> None:
+        with self.assertRaises(PermissionDenied):
+            await self.reclassify(self.exercise.id_exercise, actor=self.client)
+
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.muscle_group, CHEST)
+
+    async def test_unknown_muscle_group_is_rejected(self) -> None:
+        with self.assertRaises(ResourceNotFound) as context:
+            await self.reclassify(
+                self.exercise.id_exercise,
+                muscle_group_id=99,
+            )
+
+        self.assertEqual(context.exception.resource, "muscle group")
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.muscle_group, CHEST)
+
+    async def test_invalid_exercise_type_is_rejected(self) -> None:
+        with self.assertRaises(InvalidInput):
+            await self.reclassify(
+                self.exercise.id_exercise,
+                exercise_type="yoga",
+            )
+
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.exercise_type.value, "fuerza")
+
+    async def test_invalid_intensity_is_rejected(self) -> None:
+        with self.assertRaises(InvalidInput):
+            await self.reclassify(
+                self.exercise.id_exercise,
+                intensity="extremo",
+            )
+
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.intensity.value, "alto")
+
+    async def test_conflict_with_u12_in_target_muscle_group_is_rejected(self) -> None:
+        duplicate = await self.create_exercise(
+            name="  press de banca  ",
+            muscle_group_id=BACK.id_muscle_group,
+        )
+
+        with self.assertRaises(DuplicateResource) as context:
+            await self.reclassify(self.exercise.id_exercise)
+
+        error = context.exception
+        self.assertEqual(error.resource, "exercise")
+        self.assertEqual(error.existing.id_exercise, duplicate.id_exercise)
+
+        stored = await self.stored_exercise()
+        self.assertEqual(stored.muscle_group, CHEST)
+        self.assertEqual(stored.exercise_type.value, "fuerza")
+
+    async def test_reclassifying_to_the_current_classification_is_allowed(self) -> None:
+        output = await self.reclassify(
+            self.exercise.id_exercise,
+            exercise_type="strength",
+            intensity="high",
+            muscle_group_id=CHEST.id_muscle_group,
+        )
+
+        self.assertEqual(output.muscle_group_id, CHEST.id_muscle_group)
+        self.assertEqual(self.exercises.count(), 1)
+
+    async def test_missing_exercise_is_rejected(self) -> None:
+        with self.assertRaises(ResourceNotFound) as context:
+            await self.reclassify(999)
+
+        self.assertEqual(context.exception.resource, "exercise")
+
+    def test_invalid_identifiers_are_rejected_by_the_dto(self) -> None:
+        with self.assertRaises(InvalidDomainValue):
+            ReclassifyExerciseInputDTO(
+                actor=self.trainer,
+                id_exercise=0,
+                exercise_type="cardio",
+                intensity="low",
+                muscle_group_id=CHEST.id_muscle_group,
             )
 
 

@@ -35,9 +35,14 @@ class InMemoryExerciseRepository(ExerciseRepository):
         return self._rows.get(id_exercise)
 
     async def find_duplicate(
-        self, normalized_name: str, id_muscle_group: int
+        self,
+        normalized_name: str,
+        id_muscle_group: int,
+        exclude_id: Optional[int] = None,
     ) -> Optional[Exercise]:
         for exercise in self._rows.values():
+            if exclude_id is not None and exercise.id_exercise == exclude_id:
+                continue
             if (
                 exercise.normalized_name == normalized_name
                 and exercise.muscle_group.id_muscle_group == id_muscle_group
