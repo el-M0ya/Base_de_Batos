@@ -44,6 +44,8 @@ from app.application.use_cases.list_training_programs import (
 )
 from app.application.use_cases.resolve_session import ResolveSessionUseCase
 from app.application.use_cases.reclassify_exercise import ReclassifyExerciseUseCase
+from app.application.use_cases.generate_routine import GenerateRoutineUseCase
+from app.application.use_cases.replace_routine import ReplaceRoutineUseCase
 from app.application.use_cases.set_training_program_muscle_groups import (
     SetTrainingProgramMuscleGroupsUseCase,
 )
@@ -56,6 +58,8 @@ from app.core.config import get_settings
 from app.domain.exceptions.domain_exceptions import DomainException
 from app.domain.repositories.authorisation_repository import AuthorisationRepository
 from app.domain.repositories.user_repository import UserRepository
+from app.domain.strategies.balanced_strategy import BalancedRoutineGenerationStrategy
+from app.domain.strategies.strategy_registry import StrategyRegistry
 from app.domain.value_objects.user_role import UserRole
 from app.infrastructure.persistence.repositories.authorisation_repository_sql import (
     AuthorisationRepositorySql,
@@ -77,6 +81,9 @@ from app.infrastructure.persistence.repositories.user_repository_sql import (
 )
 from app.infrastructure.persistence.repositories.workout_program_repository_sql import (
     WorkoutProgramRepositorySql,
+)
+from app.infrastructure.persistence.repositories.routine_repository_sql import (
+    RoutineRepositorySql,
 )
 from app.infrastructure.persistence.transaction import PsqlTransactionManager
 from app.infrastructure.security.jwt_token_service import JwtTokenService
@@ -367,6 +374,36 @@ async def get_exercise_repository(
 ) -> AsyncGenerator[ExerciseRepositorySql, None]:
     """Yield an ``ExerciseRepositorySql`` using the given transaction manager."""
     yield ExerciseRepositorySql(tm)
+
+
+async def get_routine_repository(
+    tm: PsqlTransactionManager = Depends(get_transaction_manager),
+) -> AsyncGenerator[RoutineRepositorySql, None]:
+    """Yield a routine repository bound to the request transaction."""
+    yield RoutineRepositorySql(tm)
+
+
+def get_generate_routine_use_case(
+    programs: WorkoutProgramRepositorySql = Depends(get_workout_program_repository),
+    exercises: ExerciseRepositorySql = Depends(get_exercise_repository),
+    routines: RoutineRepositorySql = Depends(get_routine_repository),
+) -> GenerateRoutineUseCase:
+    """Build the existing Epic 6 generation flow with the balanced strategy."""
+    return GenerateRoutineUseCase(
+        programs,
+        exercises,
+        routines,
+        StrategyRegistry([BalancedRoutineGenerationStrategy()]),
+    )
+
+
+def get_replace_routine_use_case(
+    routines: RoutineRepositorySql = Depends(get_routine_repository),
+    authorisations: AuthorisationRepository = Depends(get_authorisation_repository),
+    generator: GenerateRoutineUseCase = Depends(get_generate_routine_use_case),
+) -> ReplaceRoutineUseCase:
+    """Build the replacement flow over the same request transaction."""
+    return ReplaceRoutineUseCase(routines, authorisations, generator)
 
 
 async def get_catalog_repository(

@@ -166,6 +166,7 @@ class GenerateRoutineUseCase:
                 id_workout_program=program_id,
                 id_trainer_creator=request.actor.id_user,
                 creation_date=request.generation_date,
+                id_routine_origin=request.id_routine_origin,
             )
             # The E2-07 repository consumes these attributes as part of the
             # routine aggregate. They are attached immediately before the save.

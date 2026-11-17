@@ -48,11 +48,14 @@ class GenerateRoutineInputDTO:
         ExerciseType | str, Decimal | int | float | str
     ]
     generation_date: date = field(default_factory=date.today)
+    id_routine_origin: int | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.actor, ActorDTO):
             raise InvalidDomainValue("actor", self.actor, "an ActorDTO instance")
         _ensure_positive_int(self.id_workout_program, "id_workout_program")
+        if self.id_routine_origin is not None:
+            _ensure_positive_int(self.id_routine_origin, "id_routine_origin")
         if not isinstance(self.strategy_name, str) or not self.strategy_name.strip():
             raise InvalidDomainValue(
                 "strategy_name", self.strategy_name, "a non-empty string"
