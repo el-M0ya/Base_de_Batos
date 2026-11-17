@@ -33,7 +33,7 @@ function ensureUniqueName(name: string, ignoredId?: string): void {
     (record) => record.id !== ignoredId && normalizeName(record.name) === normalizeName(name),
   );
   if (duplicate) {
-    throw new ApiError(409, 'Ya existe un sitio con ese nombre.', 'DUPLICATE_NAME');
+    throw new ApiError(409, 'Ya existe una sede con ese nombre.', 'DUPLICATE_NAME');
   }
 }
 
@@ -61,7 +61,7 @@ export const siteApiMock: SiteApi = {
   async update(id: string, input: SiteInput): Promise<Site> {
     ensureUniqueName(input.name, id);
     const current = records.find((record) => record.id === id);
-    if (current === undefined) throw new ApiError(404, 'El sitio no existe.');
+    if (current === undefined) throw new ApiError(404, 'La sede no existe.');
 
     const updated: Site = {
       ...current,
@@ -76,7 +76,7 @@ export const siteApiMock: SiteApi = {
   /** Removes a site from the in-memory catalog. */
   async remove(id: string): Promise<undefined> {
     if (!records.some((record) => record.id === id)) {
-      throw new ApiError(404, 'El sitio no existe.');
+      throw new ApiError(404, 'La sede no existe.');
     }
     records = records.filter((record) => record.id !== id);
     return undefined;

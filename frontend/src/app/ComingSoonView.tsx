@@ -1,3 +1,5 @@
+import { messages } from '../shared/i18n/messages';
+
 /**
  * Vista temporal "Próximamente" para las secciones que aún no se implementan.
  *
@@ -11,8 +13,8 @@
 export function ComingSoonView({ section }: { section: string }) {
   return (
     <section className="coming-soon">
-      <h1>{`Próximamente: ${section}`}</h1>
-      <p>Esta funcionalidad se implementará en una próxima entrega.</p>
+      <h1>{messages.comingSoon.heading(section)}</h1>
+      <p>{messages.comingSoon.description}</p>
     </section>
   );
 }

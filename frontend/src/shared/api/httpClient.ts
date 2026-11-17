@@ -1,4 +1,5 @@
 import { ApiError } from './apiError';
+import { messages } from '../i18n/messages';
 
 /** Options shared by all HTTP requests. */
 export interface RequestOptions {
@@ -13,6 +14,20 @@ export interface RequestOptions {
 }
 
 /**
+ * Callbacks the auth layer registers so requests carry the session token.
+ *
+ * @remarks
+ * `shared/api` must not import `shared/auth` (E3-02 dependency rules, and
+ * auth itself uses this client), so the session plugs itself in from outside.
+ */
+export interface AuthHandlers {
+  /** Returns the current session token, or `null` when nobody is logged in. */
+  getToken: () => string | null;
+  /** Called when the backend rejects the session token with HTTP 401. */
+  onUnauthorized: () => void;
+}
+
+/**
  * Small typed wrapper around the browser Fetch API.
  *
  * @remarks
@@ -21,6 +36,13 @@ export interface RequestOptions {
  * tests or adapt when the backend contract changes.
  */
 export class HttpClient {
+  private authHandlers: AuthHandlers | null = null;
+
+  /** Registers (or removes, with `null`) the auth callbacks used by every request. */
+  setAuthHandlers(handlers: AuthHandlers | null): void {
+    this.authHandlers = handlers;
+  }
+
   /**
    * Executes a request and parses its JSON response.
    *
@@ -42,6 +64,9 @@ export class HttpClient {
     headers.set('Accept', 'application/json');
     if (options.body !== undefined) headers.set('Content-Type', 'application/json');
 
+    const token = this.authHandlers?.getToken() ?? null;
+    if (token !== null) headers.set('Authorization', `Bearer ${token}`);
+
     const requestInit: RequestInit = { method, headers };
     if (options.body !== undefined) requestInit.body = JSON.stringify(options.body);
     if (options.signal !== undefined) requestInit.signal = options.signal;
@@ -50,11 +75,11 @@ export class HttpClient {
     try {
       response = await fetch(url, requestInit);
     } catch {
-      throw new ApiError(0, 'No se pudo conectar con el servidor.');
+      throw new ApiError(0, messages.common.networkError);
     }
 
     if (!response.ok) {
-      let message = response.statusText || 'La solicitud al servidor falló.';
+      let message = response.statusText || messages.common.requestFailed;
       let code: string | undefined;
       let details: unknown;
 
@@ -63,13 +88,19 @@ export class HttpClient {
           message?: string;
           code?: string;
           details?: unknown;
+          /** FastAPI's default error field: a string, or a list for 422 validation errors. */
+          detail?: unknown;
         };
         if (payload.message !== undefined) message = payload.message;
+        else if (typeof payload.detail === 'string') message = payload.detail;
         code = payload.code;
-        details = payload.details;
+        details = payload.details ?? (Array.isArray(payload.detail) ? payload.detail : undefined);
       } catch {
         // A non-JSON response still produces a useful ApiError from its status.
       }
+
+      // A rejected token means the session is over; login failures (no token sent) are not.
+      if (response.status === 401 && token !== null) this.authHandlers?.onUnauthorized();
 
       throw new ApiError(response.status, message, code, details);
     }

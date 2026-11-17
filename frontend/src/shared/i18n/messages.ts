@@ -1,3 +1,5 @@
+import { plural } from './plural';
+
 /**
  * Todos los textos visibles de la interfaz, en español.
  *
@@ -26,6 +28,112 @@ export const messages = {
     errorDescription: 'Comprueba tu conexión e inténtalo de nuevo.',
     retry: 'Reintentar',
   },
+  common: {
+    adminEyebrow: 'Administración',
+    cancel: 'Cancelar',
+    edit: 'Editar',
+    delete: 'Eliminar',
+    saveChanges: 'Guardar cambios',
+    networkError: 'No se pudo conectar con el servidor.',
+    requestFailed: 'La solicitud al servidor falló.',
+    emptyValue: '—',
+    nameRequired: 'El nombre es obligatorio.',
+    // Table column headers shared by several tables.
+    columns: {
+      name: 'Nombre',
+    },
+    // Delete confirmation; the item name is rendered in bold between both parts.
+    deleteConfirm: {
+      before: '¿Seguro que deseas eliminar ',
+      after: '? Esta acción no se puede deshacer.',
+    },
+  },
+  dataTable: {
+    defaultLabel: 'Tabla de datos',
+    loadingLabel: 'Cargando',
+    empty: 'No hay datos disponibles',
+    caption: (count: number) => `Datos (${count})`,
+    actions: 'Acciones',
+    editRow: (row: number) => `Editar registro ${row}`,
+    deleteRow: (row: number) => `Eliminar registro ${row}`,
+    sortBy: (column: string, direction: 'asc' | 'desc') =>
+      `Ordenar ${column} ${direction === 'asc' ? 'ascendente' : 'descendente'}`,
+  },
+  pdfExport: {
+    button: 'Exportar PDF',
+    exporting: 'Exportando…',
+    hint: 'Exporta la vista activa respetando el orden actual de las columnas.',
+    failed: 'No se pudo generar el PDF. Inténtalo de nuevo.',
+    generatedOn: (date: string) => `Generado el ${date}`,
+  },
+  reports: {
+    title: 'Informes',
+    subtitle: 'Consulta las estadísticas del sistema y expórtalas a PDF.',
+    summary: (count: number) =>
+      `${count} ${plural(count, { one: 'informe', other: 'informes' })} para tu perfil`,
+    searchLabel: 'Buscar informes',
+    searchPlaceholder: 'Buscar por nombre, código o requisito',
+    filtersLabel: 'Filtrar informes por estado',
+    tabs: {
+      all: (count: number) => `Todos (${count})`,
+      available: (count: number) => `Disponibles (${count})`,
+      comingSoon: (count: number) => `Próximamente (${count})`,
+    },
+    status: {
+      comingSoon: 'Próximamente',
+    },
+    viewReport: 'Ver informe',
+    detail: {
+      back: 'Volver a informes',
+      comingSoonDescription: 'Este informe estará disponible en una próxima entrega.',
+      emptyTitle: 'No hay datos para los filtros seleccionados',
+      emptyDescription: 'Prueba con otros filtros para ver resultados.',
+      insufficientTitle: 'No hay datos suficientes para este análisis',
+      insufficientDescription: 'Se necesitan más registros para obtener un resultado fiable.',
+      notFoundTitle: 'Informe no encontrado',
+      notFoundDescription: 'El informe solicitado no existe.',
+      chartLoading: 'Cargando gráfica…',
+    },
+    sectionsLabel: 'Secciones del informe',
+    noResults: 'No hay informes que coincidan',
+    noResultsHint: 'Prueba con otra búsqueda u otra pestaña.',
+    items: {
+      rep01: {
+        title: 'Rutinas generadas por programa',
+        description: 'Rutinas de un programa con su entrenador, fecha y parámetros.',
+      },
+      rep02: {
+        title: 'Ejercicios más utilizados',
+        description:
+          'Ejercicios más usados en las rutinas finales, por intensidad y grupo muscular.',
+      },
+      rep03: {
+        title: 'Rutinas validadas por revisor',
+        description: 'Fecha, decisión y observaciones de cada validación.',
+      },
+      rep04: {
+        title: 'Desempeño de clientes en una rutina',
+        description: 'Sesiones y tasas de finalización por intensidad.',
+      },
+      rep05: {
+        title: 'Comparación de rutinas entre programas',
+        description: 'Distribución por grupo muscular e intensidad, y equilibrio.',
+      },
+      rep06: {
+        title: 'Análisis de rendimiento y abandono',
+        description: 'Tres consultas sobre rendimiento, abandono y ajustes por programa.',
+        sections: {
+          correlation: 'Correlación intensidad-rendimiento',
+          abandonment: 'Ejercicios con mayor abandono',
+          adjustments: 'Ajustes frente al promedio de la sede',
+        },
+      },
+    },
+  },
+  dashboard: {
+    title: 'Inicio',
+    welcome: 'Bienvenido al sistema de generación automática de planes de entrenamiento.',
+  },
   login: {
     brand: 'FORJA',
     backToHome: 'Volver a inicio',
@@ -43,6 +151,7 @@ export const messages = {
       emailInvalid: 'El correo no tiene un formato válido.',
       passwordRequired: 'Introduce tu contraseña.',
       invalidCredentials: 'Correo o contraseña incorrectos. Verifica tus credenciales.',
+      accountInactive: 'Tu cuenta está desactivada. Contacta con el administrador.',
     },
     demoSuccess: 'Credenciales correctas. Sesión iniciada.',
     sessionError: 'Error al iniciar sesión. Inténtalo de nuevo.',
@@ -66,6 +175,7 @@ export const messages = {
   },
   comingSoon: {
     title: 'Próximamente',
+    heading: (section: string) => `Próximamente: ${section}`,
     description: 'Esta funcionalidad se implementará en una próxima entrega.',
   },
   notFound: {
@@ -82,10 +192,31 @@ export const messages = {
       actions: 'Acciones',
     },
     createButton: 'Crear cuenta',
-    editButton: 'Editar',
     deactivateButton: 'Desactivar',
     activateButton: 'Activar',
-    dismissError: 'Descartar',
+    status: {
+      active: 'Activa',
+      inactive: 'Inactiva',
+    },
+    deactivateConfirm: '¿Estás seguro de que deseas desactivar esta cuenta?',
+    editPanelTitle: (email: string) => `Editar ${email}`,
+    errors: {
+      loadFailed: 'No se pudieron cargar los usuarios.',
+      createFailed: 'No se pudo crear la cuenta.',
+      updateFailed: 'No se pudo modificar la cuenta.',
+      deactivateFailed: 'No se pudo desactivar la cuenta.',
+    },
+    validation: {
+      emailRequired: 'Introduce tu correo electrónico.',
+      emailInvalid: 'El correo no tiene un formato válido.',
+      passwordRequired: 'Introduce una contraseña.',
+      roleInvalid: 'Selecciona un rol válido.',
+      ageInvalid: 'Introduce una edad válida (mayor que cero).',
+      siteRequired: 'Selecciona una sede.',
+      noChanges: 'Modifica al menos un campo.',
+      agePositive: 'La edad debe ser mayor que cero.',
+      siteInvalid: 'Selecciona una sede válida.',
+    },
     form: {
       createTitle: 'Nueva cuenta',
       editTitle: 'Editar cuenta',
@@ -104,8 +235,137 @@ export const messages = {
       ageLabel: 'Edad',
       siteLabel: 'Sede',
       createButton: 'Crear cuenta',
-      saveButton: 'Guardar cambios',
-      cancelButton: 'Cancelar',
+    },
+  },
+  sites: {
+    title: 'Sedes',
+    subtitle: 'Gestiona las sedes donde se desarrollan los entrenamientos.',
+    createButton: 'Nueva sede',
+    listLabel: 'Listado de sedes',
+    tableLabel: 'Catálogo de sedes',
+    loadError: 'No se pudo cargar el catálogo de sedes.',
+    deleteError: 'No se pudo eliminar la sede.',
+    saveError: 'No se pudo guardar la sede. Inténtalo nuevamente.',
+    table: {
+      address: 'Dirección',
+      registered: 'Registrado',
+    },
+    form: {
+      createTitle: 'Nueva sede',
+      editTitle: 'Editar sede',
+      nameLabel: 'Nombre de la sede',
+      namePlaceholder: 'Ej. Sede Vedado',
+      addressLabel: 'Dirección',
+      addressPlaceholder: 'Ej. Calle 23, Vedado, La Habana',
+      addressRequired: 'La dirección es obligatoria.',
+      createButton: 'Crear sede',
+    },
+    delete: {
+      title: 'Eliminar sede',
+    },
+  },
+  trainingPrograms: {
+    title: 'Programas de entrenamiento',
+    subtitle: 'Gestiona objetivos y grupos musculares cubiertos por cada programa.',
+    createButton: 'Nuevo programa',
+    listLabel: 'Listado de programas de entrenamiento',
+    tableLabel: 'Catálogo de programas de entrenamiento',
+    loadError: 'No se pudo cargar el catálogo de programas.',
+    deleteError: 'No se pudo eliminar el programa.',
+    saveError: 'No se pudo guardar el programa. Inténtalo nuevamente.',
+    table: {
+      objective: 'Objetivo',
+      muscleGroups: 'Grupos musculares',
+      configuredCount: (count: number) =>
+        `${count} ${plural(count, { one: 'configurado', other: 'configurados' })}`,
+    },
+    form: {
+      createTitle: 'Nuevo programa',
+      editTitle: 'Editar programa',
+      nameLabel: 'Nombre del programa',
+      namePlaceholder: 'Ej. Fuerza de tren superior',
+      objectiveLabel: 'Objetivo',
+      objectivePlaceholder: 'Ej. Mejorar la fuerza general',
+      objectiveRequired: 'El objetivo es obligatorio.',
+      muscleGroupsRequired: 'Selecciona al menos un grupo muscular.',
+      muscleGroupsLoadError: 'No se pudieron cargar los grupos musculares.',
+      muscleGroupsLoading: 'Cargando grupos musculares…',
+      createButton: 'Crear programa',
+    },
+    muscleGroupPicker: {
+      legend: 'Grupos musculares',
+      hint: 'Selecciona los grupos que cubre este programa.',
+      empty: 'No hay grupos musculares disponibles.',
+      selectedLabel: 'Configurados:',
+      noneSelected: 'Ninguno',
+    },
+    delete: {
+      title: 'Eliminar programa',
+    },
+  },
+  muscleGroups: {
+    title: 'Grupos musculares',
+    subtitle: 'Gestiona el catálogo utilizado por los programas de entrenamiento.',
+    createButton: 'Nuevo grupo',
+    listLabel: 'Listado de grupos musculares',
+    tableLabel: 'Catálogo de grupos musculares',
+    loadError: 'No se pudo cargar el catálogo de grupos musculares.',
+    deleteError: 'No se pudo eliminar el grupo muscular.',
+    saveError: 'No se pudo guardar el grupo muscular. Inténtalo nuevamente.',
+    table: {
+      description: 'Descripción',
+      created: 'Creado',
+    },
+    form: {
+      createTitle: 'Nuevo grupo muscular',
+      editTitle: 'Editar grupo muscular',
+      nameLabel: 'Nombre',
+      namePlaceholder: 'Ej. Piernas',
+      descriptionLabel: 'Descripción',
+      descriptionPlaceholder: 'Describe los músculos incluidos (opcional)',
+      createButton: 'Crear grupo',
+    },
+    delete: {
+      title: 'Eliminar grupo muscular',
+    },
+  },
+  exercises: {
+    title: 'Ejercicios',
+    subtitle: 'Consulta y reclasifica los ejercicios que has creado.',
+    tableLabel: 'Tabla de ejercicios',
+    loadError: 'No se pudieron cargar los ejercicios.',
+    pdfFileName: 'ejercicios',
+    table: {
+      muscleGroup: 'Grupo muscular',
+      type: 'Tipo',
+      intensity: 'Intensidad',
+      creator: 'Creador',
+      registrationDate: 'Fecha de registro',
+    },
+    form: {
+      title: 'Reclasificar ejercicio',
+      close: 'Cerrar formulario',
+      nameLabel: 'Nombre',
+      descriptionLabel: 'Descripción',
+      catalogsLoading: 'Cargando catálogos…',
+      catalogsError: 'No se pudieron cargar los catálogos.',
+      muscleGroupLabel: 'Grupo muscular',
+      muscleGroupPlaceholder: 'Selecciona un grupo muscular',
+      muscleGroupRequired: 'El grupo muscular es obligatorio.',
+      typeLabel: 'Tipo de ejercicio',
+      typePlaceholder: 'Selecciona un tipo',
+      typeRequired: 'El tipo de ejercicio es obligatorio.',
+      intensityLabel: 'Intensidad',
+      intensityPlaceholder: 'Selecciona una intensidad',
+      intensityRequired: 'La intensidad es obligatoria.',
+      saving: 'Guardando…',
+    },
+    // Fallback texts by HTTP status, used when the server sends no message.
+    errors: {
+      forbidden: 'No tienes permiso para reclasificar este ejercicio.',
+      conflict: 'La clasificación ya existe.',
+      invalid: 'La clasificación no es válida.',
+      updateFailed: 'No se pudo actualizar el ejercicio.',
     },
   },
 } as const;

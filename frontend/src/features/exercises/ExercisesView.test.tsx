@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   useAuth: vi.fn(),
   useExercises: vi.fn(),
   useUpdateExerciseClassification: vi.fn(),
+  exportToPdf: vi.fn(),
 }));
 
 vi.mock('../../shared/auth/useAuth', () => ({ useAuth: mocks.useAuth }));
@@ -16,15 +17,21 @@ vi.mock('./useExercises', () => ({
   useExercises: mocks.useExercises,
   useUpdateExerciseClassification: mocks.useUpdateExerciseClassification,
 }));
+vi.mock('../../shared/export/exportToPdf', () => ({ exportToPdf: mocks.exportToPdf }));
 vi.mock('./ExerciseTable', () => ({
   ExerciseTable: ({
     exercises,
     onReclassify,
+    onSortChange,
   }: {
     exercises: Exercise[];
     onReclassify: (exercise: Exercise) => void;
+    onSortChange?: (accessor: keyof Exercise | null, direction: 'asc' | 'desc') => void;
   }) => (
     <div data-testid="exercise-table">
+      <button type="button" onClick={() => onSortChange?.('name', 'desc')}>
+        Ordenar por nombre descendente
+      </button>
       {exercises.map((exercise) => (
         <span key={exercise.id}>
           {exercise.name}
@@ -103,7 +110,10 @@ const mutationState = {
 beforeEach(() => {
   queryState.data = [exercise];
   mutationState.error = null;
+  mutationState.isPending = false;
   mutationState.mutateAsync.mockClear();
+  mocks.exportToPdf.mockReset();
+  mocks.exportToPdf.mockResolvedValue(undefined);
 });
 
 function renderView(user: AuthenticatedUser | null = trainer('trainer-1')) {
@@ -172,5 +182,49 @@ describe('ExercisesView', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'No tienes permiso para reclasificar este ejercicio.',
     );
+  });
+
+  it('closes the form with the modal close button', async () => {
+    const user = userEvent.setup();
+    renderView();
+    await user.click(screen.getByRole('button', { name: 'Reclasificar Press de banca' }));
+    await user.click(screen.getByRole('button', { name: 'Cerrar' }));
+
+    expect(screen.queryByTestId('exercise-form')).not.toBeInTheDocument();
+  });
+
+  it('keeps the form open while the update is being saved', async () => {
+    const user = userEvent.setup();
+    mutationState.isPending = true;
+    renderView();
+    await user.click(screen.getByRole('button', { name: 'Reclasificar Press de banca' }));
+    await user.click(screen.getByRole('button', { name: 'Cerrar' }));
+
+    expect(screen.getByTestId('exercise-form')).toBeInTheDocument();
+  });
+
+  it('exports the visible rows in the active order', async () => {
+    const user = userEvent.setup();
+    queryState.data = [exercise, { ...exercise, id: 'exercise-2', name: 'Sentadilla' }];
+    renderView();
+
+    await user.click(screen.getByRole('button', { name: 'Exportar PDF' }));
+    expect(mocks.exportToPdf.mock.calls[0]?.[0]).toMatchObject({
+      title: 'Ejercicios',
+      fileName: 'ejercicios',
+      table: { body: [expect.arrayContaining(['Press de banca']), expect.anything()] },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Ordenar por nombre descendente' }));
+    await user.click(screen.getByRole('button', { name: 'Exportar PDF' }));
+    const body = mocks.exportToPdf.mock.calls[1]?.[0].table.body as string[][];
+    expect(body.map((cells) => cells[0])).toEqual(['Sentadilla', 'Press de banca']);
+  });
+
+  it('disables the export when there are no exercises', () => {
+    queryState.data = [];
+    renderView();
+
+    expect(screen.getByRole('button', { name: 'Exportar PDF' })).toBeDisabled();
   });
 });

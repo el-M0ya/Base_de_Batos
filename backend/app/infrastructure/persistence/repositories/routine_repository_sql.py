@@ -131,8 +131,10 @@ class RoutineRepositorySql(RoutineRepository):
                     total_exercises,
                     intensity_level,
                     cardio_ratio,
-                    strength_ratio
-                ) VALUES (%s, %s, %s, %s, %s)
+                    strength_ratio,
+                    flexibility_ratio,
+                    covered_muscle_group_ids
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     routine_id,
@@ -140,6 +142,8 @@ class RoutineRepositorySql(RoutineRepository):
                     params.intensity_level.value,
                     str(params.cardio_ratio),
                     str(params.strength_ratio),
+                    str(params.flexibility_ratio),
+                    list(params.covered_muscle_group_ids),
                 ),
             )
 
@@ -238,7 +242,9 @@ class RoutineRepositorySql(RoutineRepository):
             # Parameters
             cursor = await self._conn.execute(
                 """
-                SELECT total_exercises, intensity_level, cardio_ratio, strength_ratio
+                SELECT total_exercises, intensity_level, cardio_ratio,
+                       strength_ratio, flexibility_ratio,
+                       covered_muscle_group_ids
                 FROM parameters_routine
                 WHERE id_routine = %s
                 """,
@@ -273,6 +279,18 @@ class RoutineRepositorySql(RoutineRepository):
             struct_row = await cursor.fetchone()
             if struct_row is None:
                 return None
+
+            parameters = RoutineParameters(
+                id_routine=id_routine,
+                total_exercises=params_row["total_exercises"],
+                intensity_level=params_row["intensity_level"],
+                cardio_ratio=params_row["cardio_ratio"],
+                strength_ratio=params_row["strength_ratio"],
+                flexibility_ratio=params_row["flexibility_ratio"],
+                covered_muscle_group_ids=params_row["covered_muscle_group_ids"],
+            )
+            routine._parameters = parameters
+            routine._contains = [dict(entry) for entry in contains_rows]
 
             structure = jsonb_to_structure(id_routine, struct_row["structure_json"])
 

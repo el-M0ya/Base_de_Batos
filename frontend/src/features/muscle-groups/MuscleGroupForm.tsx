@@ -2,9 +2,14 @@ import { useState, type FormEvent } from 'react';
 import { ApiError } from '../../shared/api/apiError';
 import { Alert } from '../../shared/components/Alert';
 import { Button } from '../../shared/components/Button';
+import { TextArea } from '../../shared/components/TextArea';
 import { TextField } from '../../shared/components/TextField';
 import type { MuscleGroup, MuscleGroupInput } from '../../shared/types/muscleGroup';
+import { messages } from '../../shared/i18n/messages';
 import styles from './MuscleGroupForm.module.css';
+
+const t = messages.muscleGroups;
+const common = messages.common;
 
 /** Props for the create/edit muscle-group form. */
 export interface MuscleGroupFormProps {
@@ -45,7 +50,7 @@ export function MuscleGroupForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: MuscleGroupFormErrors = {};
-    if (name.trim() === '') nextErrors.name = 'El nombre es obligatorio.';
+    if (name.trim() === '') nextErrors.name = common.nameRequired;
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       return;
@@ -57,11 +62,9 @@ export function MuscleGroupForm({
       await onSubmit({ name: name.trim(), description: description.trim() });
     } catch (error) {
       if (error instanceof ApiError) {
-        setServerError(
-          error.isNetworkError() ? 'No se pudo conectar con el servidor.' : error.message,
-        );
+        setServerError(error.isNetworkError() ? common.networkError : error.message);
       } else {
-        setServerError('No se pudo guardar el grupo muscular. Inténtalo nuevamente.');
+        setServerError(t.saveError);
       }
     }
   }
@@ -70,35 +73,28 @@ export function MuscleGroupForm({
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       {serverError !== undefined && <Alert>{serverError}</Alert>}
       <TextField
-        label="Nombre"
+        label={t.form.nameLabel}
         value={name}
         onChange={(event) => setName(event.target.value)}
         error={errors.name}
-        placeholder="Ej. Piernas"
+        placeholder={t.form.namePlaceholder}
         required
         autoFocus
         disabled={isSubmitting}
       />
-      <div className={styles.descriptionField}>
-        <label className={styles.label} htmlFor="muscle-group-description">
-          Descripción
-        </label>
-        <textarea
-          id="muscle-group-description"
-          className={styles.textarea}
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          placeholder="Describe los músculos incluidos (opcional)"
-          rows={4}
-          disabled={isSubmitting}
-        />
-      </div>
+      <TextArea
+        label={t.form.descriptionLabel}
+        value={description}
+        onChange={(event) => setDescription(event.target.value)}
+        placeholder={t.form.descriptionPlaceholder}
+        disabled={isSubmitting}
+      />
       <div className={styles.actions}>
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
-          Cancelar
+          {common.cancel}
         </Button>
         <Button type="submit" isLoading={isSubmitting}>
-          {initialValue === undefined ? 'Crear grupo' : 'Guardar cambios'}
+          {initialValue === undefined ? t.form.createButton : common.saveChanges}
         </Button>
       </div>
     </form>

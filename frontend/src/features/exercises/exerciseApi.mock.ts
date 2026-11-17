@@ -11,6 +11,8 @@ const catalogs: ExerciseCatalogs = {
   intensityLevels: ['bajo', 'medio', 'alto'],
 };
 
+// Creator ids must match the demo users of `shared/auth/authApi.mock.ts`
+// (`user-<email>`); otherwise no demo trainer could reclassify anything.
 let records: Exercise[] = [
   {
     id: 'exercise-1',
@@ -21,7 +23,7 @@ let records: Exercise[] = [
     intensity: 'alto',
     muscleGroupId: '1',
     muscleGroupName: 'Pecho',
-    trainerId: 'trainer-1',
+    trainerId: 'user-trainer@forjafit.demo',
   },
   {
     id: 'exercise-2',
@@ -32,7 +34,7 @@ let records: Exercise[] = [
     intensity: 'medio',
     muscleGroupId: '2',
     muscleGroupName: 'Espalda',
-    trainerId: 'trainer-2',
+    trainerId: 'user-chief@forjafit.demo',
   },
   {
     id: 'exercise-3',
@@ -43,7 +45,7 @@ let records: Exercise[] = [
     intensity: 'bajo',
     muscleGroupId: '3',
     muscleGroupName: 'Piernas',
-    trainerId: 'client-1',
+    trainerId: 'user-trainer@forjafit.demo',
   },
 ];
 

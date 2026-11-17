@@ -14,6 +14,10 @@ import { useState } from 'react';
 import { useUsers } from './useUsers';
 import { UsersView } from './UsersView';
 import type { UserAccount, UpdateUserInput } from '../../shared/types/users';
+import { messages } from '../../shared/i18n/messages';
+
+const t = messages.users;
+const common = messages.common;
 
 /**
  * Contenedor del listado de usuarios.
@@ -60,7 +64,7 @@ export function UsersContainer() {
   }
 
   async function handleDeactivate(id: number) {
-    if (!window.confirm('¿Estás seguro de que deseas desactivar esta cuenta?')) {
+    if (!window.confirm(t.deactivateConfirm)) {
       return;
     }
     await deactivateUser(id);
@@ -79,14 +83,14 @@ export function UsersContainer() {
 
       {editingUser && (
         <aside className="users-container__edit-panel">
-          <h2>{`Editar ${editingUser.email}`}</h2>
+          <h2>{t.editPanelTitle(editingUser.email)}</h2>
           <p>{editingUser.role}</p>
-          <p>{editingUser.status === 'active' ? 'Activa' : 'Inactiva'}</p>
+          <p>{editingUser.status === 'active' ? t.status.active : t.status.inactive}</p>
           <button className="save-button" onClick={handleSave} disabled={loading}>
-            Guardar cambios
+            {common.saveChanges}
           </button>
           <button className="cancel-button" onClick={handleCancel}>
-            Cancelar
+            {common.cancel}
           </button>
         </aside>
       )}

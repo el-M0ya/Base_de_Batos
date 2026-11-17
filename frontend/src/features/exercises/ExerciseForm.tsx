@@ -1,7 +1,17 @@
 import { useState, type FormEvent } from 'react';
+import { Alert } from '../../shared/components/Alert';
+import { Button } from '../../shared/components/Button';
+import { LoadingState } from '../../shared/components/LoadingState';
+import { SelectField, type SelectOption } from '../../shared/components/SelectField';
+import { TextArea } from '../../shared/components/TextArea';
+import { TextField } from '../../shared/components/TextField';
 import { useExerciseCatalogs } from './useExercises';
 import type { Exercise, ExerciseClassificationInput } from './types';
+import { messages } from '../../shared/i18n/messages';
 import styles from './ExerciseForm.module.css';
+
+const t = messages.exercises;
+const common = messages.common;
 
 /** Error shape accepted from the exercise update mutation. */
 export type ExerciseBackendError = (Error & { status?: number }) | null | undefined;
@@ -28,11 +38,11 @@ interface ExerciseFormErrors {
 
 function getBackendErrorMessage(error: ExerciseBackendError): string | undefined {
   if (error === null || error === undefined) return undefined;
-  if (error.status === 0) return 'No se pudo conectar con el servidor.';
-  if (error.status === 403) return 'No tienes permiso para reclasificar este ejercicio.';
-  if (error.status === 409) return error.message || 'La clasificación ya existe.';
-  if (error.status === 422) return error.message || 'La clasificación no es válida.';
-  return error.message || 'No se pudo actualizar el ejercicio.';
+  if (error.status === 0) return common.networkError;
+  if (error.status === 403) return t.errors.forbidden;
+  if (error.status === 409) return error.message || t.errors.conflict;
+  if (error.status === 422) return error.message || t.errors.invalid;
+  return error.message || t.errors.updateFailed;
 }
 
 /**
@@ -56,16 +66,15 @@ export function ExerciseForm({
   const [intensity, setIntensity] = useState(exercise.intensity);
   const [errors, setErrors] = useState<ExerciseFormErrors>({});
 
-  const catalogError = catalogsQuery.error?.message ?? 'No se pudieron cargar los catálogos.';
+  const catalogError = catalogsQuery.error?.message ?? t.form.catalogsError;
   const backendErrorMessage = getBackendErrorMessage(backendError);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors: ExerciseFormErrors = {};
-    if (muscleGroupId.trim() === '') nextErrors.muscleGroupId = 'El grupo muscular es obligatorio.';
-    if (exerciseType.trim() === '')
-      nextErrors.exerciseType = 'El tipo de ejercicio es obligatorio.';
-    if (intensity.trim() === '') nextErrors.intensity = 'La intensidad es obligatoria.';
+    if (muscleGroupId.trim() === '') nextErrors.muscleGroupId = t.form.muscleGroupRequired;
+    if (exerciseType.trim() === '') nextErrors.exerciseType = t.form.typeRequired;
+    if (intensity.trim() === '') nextErrors.intensity = t.form.intensityRequired;
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
@@ -76,111 +85,73 @@ export function ExerciseForm({
     await onSubmit({ muscleGroupId, exerciseType, intensity });
   }
 
+  // SelectField expects { value, label } pairs; the catalogs come in other shapes.
+  const muscleGroupOptions: SelectOption[] = (catalogsQuery.data?.muscleGroups ?? []).map(
+    (group) => ({ value: group.id, label: group.name }),
+  );
+  const typeOptions: SelectOption[] = (catalogsQuery.data?.exerciseTypes ?? []).map((type) => ({
+    value: type,
+    label: type,
+  }));
+  const intensityOptions: SelectOption[] = (catalogsQuery.data?.intensityLevels ?? []).map(
+    (level) => ({ value: level, label: level }),
+  );
+
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      {backendErrorMessage !== undefined && (
-        <p className={styles.error} role="alert">
-          {backendErrorMessage}
-        </p>
-      )}
+      {backendErrorMessage !== undefined && <Alert>{backendErrorMessage}</Alert>}
 
-      <label className={styles.field}>
-        <span>Nombre</span>
-        <input className={styles.input} value={exercise.name} readOnly />
-      </label>
+      <TextField label={t.form.nameLabel} value={exercise.name} readOnly />
 
-      <label className={styles.field}>
-        <span>Descripción</span>
-        <textarea className={styles.input} value={exercise.description ?? ''} readOnly rows={3} />
-      </label>
+      <TextArea
+        label={t.form.descriptionLabel}
+        value={exercise.description ?? ''}
+        readOnly
+        rows={3}
+      />
 
-      {catalogsQuery.isLoading && (
-        <p className={styles.status} role="status">
-          Cargando catálogos…
-        </p>
-      )}
+      {catalogsQuery.isLoading && <LoadingState message={t.form.catalogsLoading} />}
       {catalogsQuery.error !== null && catalogsQuery.error !== undefined && (
-        <p className={styles.error} role="alert">
-          {catalogError}
-        </p>
+        <Alert>{catalogError}</Alert>
       )}
 
-      <label className={styles.field}>
-        <span>Grupo muscular</span>
-        <select
-          className={styles.input}
-          value={muscleGroupId}
-          onChange={(event) => setMuscleGroupId(event.target.value)}
-          disabled={isSubmitting}
-          aria-invalid={errors.muscleGroupId !== undefined}
-        >
-          <option value="">Selecciona un grupo muscular</option>
-          {(catalogsQuery.data?.muscleGroups ?? []).map((group) => (
-            <option key={group.id} value={group.id}>
-              {group.name}
-            </option>
-          ))}
-        </select>
-        {errors.muscleGroupId !== undefined && (
-          <span className={styles.error} role="alert">
-            {errors.muscleGroupId}
-          </span>
-        )}
-      </label>
+      <SelectField
+        label={t.form.muscleGroupLabel}
+        placeholder={t.form.muscleGroupPlaceholder}
+        options={muscleGroupOptions}
+        value={muscleGroupId}
+        onChange={(event) => setMuscleGroupId(event.target.value)}
+        error={errors.muscleGroupId}
+        disabled={isSubmitting}
+      />
 
-      <label className={styles.field}>
-        <span>Tipo de ejercicio</span>
-        <select
-          className={styles.input}
-          value={exerciseType}
-          onChange={(event) => setExerciseType(event.target.value)}
-          disabled={isSubmitting}
-          aria-invalid={errors.exerciseType !== undefined}
-        >
-          <option value="">Selecciona un tipo</option>
-          {(catalogsQuery.data?.exerciseTypes ?? []).map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-        {errors.exerciseType !== undefined && (
-          <span className={styles.error} role="alert">
-            {errors.exerciseType}
-          </span>
-        )}
-      </label>
+      <SelectField
+        label={t.form.typeLabel}
+        placeholder={t.form.typePlaceholder}
+        options={typeOptions}
+        value={exerciseType}
+        onChange={(event) => setExerciseType(event.target.value)}
+        error={errors.exerciseType}
+        disabled={isSubmitting}
+      />
 
-      <label className={styles.field}>
-        <span>Intensidad</span>
-        <select
-          className={styles.input}
-          value={intensity}
-          onChange={(event) => setIntensity(event.target.value)}
-          disabled={isSubmitting}
-          aria-invalid={errors.intensity !== undefined}
-        >
-          <option value="">Selecciona una intensidad</option>
-          {(catalogsQuery.data?.intensityLevels ?? []).map((level) => (
-            <option key={level} value={level}>
-              {level}
-            </option>
-          ))}
-        </select>
-        {errors.intensity !== undefined && (
-          <span className={styles.error} role="alert">
-            {errors.intensity}
-          </span>
-        )}
-      </label>
+      <SelectField
+        label={t.form.intensityLabel}
+        placeholder={t.form.intensityPlaceholder}
+        options={intensityOptions}
+        value={intensity}
+        onChange={(event) => setIntensity(event.target.value)}
+        error={errors.intensity}
+        disabled={isSubmitting}
+      />
 
       <div className={styles.actions}>
-        <button type="button" onClick={onCancel} disabled={isSubmitting}>
-          Cancelar
-        </button>
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Guardando…' : 'Guardar cambios'}
-        </button>
+        <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
+          {common.cancel}
+        </Button>
+        <Button type="submit" isLoading={isSubmitting}>
+          {common.saveChanges}
+        </Button>
       </div>
     </form>
   );

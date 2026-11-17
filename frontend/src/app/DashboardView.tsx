@@ -1,3 +1,5 @@
+import { messages } from '../shared/i18n/messages';
+
 /**
  * Vista de inicio (dashboard) de la aplicación.
  *
@@ -9,8 +11,8 @@
 export function DashboardView() {
   return (
     <section className="dashboard">
-      <h1>Inicio</h1>
-      <p>Bienvenido al sistema de generación automática de planes de entrenamiento.</p>
+      <h1>{messages.dashboard.title}</h1>
+      <p>{messages.dashboard.welcome}</p>
     </section>
   );
 }
