@@ -66,13 +66,16 @@ echo "[INFO] Executing SQL scripts in numeric order with ON_ERROR_STOP..."
 # Execute in strict numeric order
 for script in \
   "${SCRIPTS_DIR}/001_identity_and_sites.sql" \
-  "${SCRIPTS_DIR}/002_catalogs_and_programs.sql" \
+  "${SCRIPTS_DIR}/002_catalogs_and_programs.sql.sql" \
   "${SCRIPTS_DIR}/003_exercises_authorisations_enrolments.sql" \
   "${SCRIPTS_DIR}/004_routines_and_structure.sql" \
   "${SCRIPTS_DIR}/005_validation_assignments_sessions_adjustments.sql" \
   "${SCRIPTS_DIR}/006_integrity_constraints.sql" \
   "${SCRIPTS_DIR}/007_consistency_triggers.sql" \
-  "${SCRIPTS_DIR}/008_catalog_seeds.sql"
+  "${SCRIPTS_DIR}/008_catalog_seeds.sql" \
+  "${SCRIPTS_DIR}/010_add_user_is_active.sql" \
+  "${SCRIPTS_DIR}/011_routine_parameters_full_generation.sql" \
+  "${SCRIPTS_DIR}/013_training_session_integrity.sql"
 do
   if [[ -f "${script}" ]]; then
     echo "[RUN] $(basename "${script}")"

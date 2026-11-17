@@ -42,7 +42,9 @@ SCRIPT_FILES = [
     "006_integrity_constraints.sql",
     "007_consistency_triggers.sql",
     "008_catalog_seeds.sql",
+    "010_add_user_is_active.sql",
     "011_routine_parameters_full_generation.sql",
+    "013_training_session_integrity.sql",
 ]
 
 _pool: Optional[AsyncConnectionPool] = None

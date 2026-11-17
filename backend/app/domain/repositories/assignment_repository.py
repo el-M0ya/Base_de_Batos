@@ -13,6 +13,10 @@ class AssignmentRepository(ABC):
     """Persistence operations for assigning routines to clients."""
 
     @abstractmethod
+    async def get_by_id(self, id_assignment: int) -> Optional[Assignment]:
+        """Return an assignment by its identifier, or ``None``."""
+
+    @abstractmethod
     async def find_by_routine_and_client(
         self, id_routine: int, id_client: int
     ) -> Optional[Assignment]:
