@@ -44,9 +44,7 @@ function renderTable(overrides: Partial<{ data: Row[]; loading: boolean }> = {})
 function columnValues(columnIndex: number): string[] {
   const cells = screen.getAllByRole('row');
   // Saltamos la fila de encabezado (primer row) y tomamos la celda del índice.
-  return cells
-    .slice(1)
-    .map((row) => row.querySelectorAll('td')[columnIndex]?.textContent ?? '');
+  return cells.slice(1).map((row) => row.querySelectorAll('td')[columnIndex]?.textContent ?? '');
 }
 
 describe('DataTable - estados', () => {
@@ -78,6 +76,48 @@ describe('DataTable - renderizado', () => {
     renderTable({ data: [] });
 
     expect(screen.queryByText('Zoe')).not.toBeInTheDocument();
+  });
+});
+
+describe('DataTable - acciones de edición', () => {
+  it('muestra la acción cuando canEdit devuelve true', () => {
+    render(
+      <DataTable<Row>
+        columns={columns}
+        data={data.slice(0, 1)}
+        onEdit={vi.fn()}
+        canEdit={() => true}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Editar registro 1' })).toBeInTheDocument();
+  });
+
+  it('oculta la acción cuando canEdit devuelve false', () => {
+    render(
+      <DataTable<Row>
+        columns={columns}
+        data={data.slice(0, 1)}
+        onEdit={vi.fn()}
+        canEdit={() => false}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: 'Editar registro 1' })).not.toBeInTheDocument();
+  });
+
+  it('muestra la acción solo en las filas editables', () => {
+    render(
+      <DataTable<Row>
+        columns={columns}
+        data={data.slice(0, 3)}
+        onEdit={vi.fn()}
+        canEdit={(row) => row.name === 'Zoe'}
+      />,
+    );
+
+    expect(screen.getAllByRole('button', { name: /Editar registro/ })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Editar registro 3' })).toBeInTheDocument();
   });
 });
 
@@ -137,9 +177,7 @@ describe('DataTable - ordenamiento', () => {
 
   it('expone el estado activo de orden al consumidor', () => {
     const onSortChange = vi.fn();
-    render(
-      <DataTable<Row> columns={columns} data={data} onSortChange={onSortChange} />,
-    );
+    render(<DataTable<Row> columns={columns} data={data} onSortChange={onSortChange} />);
 
     fireEvent.click(screen.getByText('Edad'));
 

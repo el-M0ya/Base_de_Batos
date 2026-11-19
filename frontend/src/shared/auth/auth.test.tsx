@@ -6,10 +6,12 @@
  * recarga. El mock de `authApi` simula una demora de red de 400 ms, por lo
  * que las pruebas esperan a que las promesas se resuelvan.
  */
-import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { httpClient } from '../api/httpClient';
 import { AuthProvider, useAuth } from './AuthContext';
+import { sessionStore } from './sessionStore';
 
 /** Componente auxiliar que expone los valores de `useAuth` para probarlos. */
 function AuthProbe() {
@@ -29,7 +31,15 @@ function AuthProbe() {
 }
 
 /** Componente con botón de login para un usuario concreto. */
-function LoginButton({ email, password, testId }: { email: string; password: string; testId: string }) {
+function LoginButton({
+  email,
+  password,
+  testId,
+}: {
+  email: string;
+  password: string;
+  testId: string;
+}) {
   const { login } = useAuth();
   return (
     <button data-testid={testId} onClick={() => void login(email, password).catch(() => {})}>
@@ -66,6 +76,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
 });
 
 /**
@@ -86,7 +97,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await waitForAuth();
 
     // Remontar un probe para leer el estado tras el login (sessionStorage persiste).
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('trainer');
@@ -105,7 +120,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await u.click(getByTestId('login-trainer'));
     await waitForAuth();
 
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('trainer');
@@ -124,7 +143,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await u.click(getByTestId('login-admin'));
     await waitForAuth();
 
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('administrator');
@@ -143,7 +166,11 @@ describe('AuthContext - roles y capacidades de los usuarios demo', () => {
     await u.click(getByTestId('login-client'));
     await waitForAuth();
 
-    const { getByTestId: g } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g('role')).toHaveTextContent('client');
@@ -194,11 +221,92 @@ describe('AuthContext - login, logout y restauración', () => {
 
     // Simular recarga: desmontar y montar un nuevo proveedor con AuthProbe.
     cleanup();
-    const { getByTestId: g2 } = render(<AuthProvider><AuthProbe /></AuthProvider>);
+    const { getByTestId: g2 } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
     await waitForAuth();
 
     expect(g2('user-email')).toHaveTextContent('client@forjafit.demo');
     expect(g2('role')).toHaveTextContent('client');
     expect(g2('isAuthenticated')).toHaveTextContent('true');
+  });
+
+  it('al restaurar usa los datos actuales del backend, no los guardados', async () => {
+    // Room chief token, but an outdated stored user (client).
+    sessionStorage.setItem('forjafit:token', 'demo:chief@forjafit.demo');
+    sessionStorage.setItem(
+      'forjafit:user',
+      JSON.stringify({
+        id: 'viejo',
+        email: 'chief@forjafit.demo',
+        role: 'client',
+        capabilities: { can_generate: false, can_validate: false },
+      }),
+    );
+
+    const { getByTestId } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitForAuth();
+
+    expect(getByTestId('role')).toHaveTextContent('trainer');
+    expect(getByTestId('hasCapCanValidate')).toHaveTextContent('true');
+  });
+
+  it('al restaurar con un token inválido borra la sesión', async () => {
+    sessionStorage.setItem('forjafit:token', 'token-que-no-existe');
+
+    const { getByTestId } = render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+    await waitForAuth();
+
+    expect(getByTestId('isAuthenticated')).toHaveTextContent('false');
+    expect(sessionStorage.getItem('forjafit:token')).toBeNull();
+  });
+});
+
+describe('AuthContext - integración con httpClient', () => {
+  it('tras el login, las peticiones llevan el token de la sesión', async () => {
+    const { user: u, getByTestId } = renderWithAuth(<LoginLogout />);
+    await u.click(getByTestId('login-btn'));
+    await waitForAuth();
+
+    const fetchMock = vi.fn().mockResolvedValue(new Response('[]', { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await httpClient.get('/exercises');
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(new Headers(init.headers).get('Authorization')).toBe(
+      'Bearer demo:trainer@forjafit.demo',
+    );
+  });
+
+  it('un 401 del backend cierra la sesión y marca que expiró', async () => {
+    const { user: u, getByTestId } = renderWithAuth(<LoginLogout />);
+    await u.click(getByTestId('login-btn'));
+    await waitForAuth();
+    expect(getByTestId('auth-state')).toHaveTextContent('trainer@forjafit.demo:true');
+
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ detail: 'The access token is invalid.' }), { status: 401 }),
+        ),
+    );
+    await httpClient.get('/exercises').catch(() => {});
+    await waitForAuth();
+
+    expect(getByTestId('auth-state')).toHaveTextContent('ninguna:false');
+    expect(sessionStorage.getItem('forjafit:token')).toBeNull();
+    expect(sessionStore.hasExpired()).toBe(true);
   });
 });

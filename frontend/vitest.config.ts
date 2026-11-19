@@ -9,6 +9,11 @@ export default defineConfig((env) =>
   mergeConfig(viteConfig(env), {
     test: {
       environment: 'jsdom',
+      // Tests always run as if no .env.local existed: an empty VITE_API_MODE keeps
+      // every API on its mock and the regular router ('mock' would switch to the
+      // hash router used by the static demo). The exercises module has its own
+      // switch (VITE_EXERCISE_API), so it is forced to the mock as well.
+      env: { VITE_API_MODE: '', VITE_EXERCISE_API: 'mock' },
       setupFiles: ['./src/test/setup.ts'],
       include: ['src/**/*.test.{ts,tsx}'],
       css: { modules: { classNameStrategy: 'non-scoped' } },

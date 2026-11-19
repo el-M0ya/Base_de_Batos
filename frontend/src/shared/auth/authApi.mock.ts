@@ -1,29 +1,32 @@
 /**
- * Implementación simulada de la API de autenticación.
+ * Simulated implementation of the authentication API.
  *
  * @remarks
- * Proporciona cuatro usuarios de demostración: administrador, entrenador,
- * jefe de sala (entrenador con `can_validate = true`) y cliente.
- * Simula una demora de red para que el comportamiento sea realista.
- * Las credenciales son ficticias y nunca reutilizan datos reales.
- *
- * El backend aún no expone endpoints de autenticación (ver `Agents.md` §13),
- * por lo que el frontend usa esta simulación hasta que existan.
+ * Provides four active demo users: administrator, trainer, room chief
+ * (trainer with `can_validate = true`) and client, plus one inactive account
+ * to show that error.
+ * It simulates network delay and answers with the same errors as the real
+ * backend (E4-01), so the demo and the tests reflect the real behaviour.
+ * The credentials are fictitious and never reuse real data.
  */
+import { ApiError } from '../api/apiError';
 import type { AuthenticatedUser, UserCapabilities, UserRole } from '../types/roles';
+import type { AuthApi, AuthSession } from './authApi';
 
 /**
- * Usuario de demostración usado por la API simulada.
+ * Demo user used by the simulated API.
  */
 export interface DemoUser {
-  /** Correo electrónico del usuario demo. */
+  /** Email of the demo user. */
   email: string;
-  /** Contraseña del usuario demo (ficticia). */
+  /** Password of the demo user (fictitious). */
   password: string;
-  /** Rol persistido del usuario. */
+  /** Persisted role of the user. */
   role: UserRole;
-  /** Capacidades activas del usuario. */
+  /** Active capabilities of the user. */
   capabilities: UserCapabilities;
+  /** `false` when the account is deactivated (soft delete). */
+  active: boolean;
 }
 
 const DEMO_USERS: DemoUser[] = [
@@ -32,42 +35,54 @@ const DEMO_USERS: DemoUser[] = [
     password: 'admin2026',
     role: 'administrator',
     capabilities: { can_generate: false, can_validate: false },
+    active: true,
   },
   {
     email: 'trainer@forjafit.demo',
     password: 'trainer2026',
     role: 'trainer',
     capabilities: { can_generate: true, can_validate: false },
+    active: true,
   },
   {
     email: 'chief@forjafit.demo',
     password: 'chief2026',
     role: 'trainer',
     capabilities: { can_generate: true, can_validate: true },
+    active: true,
   },
   {
     email: 'client@forjafit.demo',
     password: 'client2026',
     role: 'client',
     capabilities: { can_generate: false, can_validate: false },
+    active: true,
+  },
+  {
+    email: 'inactive@forjafit.demo',
+    password: 'inactive2026',
+    role: 'client',
+    capabilities: { can_generate: false, can_validate: false },
+    active: false,
   },
 ];
 
-/** Demora simulada de red, en milisegundos. */
+/** Prefix of the simulated tokens: `demo:<email>`. */
+const DEMO_TOKEN_PREFIX = 'demo:';
+
+/** Simulated network delay, in milliseconds. */
 const SIMULATED_DELAY_MS = 400;
 
 /**
- * Busca un usuario demo por correo y contraseña.
- * Devuelve `null` si las credenciales no coinciden.
+ * Finds a demo user by email and password.
+ * Returns `null` when the credentials do not match.
  */
 function findUser(email: string, password: string): DemoUser | null {
-  return (
-    DEMO_USERS.find((u) => u.email === email.toLowerCase() && u.password === password) ?? null
-  );
+  return DEMO_USERS.find((u) => u.email === email.toLowerCase() && u.password === password) ?? null;
 }
 
 /**
- * Convierte un usuario demo en un `AuthenticatedUser` con identificador estable.
+ * Converts a demo user into an `AuthenticatedUser` with a stable identifier.
  */
 function toAuthenticatedUser(demo: DemoUser): AuthenticatedUser {
   return {
@@ -79,7 +94,7 @@ function toAuthenticatedUser(demo: DemoUser): AuthenticatedUser {
 }
 
 /**
- * Simula una llamada a la API de autenticación con demora de red.
+ * Simulates an authentication API call with network delay.
  */
 async function withDelay<T>(value: T): Promise<T> {
   return new Promise((resolve) => {
@@ -88,45 +103,39 @@ async function withDelay<T>(value: T): Promise<T> {
 }
 
 /**
- * API de autenticación simulada.
+ * Simulated authentication API.
  */
-export const authApiMock = {
+export const authApiMock: AuthApi = {
   /**
-   * Inicia sesión con correo y contraseña.
-   * Rechaza con un error de estado 401 si las credenciales son inválidas.
+   * Logs in with email and password.
+   * Rejects with a 401 `ApiError`, using the backend's wording, when the
+   * credentials are invalid or the account is inactive.
    */
-  async login(email: string, password: string): Promise<AuthenticatedUser> {
+  async login(email: string, password: string): Promise<AuthSession> {
     await withDelay(undefined);
     const user = findUser(email, password);
     if (!user) {
-      const error: Error & { status?: number; code?: string } = new Error(
-        'Credenciales incorrectas.',
-      );
-      error.status = 401;
-      error.code = 'UNAUTHORIZED';
-      throw error;
+      throw new ApiError(401, 'Invalid email or password.');
     }
-    return toAuthenticatedUser(user);
+    if (!user.active) {
+      throw new ApiError(401, 'The account is inactive.');
+    }
+    return { token: `${DEMO_TOKEN_PREFIX}${user.email}`, user: toAuthenticatedUser(user) };
   },
 
-  /** Cierra la sesión simulada (no hay estado de servidor que limpiar). */
+  /** Ends the simulated session (there is no server state to clear). */
   async logout(): Promise<void> {
     await withDelay(undefined);
   },
 
-  /** Restaura la sesión desde el token guardado; devuelve `null` si no hay sesión. */
-  async me(): Promise<AuthenticatedUser | null> {
+  /** Returns the user of a simulated token, or `null` when it is not valid. */
+  async me(token: string): Promise<AuthenticatedUser | null> {
     await withDelay(undefined);
-    const token = sessionStorage.getItem('forjafit:token');
-    if (!token) {
+    if (!token.startsWith(DEMO_TOKEN_PREFIX)) {
       return null;
     }
-    // El token tiene el formato "demo:<email>"; recuperamos el usuario asociado.
-    const email = token.replace(/^demo:/, '');
-    const user = DEMO_USERS.find((u) => u.email === email);
-    if (!user) {
-      return null;
-    }
-    return toAuthenticatedUser(user);
+    const email = token.slice(DEMO_TOKEN_PREFIX.length);
+    const user = DEMO_USERS.find((u) => u.email === email && u.active);
+    return user ? toAuthenticatedUser(user) : null;
   },
 };

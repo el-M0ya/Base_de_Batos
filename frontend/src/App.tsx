@@ -1,18 +1,25 @@
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './shared/api/queryClient';
 import { AuthProvider } from './shared/auth/AuthContext';
-import { LoginPage } from './features/auth/LoginPage';
+import { AppRouter } from './app/router';
 
 /**
  * Root component of the application.
  *
  * @remarks
- * Wraps the app in `AuthProvider` so the session is available everywhere.
- * Temporarily shows the login screen directly. In E3-05 it is replaced by
- * the router with the layout and role-based navigation.
+ * Composes the global providers once, so every page can rely on them:
+ * `QueryClientProvider` (server-data cache used by the feature hooks) and
+ * `AuthProvider` (session). Then mounts `AppRouter`, which owns the
+ * application shell, the navigation and the role-protected routes.
  */
 export function App() {
   return (
-    <AuthProvider>
-      <LoginPage />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
+
+export default App;

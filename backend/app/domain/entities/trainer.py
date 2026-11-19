@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 from app.domain.entities.user import User
+from app.domain.entities.authorisation import Authorisation
+from datetime import date
 
 
 class TrainerSpecialty(str, Enum):
@@ -11,7 +13,6 @@ class TrainerSpecialty(str, Enum):
     REHABILITACION = "REHABILITACION"
     FUNCIONAL = "FUNCIONAL"
     ROUTINE_EDITOR = "ROUTINE_EDITOR"
-    ROOM_CHIEF = "ROOM_CHIEF"
 
 
 @dataclass
@@ -35,5 +36,9 @@ class Trainer:
                 f"The user with role '{self.user.role}' cannot be registered as a Trainer."
             )
 
-    def is_room_chief(self) -> bool:
-        return self.specialty == TrainerSpecialty.ROOM_CHIEF
+    def is_room_chief(self, authorisation: Authorisation, on_date: date) -> bool:
+        """Room-chief capability is a current validation permission per program."""
+        return (
+            authorisation.id_trainer == self.id_trainer
+            and authorisation.allows_validation_on(on_date)
+        )

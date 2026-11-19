@@ -7,7 +7,7 @@ from app.domain.states.routine_state import RoutineState
 
 
 class ApprovedState(RoutineState):
-    """An approved routine cannot transition to another lifecycle state."""
+    """An approved routine may later be superseded by a successor."""
 
     status = RoutineStatus.APPROVED
-    allowed_transitions = frozenset()
+    allowed_transitions = frozenset({RoutineStatus.REPLACED})

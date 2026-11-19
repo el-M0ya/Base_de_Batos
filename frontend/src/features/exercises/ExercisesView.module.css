@@ -1,0 +1,21 @@
+.view {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.header h1,
+.header p {
+  margin: 0;
+}
+
+.header p {
+  margin-top: 0.35rem;
+  color: var(--color-text-muted, #6b7280);
+}

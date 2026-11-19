@@ -77,7 +77,11 @@ function setClientSession() {
 
 describe('ProtectedRoute - sin sesión', () => {
   it('no renderiza el contenido cuando no hay sesión', async () => {
-    renderRoute(<ProtectedRoute requiredRole="trainer"><AuthorizedContent /></ProtectedRoute>);
+    renderRoute(
+      <ProtectedRoute requiredRole="trainer">
+        <AuthorizedContent />
+      </ProtectedRoute>,
+    );
     await waitForSession();
 
     expect(document.querySelector('[data-testid="authorized-content"]')).not.toBeInTheDocument();
@@ -88,7 +92,9 @@ describe('ProtectedRoute - rol requerido', () => {
   it('permite al entrenador acceder a ruta que requiere rol trainer', async () => {
     setTrainerSession();
     renderRoute(
-      <ProtectedRoute requiredRole="trainer"><AuthorizedContent /></ProtectedRoute>,
+      <ProtectedRoute requiredRole="trainer">
+        <AuthorizedContent />
+      </ProtectedRoute>,
     );
     await waitForSession();
 
@@ -98,7 +104,9 @@ describe('ProtectedRoute - rol requerido', () => {
   it('no permite al cliente acceder a ruta que requiere rol trainer', async () => {
     setClientSession();
     renderRoute(
-      <ProtectedRoute requiredRole="trainer"><AuthorizedContent /></ProtectedRoute>,
+      <ProtectedRoute requiredRole="trainer">
+        <AuthorizedContent />
+      </ProtectedRoute>,
     );
     await waitForSession();
 
@@ -117,7 +125,9 @@ describe('ProtectedRoute - rol requerido', () => {
       }),
     );
     renderRoute(
-      <ProtectedRoute requiredRole="administrator"><AuthorizedContent /></ProtectedRoute>,
+      <ProtectedRoute requiredRole="administrator">
+        <AuthorizedContent />
+      </ProtectedRoute>,
     );
     await waitForSession();
 
@@ -129,7 +139,9 @@ describe('ProtectedRoute - capacidad requerida', () => {
   it('permite al jefe de sala acceder a ruta que requiere can_validate', async () => {
     setChiefSession();
     renderRoute(
-      <ProtectedRoute requiredCapability="can_validate"><AuthorizedContent /></ProtectedRoute>,
+      <ProtectedRoute requiredCapability="can_validate">
+        <AuthorizedContent />
+      </ProtectedRoute>,
     );
     await waitForSession();
 
@@ -139,7 +151,9 @@ describe('ProtectedRoute - capacidad requerida', () => {
   it('no permite al entrenador sin can_validate acceder a ruta que requiere can_validate', async () => {
     setTrainerSession();
     renderRoute(
-      <ProtectedRoute requiredCapability="can_validate"><AuthorizedContent /></ProtectedRoute>,
+      <ProtectedRoute requiredCapability="can_validate">
+        <AuthorizedContent />
+      </ProtectedRoute>,
     );
     await waitForSession();
 
@@ -149,7 +163,9 @@ describe('ProtectedRoute - capacidad requerida', () => {
   it('no permite al cliente acceder a ruta que requiere can_generate', async () => {
     setClientSession();
     renderRoute(
-      <ProtectedRoute requiredCapability="can_generate"><AuthorizedContent /></ProtectedRoute>,
+      <ProtectedRoute requiredCapability="can_generate">
+        <AuthorizedContent />
+      </ProtectedRoute>,
     );
     await waitForSession();
 

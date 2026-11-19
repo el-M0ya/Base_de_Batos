@@ -160,13 +160,12 @@ class StateTransitionTests(unittest.TestCase):
         with self.assertRaises(InvalidRoutineStateTransition):
             routine.submit_for_review()
 
-    def test_approved_routine_is_terminal(self) -> None:
+    def test_approved_routine_can_only_be_replaced(self) -> None:
         actions = (
             lambda routine: routine.submit_for_review(),
             lambda routine: routine.resubmit_for_review(),
             lambda routine: routine.approve(),
             lambda routine: routine.reject("Reason"),
-            lambda routine: routine.replace(),
         )
 
         for action in actions:
@@ -175,11 +174,14 @@ class StateTransitionTests(unittest.TestCase):
                 with self.assertRaises(InvalidRoutineStateTransition):
                     action(routine)
 
-    def test_rejected_routine_cannot_be_approved_rejected_or_replaced(self) -> None:
+        routine = build_routine(status=RoutineStatus.APPROVED)
+        routine.replace()
+        self.assertIs(routine.status, RoutineStatus.REPLACED)
+
+    def test_rejected_routine_can_be_resubmitted_or_replaced(self) -> None:
         actions = (
             lambda routine: routine.approve(),
             lambda routine: routine.reject("Reason"),
-            lambda routine: routine.replace(),
         )
 
         for action in actions:
@@ -187,6 +189,10 @@ class StateTransitionTests(unittest.TestCase):
                 routine = build_routine(status=RoutineStatus.REJECTED)
                 with self.assertRaises(InvalidRoutineStateTransition):
                     action(routine)
+
+        routine = build_routine(status=RoutineStatus.REJECTED)
+        routine.replace()
+        self.assertIs(routine.status, RoutineStatus.REPLACED)
 
     def test_replaced_routine_is_terminal(self) -> None:
         actions = (
