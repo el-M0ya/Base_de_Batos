@@ -23,6 +23,7 @@ pnpm-debug.log*
 .eslintcache
 .prettiercache
 .vite/
+__pycache__/
 
 # Datos de bases de datos y respaldos locales
 *.sqlite

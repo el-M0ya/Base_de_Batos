@@ -1,0 +1,136 @@
+import { ApiError } from './apiError';
+import { messages } from '../i18n/messages';
+
+/** Options shared by all HTTP requests. */
+export interface RequestOptions {
+  /** Query parameters appended to the request URL. */
+  params?: Record<string, string | number | boolean | undefined>;
+  /** JSON body sent with the request. */
+  body?: unknown;
+  /** Additional request headers. */
+  headers?: HeadersInit;
+  /** Signal used to cancel a request. */
+  signal?: AbortSignal;
+}
+
+/**
+ * Callbacks the auth layer registers so requests carry the session token.
+ *
+ * @remarks
+ * `shared/api` must not import `shared/auth` (E3-02 dependency rules, and
+ * auth itself uses this client), so the session plugs itself in from outside.
+ */
+export interface AuthHandlers {
+  /** Returns the current session token, or `null` when nobody is logged in. */
+  getToken: () => string | null;
+  /** Called when the backend rejects the session token with HTTP 401. */
+  onUnauthorized: () => void;
+}
+
+/**
+ * Small typed wrapper around the browser Fetch API.
+ *
+ * @remarks
+ * Feature API modules depend on this abstraction rather than calling
+ * `fetch` directly, which makes the real implementation easy to replace in
+ * tests or adapt when the backend contract changes.
+ */
+export class HttpClient {
+  private authHandlers: AuthHandlers | null = null;
+
+  /** Registers (or removes, with `null`) the auth callbacks used by every request. */
+  setAuthHandlers(handlers: AuthHandlers | null): void {
+    this.authHandlers = handlers;
+  }
+
+  /**
+   * Executes a request and parses its JSON response.
+   *
+   * @param method - HTTP method.
+   * @param path - Relative API path.
+   * @param options - Request options.
+   * @returns Parsed response body.
+   * @throws {@link ApiError} When the network or server request fails.
+   */
+  async request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+    const url = new URL(`${baseUrl.replace(/\/$/, '')}/${path.replace(/^\//, '')}`);
+
+    for (const [key, value] of Object.entries(options.params ?? {})) {
+      if (value !== undefined) url.searchParams.set(key, String(value));
+    }
+
+    const headers = new Headers(options.headers);
+    headers.set('Accept', 'application/json');
+    if (options.body !== undefined) headers.set('Content-Type', 'application/json');
+
+    const token = this.authHandlers?.getToken() ?? null;
+    if (token !== null) headers.set('Authorization', `Bearer ${token}`);
+
+    const requestInit: RequestInit = { method, headers };
+    if (options.body !== undefined) requestInit.body = JSON.stringify(options.body);
+    if (options.signal !== undefined) requestInit.signal = options.signal;
+
+    let response: Response;
+    try {
+      response = await fetch(url, requestInit);
+    } catch {
+      throw new ApiError(0, messages.common.networkError);
+    }
+
+    if (!response.ok) {
+      let message = response.statusText || messages.common.requestFailed;
+      let code: string | undefined;
+      let details: unknown;
+
+      try {
+        const payload = (await response.json()) as {
+          message?: string;
+          code?: string;
+          details?: unknown;
+          /** FastAPI's default error field: a string, or a list for 422 validation errors. */
+          detail?: unknown;
+        };
+        if (payload.message !== undefined) message = payload.message;
+        else if (typeof payload.detail === 'string') message = payload.detail;
+        code = payload.code;
+        details = payload.details ?? (Array.isArray(payload.detail) ? payload.detail : undefined);
+      } catch {
+        // A non-JSON response still produces a useful ApiError from its status.
+      }
+
+      // A rejected token means the session is over; login failures (no token sent) are not.
+      if (response.status === 401 && token !== null) this.authHandlers?.onUnauthorized();
+
+      throw new ApiError(response.status, message, code, details);
+    }
+
+    if (response.status === 204) return undefined as T;
+
+    const text = await response.text();
+    return text === '' ? (undefined as T) : (JSON.parse(text) as T);
+  }
+
+  /** Executes a GET request. */
+  get<T>(path: string, options?: RequestOptions): Promise<T> {
+    return this.request<T>('GET', path, options);
+  }
+
+  /** Executes a POST request. */
+  post<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>('POST', path, { ...options, body });
+  }
+
+  /** Executes a PUT request. */
+  put<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>('PUT', path, { ...options, body });
+  }
+
+  /** Executes a DELETE request. */
+  delete<T>(path: string, options?: RequestOptions): Promise<T> {
+    return this.request<T>('DELETE', path, options);
+  }
+}
+
+/** Shared real-API HTTP client instance. */
+export const httpClient = new HttpClient();

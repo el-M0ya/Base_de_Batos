@@ -72,10 +72,10 @@ describe('LoginPage', () => {
 
     // Successful login: no error alert, no "invalid credentials" message.
     await new Promise((resolve) => setTimeout(resolve, 600));
-    expect(screen.queryByText('Correo o contraseña incorrectos. Verifica tus credenciales.')).not.toBeInTheDocument();
-    expect(sessionStorage.getItem('forjafit:token')).toBe(
-      'demo:trainer@forjafit.demo',
-    );
+    expect(
+      screen.queryByText('Correo o contraseña incorrectos. Verifica tus credenciales.'),
+    ).not.toBeInTheDocument();
+    expect(sessionStorage.getItem('forjafit:token')).toBe('demo:trainer@forjafit.demo');
   });
 
   it('accepts client demo credentials', async () => {
@@ -88,9 +88,36 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Entrar' }));
 
     await new Promise((resolve) => setTimeout(resolve, 600));
-    expect(sessionStorage.getItem('forjafit:token')).toBe(
-      'demo:client@forjafit.demo',
-    );
+    expect(sessionStorage.getItem('forjafit:token')).toBe('demo:client@forjafit.demo');
+  });
+
+  it('shows a specific message for a deactivated account', async () => {
+    const { user } = renderWithProviders(<LoginPage />);
+
+    await user.type(screen.getByLabelText('Correo electrónico'), 'inactive@forjafit.demo');
+    await user.type(screen.getByLabelText('Contraseña'), 'inactive2026');
+    await user.click(screen.getByRole('button', { name: 'Entrar' }));
+
+    expect(
+      await screen.findByText('Tu cuenta está desactivada. Contacta con el administrador.'),
+    ).toBeInTheDocument();
+    expect(sessionStorage.getItem('forjafit:token')).toBeNull();
+  });
+
+  it('shows the expiry notice once after the session was rejected', () => {
+    sessionStorage.setItem('forjafit:sessionExpired', '1');
+
+    renderWithProviders(<LoginPage />);
+
+    expect(screen.getByText('Tu sesión ha expirado. Inicia sesión de nuevo.')).toBeInTheDocument();
+    expect(sessionStorage.getItem('forjafit:sessionExpired')).toBeNull();
+
+    cleanup();
+    renderWithProviders(<LoginPage />);
+
+    expect(
+      screen.queryByText('Tu sesión ha expirado. Inicia sesión de nuevo.'),
+    ).not.toBeInTheDocument();
   });
 
   it('accepts administrator demo credentials', async () => {
@@ -103,8 +130,6 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Entrar' }));
 
     await new Promise((resolve) => setTimeout(resolve, 600));
-    expect(sessionStorage.getItem('forjafit:token')).toBe(
-      'demo:admin@forjafit.demo',
-    );
+    expect(sessionStorage.getItem('forjafit:token')).toBe('demo:admin@forjafit.demo');
   });
 });

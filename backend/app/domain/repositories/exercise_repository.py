@@ -37,12 +37,17 @@ class ExerciseRepository(ABC):
 
     @abstractmethod
     async def find_duplicate(
-        self, normalized_name: str, id_muscle_group: int
+        self,
+        normalized_name: str,
+        id_muscle_group: int,
+        exclude_id: Optional[int] = None,
     ) -> Optional[Exercise]:
         """Return the exercise that collides with the duplicate key (U-12).
 
         Duplicate detection uses the normalized name and the muscle group, so
-        the same name in another muscle group is not a duplicate.
+        the same name in another muscle group is not a duplicate. When
+        ``exclude_id`` is provided, the exercise with that identifier is ignored
+        so a reclassification can keep its own name and muscle group.
         """
 
     @abstractmethod

@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from app.domain.entities.routine import Routine
+from app.domain.entities.routine import Routine, RoutineStatus
 from app.domain.entities.routine_structure import RoutineStructure
 from app.domain.entities.routine_validation import RoutineValidation
 
@@ -38,3 +38,13 @@ class RoutineRepository(ABC):
     @abstractmethod
     async def list_validations(self, id_routine: int) -> list[RoutineValidation]:
         """Return the validation history of a routine."""
+
+    @abstractmethod
+    async def mark_replaced(
+        self, id_routine: int, expected_status: RoutineStatus
+    ) -> Routine:
+        """Set a reviewed routine to REPLACED after its successor is persisted.
+
+        Implementations must only update the status, preserving all validation
+        history, and must require a linked successor in the same transaction.
+        """
