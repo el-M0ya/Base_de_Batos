@@ -14,6 +14,7 @@ from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.adapters.routers._errors import to_http_exception
+from app.adapters.routers.user_router import build_user_router
 from app.application.dto.actor import ActorDTO
 from app.application.dto.auth_dto import UserSessionDTO
 from app.application.exceptions import InvalidInput, InvalidToken
@@ -57,6 +58,10 @@ from app.application.use_cases.update_site import UpdateSiteUseCase
 from app.application.use_cases.update_training_program import (
     UpdateTrainingProgramUseCase,
 )
+from app.application.use_cases.user.create_user import CreateUserUseCase
+from app.application.use_cases.user.deactivate_user import DeactivateUserUseCase
+from app.application.use_cases.user.list_users import ListUsersUseCase
+from app.application.use_cases.user.update_user import UpdateUserUseCase
 from app.core.config import get_settings
 from app.domain.exceptions.domain_exceptions import DomainException
 from app.domain.repositories.authorisation_repository import AuthorisationRepository
@@ -263,6 +268,42 @@ def get_list_sites_use_case(
     repo: SiteRepositorySql = Depends(get_site_repository),
 ) -> ListSitesUseCase:
     return ListSitesUseCase(repo)
+
+
+# ---------------------------------------------------------------------------
+# User account management (administrator)
+# ---------------------------------------------------------------------------
+def get_create_user_use_case(
+    repo: UserRepository = Depends(get_user_repository),
+) -> CreateUserUseCase:
+    return CreateUserUseCase(repo)
+
+
+def get_update_user_use_case(
+    repo: UserRepository = Depends(get_user_repository),
+) -> UpdateUserUseCase:
+    return UpdateUserUseCase(repo)
+
+
+def get_deactivate_user_use_case(
+    repo: UserRepository = Depends(get_user_repository),
+) -> DeactivateUserUseCase:
+    return DeactivateUserUseCase(repo)
+
+
+def get_list_users_use_case(
+    repo: UserRepository = Depends(get_user_repository),
+) -> ListUsersUseCase:
+    return ListUsersUseCase(repo)
+
+
+def get_user_router() -> APIRouter:
+    """Build and return the administrator-managed users router."""
+    return build_user_router(
+        get_actor=get_current_actor,
+        get_repository=get_user_repository,
+        hash_password=get_password_hasher,
+    )
 
 
 # ---------------------------------------------------------------------------
