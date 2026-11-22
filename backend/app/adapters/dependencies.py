@@ -39,6 +39,9 @@ from app.application.use_cases.get_training_program import (
     GetTrainingProgramUseCase,
 )
 from app.application.use_cases.list_muscle_groups import ListMuscleGroupsUseCase
+from app.application.use_cases.list_routines_for_trainer import (
+    ListRoutinesForTrainerUseCase,
+)
 from app.application.use_cases.list_sites import ListSitesUseCase
 from app.application.use_cases.list_training_programs import (
     ListTrainingProgramsUseCase,
@@ -89,6 +92,9 @@ from app.infrastructure.persistence.repositories.workout_program_repository_sql 
 )
 from app.infrastructure.persistence.repositories.routine_repository_sql import (
     RoutineRepositorySql,
+)
+from app.infrastructure.persistence.repositories.routine_consultation_repository_sql import (
+    RoutineConsultationRepositorySql,
 )
 from app.infrastructure.persistence.transaction import PsqlTransactionManager
 from app.infrastructure.security.jwt_token_service import JwtTokenService
@@ -397,6 +403,22 @@ async def get_list_training_programs_use_case(
 ) -> AsyncGenerator[ListTrainingProgramsUseCase, None]:
     """Yield a ``ListTrainingProgramsUseCase``."""
     yield ListTrainingProgramsUseCase(repo)
+
+
+async def get_routine_consultation_repository(
+    tm: PsqlTransactionManager = Depends(get_transaction_manager),
+) -> AsyncGenerator[RoutineConsultationRepositorySql, None]:
+    """Yield a ``RoutineConsultationRepositorySql`` using the request transaction."""
+    yield RoutineConsultationRepositorySql(tm)
+
+
+async def get_list_routines_for_trainer_use_case(
+    repo: RoutineConsultationRepositorySql = Depends(
+        get_routine_consultation_repository
+    ),
+) -> AsyncGenerator[ListRoutinesForTrainerUseCase, None]:
+    """Yield a ``ListRoutinesForTrainerUseCase``."""
+    yield ListRoutinesForTrainerUseCase(repo)
 
 
 async def get_set_training_program_muscle_groups_use_case(
