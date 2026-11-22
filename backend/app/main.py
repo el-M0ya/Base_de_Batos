@@ -19,6 +19,7 @@ from app.adapters.routers.exercises import (
 from app.adapters.routers.muscle_groups import router as muscle_groups_router
 from app.adapters.routers.sites import router as sites_router
 from app.adapters.routers.training_programs import router as training_programs_router
+from app.adapters.dependencies import get_user_router
 from app.adapters.routers.routine_replacements import router as routine_replacements_router
 from app.application.exceptions import ApplicationError
 from app.infrastructure.persistence.connection import close_db_pool, init_db_pool
@@ -66,6 +67,7 @@ def create_app() -> FastAPI:
     application.include_router(catalogs_router, prefix="/api/v1")
     application.include_router(muscle_groups_router, prefix="/api/v1")
     application.include_router(training_programs_router, prefix="/api/v1")
+    application.include_router(get_user_router(), prefix="/api/v1")
     application.include_router(routine_replacements_router, prefix="/api/v1")
 
     @application.get("/health", tags=["Health Check"])
