@@ -49,6 +49,7 @@ from app.application.use_cases.list_training_programs import (
 from app.application.use_cases.resolve_session import ResolveSessionUseCase
 from app.application.use_cases.reclassify_exercise import ReclassifyExerciseUseCase
 from app.application.use_cases.generate_routine import GenerateRoutineUseCase
+from app.application.use_cases.get_routine import GetRoutineUseCase
 from app.application.use_cases.replace_routine import ReplaceRoutineUseCase
 from app.application.use_cases.set_training_program_muscle_groups import (
     SetTrainingProgramMuscleGroupsUseCase,
@@ -467,6 +468,14 @@ def get_replace_routine_use_case(
 ) -> ReplaceRoutineUseCase:
     """Build the replacement flow over the same request transaction."""
     return ReplaceRoutineUseCase(routines, authorisations, generator)
+
+
+def get_get_routine_use_case(
+    routines: RoutineRepositorySql = Depends(get_routine_repository),
+    authorisations: AuthorisationRepository = Depends(get_authorisation_repository),
+) -> GetRoutineUseCase:
+    """Build the routine-retrieval flow over the same request transaction."""
+    return GetRoutineUseCase(routines, authorisations)
 
 
 async def get_catalog_repository(
