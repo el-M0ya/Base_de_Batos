@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 /**
  * Definiciones de columna y dirección de orden para `DataTable`.
  *
@@ -33,4 +35,3 @@ export interface ColumnDef<T> {
   /** Set to `false` to leave the column out of exported files (e.g. the PDF). */
   exportable?: boolean;
 }
-import type { ReactNode } from 'react';

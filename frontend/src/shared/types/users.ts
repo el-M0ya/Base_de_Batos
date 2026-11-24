@@ -13,7 +13,7 @@
  * resuelve en el adaptador de API (`features/users/api.ts`) cuando E4-02 esté
  * disponible.
  */
-export type UserRole = 'administrator' | 'trainer' | 'client';
+import type { UserRole } from './roles';
 
 /**
  * Estado de una cuenta de usuario.
@@ -23,21 +23,6 @@ export type UserRole = 'administrator' | 'trainer' | 'client';
  * mantener la trazabilidad de rutinas, asignaciones y sesiones.
  */
 export type AccountStatus = 'active' | 'inactive';
-
-/**
- * Capacidades de sesión de un usuario.
- *
- * @remarks
- * `can_generate` permite generar rutinas; `can_validate` permite revisarlas.
- * Ambas son por programa y con vigencia, pero en la sesión se guarda el valor
- * derivado del usuario autenticado.
- */
-export interface UserCapabilities {
-  /** Puede generar rutinas en un programa. */
-  can_generate: boolean;
-  /** Puede validar (revisar/aprobar/rechazar) rutinas en un programa. */
-  can_validate: boolean;
-}
 
 /**
  * Perfil de entrenador (RF-04).

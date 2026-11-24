@@ -106,12 +106,14 @@ function notFoundError(id: number): UserApiError {
 
 /** Implementación simulada de la API de usuarios. */
 const usersApiMock: UsersApi = {
+  /** Lista todas las cuentas registradas. */
   async listUsers(): Promise<UserApiResult<UserAccount[]>> {
     await withDelay(undefined);
     // Devuelve una copia para evitar mutaciones externas.
     return { ok: true, data: [...DEMO_USERS] };
   },
 
+  /** Crea una nueva cuenta. Rechaza con `duplicateEmail` si el correo ya existe. */
   async createUser(input: CreateUserInput): Promise<UserApiResult<UserAccount>> {
     await withDelay(undefined);
 
@@ -141,6 +143,7 @@ const usersApiMock: UsersApi = {
     return { ok: true, data: newUser };
   },
 
+  /** Modifica los datos de una cuenta existente. */
   async updateUser(id: number, input: UpdateUserInput): Promise<UserApiResult<UserAccount>> {
     await withDelay(undefined);
 
@@ -170,6 +173,7 @@ const usersApiMock: UsersApi = {
     return { ok: true, data: user };
   },
 
+  /** Desactiva una cuenta (baja lógica). */
   async deactivateUser(id: number): Promise<UserApiResult<void>> {
     await withDelay(undefined);
 
@@ -187,55 +191,11 @@ const usersApiMock: UsersApi = {
   },
 };
 
-/* ------------------------------------------------------------------ */
-/* Implementación real (pendiente de E4-02)                           */
-/* ------------------------------------------------------------------ */
-
 /**
- * Implementación real de la API de usuarios.
- *
- * @remarks
- * Hasta que existan los endpoints de backend (E4-02), esta implementación
- * lanza un error claro si se intenta usar. La selección entre mock y real
- * se resuelve en `usersApi` más abajo.
+ * Implementación de API activa. Hasta que E4-02 se suba y el backend exponga
+ * endpoints reales, se usa el mock. La UI no cambia al activar la real.
  */
-const usersApiReal: UsersApi = {
-  async listUsers(): Promise<UserApiResult<UserAccount[]>> {
-    throw new Error(
-      'API real de usuarios no disponible aún: E4-02 (backend de cuentas y perfiles) no está implementado.',
-    );
-  },
-  async createUser(): Promise<UserApiResult<UserAccount>> {
-    throw new Error(
-      'API real de usuarios no disponible aún: E4-02 (backend de cuentas y perfiles) no está implementado.',
-    );
-  },
-  async updateUser(): Promise<UserApiResult<UserAccount>> {
-    throw new Error(
-      'API real de usuarios no disponible aún: E4-02 (backend de cuentas y perfiles) no está implementado.',
-    );
-  },
-  async deactivateUser(): Promise<UserApiResult<void>> {
-    throw new Error(
-      'API real de usuarios no disponible aún: E4-02 (backend de cuentas y perfiles) no está implementado.',
-    );
-  },
-};
-
-/**
- * Modo de API activo: 'mock' (por defecto) o 'real'.
- *
- * @remarks
- * Se lee de `VITE_API_MODE`. Cualquier otro valor se trata como mock. Cuando
- * E4-02 se suba y el backend exponga endpoints reales, se podrá cambiar a
- * 'real' sin modificar la UI.
- */
-const API_MODE: 'mock' | 'real' = import.meta.env.VITE_API_MODE === 'real' ? 'real' : 'mock';
-
-/**
- * Implementación de autenticación activa.
- */
-export const usersApi: UsersApi = API_MODE === 'real' ? usersApiReal : usersApiMock;
+export const usersApi: UsersApi = usersApiMock;
 
 /**
  * Extrae el mensaje de error de un resultado de API, o `null` si fue exitoso.

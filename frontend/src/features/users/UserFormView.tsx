@@ -7,7 +7,8 @@
  * sede) y muestra errores de campo y de backend. El contenedor
  * (`UserFormContainer`) provee los valores, manejadores y validación.
  */
-import type { UserRole, UserFormFieldErrors } from '../../shared/types/users';
+import type { UserRole } from '../../shared/types/roles';
+import type { UserFormFieldErrors } from '../../shared/types/users';
 import { messages } from '../../shared/i18n/messages';
 import { TextField } from '../../shared/components/TextField';
 import { SelectField } from '../../shared/components/SelectField';
