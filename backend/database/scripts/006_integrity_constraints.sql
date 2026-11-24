@@ -27,10 +27,10 @@ DO
 $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'uq_user_email'
+    SELECT 1 FROM pg_constraint WHERE conname = 'uq_app_user_email'
   ) THEN
-    ALTER TABLE "user"
-      ADD CONSTRAINT uq_user_email UNIQUE (email);
+    ALTER TABLE app_user
+      ADD CONSTRAINT uq_app_user_email UNIQUE (email);
   END IF;
 END
 $$;
@@ -47,10 +47,6 @@ BEGIN
 
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_exercise_type_name') THEN
     ALTER TABLE exercise_type ADD CONSTRAINT uq_exercise_type_name UNIQUE (name);
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_intensity_level_name') THEN
-    ALTER TABLE intensity_level ADD CONSTRAINT uq_intensity_level_name UNIQUE (name);
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_site_name') THEN
@@ -133,9 +129,9 @@ $$;
 DO
 $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_session_assignment') THEN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_session_assignment_date') THEN
     ALTER TABLE session
-      ADD CONSTRAINT uq_session_assignment UNIQUE (id_session, id_assignment);
+      ADD CONSTRAINT uq_session_assignment_date UNIQUE (id_assignment, fecha_sesion);
   END IF;
 END
 $$;
@@ -190,7 +186,7 @@ BEGIN
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_contains_rest_positive') THEN
-    ALTER TABLE contains ADD CONSTRAINT chk_contains_rest_positive CHECK (rest_seconds > 0);
+    ALTER TABLE contains ADD CONSTRAINT chk_contains_rest_positive CHECK (rest_time_seconds >= 0);
   END IF;
 
   -- Parameters routine: proportions and counts must be >= 0 where applicable
@@ -205,7 +201,8 @@ BEGIN
 
   -- Session completed flag logic aid
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_session_intensity_perceived_range') THEN
-    ALTER TABLE session ADD CONSTRAINT chk_session_intensity_perceived_range CHECK (intensity_perceived BETWEEN 1 AND 10);
+    ALTER TABLE session ADD CONSTRAINT chk_session_intensity_perceived_range
+      CHECK (intensidad_percibida IS NULL OR intensidad_percibida ~ '^(10|[1-9])$');
   END IF;
 END
 $$;
@@ -218,7 +215,7 @@ $$
 BEGIN
 -- Assignment: end_date >= assignment_date if present
 IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_assignment_dates') THEN
-    ALTER TABLE assignment ADD CONSTRAINT chk_assignment_dates CHECK (end_date IS NULL OR end_date >= assignment_date);
+    ALTER TABLE assignment ADD CONSTRAINT chk_assignment_dates CHECK (fecha_fin IS NULL OR fecha_fin >= fecha_asignacion);
   END IF;
 
   -- Authorization: end_date >= start_date if present
@@ -228,7 +225,7 @@ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_assignment_dates
 
   -- Session: end_time >= start_time
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_session_time_range') THEN
-    ALTER TABLE session ADD CONSTRAINT chk_session_time_range CHECK (end_time >= start_time);
+    ALTER TABLE session ADD CONSTRAINT chk_session_time_range CHECK (hora_fin >= hora_inicio);
   END IF;
 
   -- Validation: routine must not be validated before creation (business rule)
@@ -243,10 +240,10 @@ $$;
 -- -----------------------------------------------------------------------------
 -- Supporting indexes for constraint-related lookups
 -- -----------------------------------------------------------------------------
-CREATE INDEX IF NOT EXISTS idx_routine_state ON routine (state);
-CREATE INDEX IF NOT EXISTS idx_routine_intensity ON routine (intensity_level);
+CREATE INDEX IF NOT EXISTS idx_routine_state ON routine (status);
+CREATE INDEX IF NOT EXISTS idx_routine_intensity ON parameters_routine (intensity_level);
 CREATE INDEX IF NOT EXISTS idx_assignment_client_routine ON assignment (id_client, id_routine);
-CREATE INDEX IF NOT EXISTS idx_session_assignment_date ON session (id_assignment, session_date);
+CREATE INDEX IF NOT EXISTS idx_session_assignment_date ON session (id_assignment, fecha_sesion);
 
 COMMIT;
 

@@ -42,7 +42,9 @@ SCRIPT_FILES = [
     "006_integrity_constraints.sql",
     "007_consistency_triggers.sql",
     "008_catalog_seeds.sql",
+    "010_add_user_is_active.sql",
     "011_routine_parameters_full_generation.sql",
+    "012_routine_replacement.sql",
 ]
 
 _pool: Optional[AsyncConnectionPool] = None
@@ -171,4 +173,10 @@ async def clean_all_tables() -> None:
     pool = await get_test_pool()
     async with pool.connection() as conn:
         async with conn.transaction():
-            await conn.execute("TRUNCATE TABLE adjustment_result, request, session, assignment, validate, contains, routine_structure, routine, parameters_routine, inscription, authorises, exercise, client, trainer, app_user, muscle_group, exercise_type, intensity_level, workout_program, site, covers RESTART IDENTITY CASCADE")
+            await conn.execute(
+                "TRUNCATE TABLE adjustment_result, request, session, assignment, "
+                "validate, contains, routine_structure, routine, parameters_routine, "
+                "inscribed, authorises, exercise, client, trainer, app_user, "
+                "muscle_group, exercise_type, workout_program, site, covers "
+                "RESTART IDENTITY CASCADE"
+            )

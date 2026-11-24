@@ -10,14 +10,14 @@ Scripts must be executed in the following numeric order:
 
 | Script | Issue | Purpose |
 | :-- | :-- | :-- |
-| `001_identity_and_sites.sql` | #20 | `user`, `trainer`, `room_chief`, `site`, `client` (role stored as attribute of `user`, generalization resolved by shared PKs) |
-| `002_catalogs_and_programs.sql` | #21 | `workout_program`, `muscle_group`, `exercise_type`, `intensity_level`, `covers` |
+| `001_identity_and_sites.sql` | #20 | `app_user`, `trainer`, `site`, `client` (room chiefs use trainer identity with `can_validate` authorization) |
+| `002_catalogs_and_programs.sql.sql` | #21 | `workout_program`, `muscle_group`, `exercise_type`, `covers` |
 | `003_exercises_authorisations_enrolments.sql` | #22 | `exercise`, `authorises`, `inscribed` |
 | `004_routines_and_structure.sql` | #23 | `routine`, `parameters_routine`, `contains`, `routine_structure` (JSONB). Routine and structure created atomically in one transaction. |
 | `005_validation_assignments_sessions_adjustments.sql` | #24 | `validate`, `assignment`, `session`, `request`, `adjustment_result` |
-| `006_integrity_constraints.sql` | #25 | Uniqueness (U-1–U-12), domain CHECKs, temporal CHECKs and supporting indexes |
+| `006_integrity_constraints.sql` | #25 | Uniqueness, domain CHECKs, temporal CHECKs and supporting indexes aligned with the physical schema |
 | `007_consistency_triggers.sql` | #26 | Model consistency triggers (role/specialization checks, routine state consistency, adjustment resolver validation) and cache invalidation hooks for Redis |
-| `008_catalog_seeds.sql` | #27 | Initial catalog data and SQL fixtures for development/testing |
+| `008_catalog_seeds.sql` | #27 | Initial exercise-type catalog data |
 | `010_add_user_is_active.sql` | Auth | Adds the active flag used by user sessions |
 | `011_routine_parameters_full_generation.sql` | E6-02 | Adds the flexibility proportion and muscle-group coverage snapshot to `parameters_routine` |
 | `012_routine_replacement.sql` | #122 | Adds `routine.id_routine_origin`, the `REPLACED` status, and a unique successor-per-source constraint |
