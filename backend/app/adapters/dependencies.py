@@ -39,9 +39,11 @@ from app.application.use_cases.get_training_program import (
     GetTrainingProgramUseCase,
 )
 from app.application.use_cases.list_muscle_groups import ListMuscleGroupsUseCase
+from app.application.use_cases.list_pending_reviews import ListPendingReviewsUseCase
 from app.application.use_cases.list_routines_for_trainer import (
     ListRoutinesForTrainerUseCase,
 )
+from app.application.use_cases.review_routine import ReviewRoutineUseCase
 from app.application.use_cases.list_sites import ListSitesUseCase
 from app.application.use_cases.list_training_programs import (
     ListTrainingProgramsUseCase,
@@ -476,6 +478,22 @@ def get_get_routine_use_case(
 ) -> GetRoutineUseCase:
     """Build the routine-retrieval flow over the same request transaction."""
     return GetRoutineUseCase(routines, authorisations)
+
+
+def get_review_routine_use_case(
+    routines: RoutineRepositorySql = Depends(get_routine_repository),
+    authorisations: AuthorisationRepository = Depends(get_authorisation_repository),
+) -> ReviewRoutineUseCase:
+    """Build the routine-review flow over the same request transaction."""
+    return ReviewRoutineUseCase(routines, authorisations)
+
+
+def get_list_pending_reviews_use_case(
+    routines: RoutineRepositorySql = Depends(get_routine_repository),
+    authorisations: AuthorisationRepository = Depends(get_authorisation_repository),
+) -> ListPendingReviewsUseCase:
+    """Build the pending-reviews listing flow over the same request transaction."""
+    return ListPendingReviewsUseCase(routines, authorisations)
 
 
 async def get_catalog_repository(
