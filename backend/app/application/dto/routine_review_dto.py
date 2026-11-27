@@ -79,6 +79,17 @@ class ListRoutineValidationsInputDTO:
 
 
 @dataclass(frozen=True)
+class ListPendingReviewsInputDTO:
+    """Data required to list routines pending review for an authorised reviewer."""
+
+    actor: ActorDTO
+
+    def __post_init__(self) -> None:
+        """Validate the actor."""
+        validate_actor(self.actor)
+
+
+@dataclass(frozen=True)
 class RoutineValidationOutputDTO:
     """Public representation of a persisted routine validation.
 
